@@ -10,8 +10,8 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
 所以只能用GHC-Haskell或Ocaml或Coq。
 
-歷史
-===
+歷史/特性
+=======
 某些東西被意外毀了，所以我可以修改歷史。雖然被修改過，我說以下內容是事實。
 
 # 版本
@@ -29,7 +29,7 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 #### ↓
 #### 構--Scheme的cons的一種用法
 ### Lazy
-#### 像MicroKanren一樣的Lazy現在是可以沒有的
+#### 像MicroKanren一樣的Lazy （現在是可以沒有的）
 ### 命名 Symbol
 #### Scheme的symbol
 #### ↓
