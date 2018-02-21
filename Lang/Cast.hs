@@ -31,12 +31,16 @@ instance C建字列 L列 where
 class C字列To名 x where 字列To名 :: String -> x
 instance C字列To名 W物 where 字列To名 xs = 名 (建字列 xs)
 instance C字列To名 M名物 where 字列To名 xs = 名 (建字列 xs)
+instance C字列To名 X形 where 字列To名 xs = 名 (建字列 xs)
 
 class C建名 x where 建名 :: List String -> x
 instance C建名 W物 where
     建名 [x] = 字列To名 x
     建名 xs = 名 (建列 (map 字列To名 xs))
 instance C建名 M名物 where
+    建名 [x] = 字列To名 x
+    建名 xs = 名 (建列 (map 字列To名 xs))
+instance C建名 X形 where
     建名 [x] = 字列To名 x
     建名 xs = 名 (建列 (map 字列To名 xs))
 
