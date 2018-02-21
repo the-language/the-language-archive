@@ -17,7 +17,11 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 版本:
 + 用易語言寫的一個版本
 + 用Java寫的一個版本
-+ 用Go寫的三個版本
++ 用Go重寫三次
 + 用Haskell寫的一個版本
-+ 用Racket/Scheme/Idris/Haskell寫的十三個版本
-    ...
++ 用Racket/Scheme/Idris/Haskell重寫十三次
+---------------------------------
+### 函數和宏
++ 複雜的Curried+非Curried函數和宏
++ 非Curried的函數和宏
+
