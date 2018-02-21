@@ -32,14 +32,45 @@ mkfM n f = \xs -> case f xs of
     Just x -> x
     Nothing -> 界誤 n xs
 
+class C建參 x where 建參 :: Nat -> x
+instance C建參 X形 where 建參 x = 建列 (map (\x -> 建名[show x]) [x,x-1..1])
+instance C建參 W物 where 建參 x = 建列 (map (\x -> 建名[show x]) [x,x-1..1])
+
+建界名 :: List String -> W物
+建界名 n = (首尾 用界名 (首尾 (建名 n) 空))
+
 f :: List String -> Nat -> (List W物 -> W物) -> (M名物, W物)
-f n c x =
-    (建名 n,
-      界機 (MkJJ界機物 n c x (建列 (map (\x -> 建名[show x]) [1..c]))
-                           (首尾 (首尾 用界名 (首尾 (建名 n) 空)) (建列 (map (\x -> 建名[show x]) [1..c])))))
+f n c x = (建名 n, 界機 (MkJJ界機物 n c x (建參 c) (首尾 (建界名 n) (建參 c))))
 
 fM :: List String -> Nat -> (List W物 -> Maybe W物) -> (M名物, W物)
 fM n c x = f n c (mkfM n x)
+
+m :: List String -> Nat -> (Mapping M名物 W物 -> List W物 -> Maybe W物) -> (M名物, W物)
+m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[建界名["算"], 未算, 建名[show ce]]))))
+  where
+    f :: (List W物 -> W物)
+    f _a@(e : xs) = case (物To境 e >>= \e -> x e xs) of
+        Just x -> x
+        Nothing -> 界誤 n _a
+    
+    ce :: Nat
+    ce = c+1
+    
+    未算 :: W物
+    未算 = 建首尾 (引 用式名) (建首尾 (引 (建界名 n)) (連參 c))
+    
+    連參 :: Nat -> W物
+    連參 1 = 建首尾 (建名["1"]) (建界名["空"])
+    連參 n = 建首尾 (建名[show n]) (連參 (n-1))
+    
+    建首尾 :: W物 -> W物 -> W物
+    建首尾 a d = 建列[建界名["首尾"], a, d]
+    
+    引 :: W物 -> W物
+    引 x = 建式 (建界名["引"]) [x]
+    
+    建式 :: W物 -> List W物 -> W物
+    建式 x ys = 建列 (用式名 : x : ys)
 
 空境 :: Mapping M名物 W物
 空境 = (listToMapping [
