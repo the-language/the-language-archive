@@ -14,7 +14,7 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 ===
 某些東西被意外毀了，所以我可以修改歷史。雖然被修改過，我說以下內容是事實。
 
-版本:
+# 版本
 ## 用易語言寫的一個版本
 ## 用Java寫的一個版本
 ## 用Go重寫三次
@@ -22,5 +22,6 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 ## 用Racket/Scheme/Idris/Haskell重寫十三次
 ### 函數和宏
 #### 複雜的Curried+非Curried函數和宏
+#### ↓
 #### 非Curried的函數和宏
 
