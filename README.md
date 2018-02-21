@@ -1,3 +1,5 @@
+語
+==
 Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
 因爲
@@ -11,7 +13,7 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 所以只能用GHC-Haskell或Ocaml或Coq。
 
 歷史/特性
-=======
+-------
 某些東西被意外毀了，所以我可以修改歷史。雖然被修改過，我說以下內容是事實。
 
 # 版本
@@ -39,7 +41,7 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 call/gensym修改`域`，`域`默認是`()`。
 #### ↓
 #### 列表
-+ `'hash-set`是`(名 '((#\h #\a #\s #\h) (#\s #\e #\t)))
++ `'hash-set`是`(名 '((#\h #\a #\s #\h) (#\s #\e #\t)))`
 + `'a`是`(名 '((#\a)))`
 + `(call/gensym 'a f)`產生`(名 '(#<procedure> (#\a)))`
 #### ↓
