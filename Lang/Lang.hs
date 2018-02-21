@@ -100,7 +100,9 @@ fM n c x = f n c (mkfM n x)
         W界機 (MkJJ界機物 _ _ _ x _) -> Just (形To物 x)
         _ -> Nothing)),
     (fM["機","物"]1(\[x] -> x? wip)),
-    (建名["入"], wip),
+    (建名["入"], 引機 (界機 (MkJJ界機物 ["入"] 3 (\_a@[e, x, w] -> case 物To形 x of
+        Just x -> 機 (case 物To境 e of Just x -> x) x w
+        Nothing -> 界誤 ["入"] _a) (首尾 (建名["e"]) (首尾 (建名["x"]) (首尾 (建名["w"]) 空))) wip))),
     (建名["陰"], 陰),
     (建名["陽"], 陽),
     (fM["若"]3(\[b, x, y] -> b? case b of
