@@ -106,6 +106,10 @@ instance C建列 W物 L列 where
 物To機物 (W界機 x) = Just (界機 x)
 物To機物 _ = Nothing
 
+物To名 :: W物 -> Maybe M名物
+物To名 (W名 k) = Just (名 k)
+物To名 _ = Nothing
+
 境ToMapping :: Mapping M名物 W物 -> Mapping W物 W物
 境ToMapping x = listToMapping (map (\(M名 k, v) -> (名 k, v)) (mappingToList x))
 
@@ -113,7 +117,7 @@ instance C建列 W物 L列 where
 境To物 = 境
 
 mappingTo境 :: Mapping W物 W物 -> Maybe (Mapping M名物 W物)
-mappingTo境 x = listToMapping <$> mapM (\x -> case x of{(W名 k, v) -> Just (名 k, v);_ -> Nothing}) (mappingToList x)
+mappingTo境 x = listToMapping <$> mapM (\(k, v) -> (,) <$> 物To名 k <*> pure v) (mappingToList x)
 物To境 :: W物 -> Maybe (Mapping M名物 W物)
 物To境 (W映 x) = mappingTo境 x
 物To境 (W境 x) = Just x
