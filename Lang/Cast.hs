@@ -48,6 +48,9 @@ class C用式名 x where 用式名 :: x
 instance C用式名 W物 where 用式名 = 建名 ["!", "式"]
 instance C用式名 M名物 where 用式名 = 建名 ["!", "式"]
 
+建式 :: W物 -> List W物 -> W物
+建式 x ys = 建列 (用式名 : x : ys)
+
 class C用界名 x where 用界名 :: x
 instance C用界名 W物 where 用界名 = 建名 ["!", "界"]
 instance C用界名 M名物 where 用界名 = 建名 ["!", "界"]
@@ -102,13 +105,15 @@ instance C建列 W物 L列 where
 
 境ToMapping :: Mapping M名物 W物 -> Mapping W物 W物
 境ToMapping x = listToMapping (map (\(M名 k, v) -> (名 k, v)) (mappingToList x))
+
 境To物 :: Mapping M名物 W物 -> W物
-境To物 x = W映 (境ToMapping x)
+境To物 = 境
 
 mappingTo境 :: Mapping W物 W物 -> Maybe (Mapping M名物 W物)
 mappingTo境 x = listToMapping <$> mapM (\x -> case x of{(W名 k, v) -> Just (名 k, v);_ -> Nothing}) (mappingToList x)
 物To境 :: W物 -> Maybe (Mapping M名物 W物)
 物To境 (W映 x) = mappingTo境 x
+物To境 (W境 x) = Just x
 物To境 _ = Nothing
 
 機物To物 :: J機物 -> W物

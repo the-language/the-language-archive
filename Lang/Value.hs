@@ -16,8 +16,10 @@
 module Lang.Value where
 import Mapping
 import Lang.Common
+-- 模擬subtype
+-- Shen的Type System更好，但Shen不支持中國字
 data W物 = W首尾 W物 W物|W空|W字 Char|W數 Rational|W名 L列|
-           W映 (Mapping W物 W物)|W機 (Mapping M名物 W物) X形 W物|W界機 JJ界機物|
+           W映 (Mapping W物 W物)|W境 (Mapping M名物 W物)|W機 (Mapping M名物 W物) X形 W物|W界機 JJ界機物|
            W陰|W陽|W引機 J機物|W譯機 J機物|W誤 W物|W構 M名物 L列 deriving (Eq, Ord, Show)
 data L列 = L首尾 W物 L列|L空 deriving (Eq, Ord, Show)
 data M名物 = M名 L列 deriving (Eq, Ord, Show)
@@ -30,8 +32,6 @@ instance Ord JJ界機物 where
     compare (MkJJ界機物 x _ _ _ _) (MkJJ界機物 y _ _ _ _) = compare x y
 instance Show JJ界機物 where
     show (MkJJ界機物 x y _ z a) = "MkJJ界機物 " ++ showsPrec 11 x "" ++ " " ++ showsPrec 11 y "" ++ " _ " ++ showsPrec 11 z "" ++ " " ++ showsPrec 11 a ""
-
--- Shen的Type System更好，但Shen不支持中國字
 
 class C首尾 x y z | y -> x z, z -> x y where 首尾 :: x -> y -> z
 class C空 x where 空 :: x
@@ -62,4 +62,4 @@ instance C界機 J機物 where 界機 = J界機
 譯機 = W譯機
 誤 = W誤
 構 = W構
-
+境 = W境
