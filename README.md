@@ -2,6 +2,8 @@
 ==
 Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
+這只是核心，不是直接用來solve problems · make languages的。
+
 因爲
 + Idris的Lazy有Bug
 + Shen不支持中國字
