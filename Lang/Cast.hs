@@ -45,8 +45,8 @@ instance C建名 X形 where
     建名 xs = 名 (建列 (map 字列To名 xs))
 
 class C用式名 x where 用式名 :: x
-instance C用式名 W物 where 用式名 = 建名 ["!", "式"]
-instance C用式名 M名物 where 用式名 = 建名 ["!", "式"]
+instance C用式名 W物 where 用式名 = 建名["!", "式"]
+instance C用式名 M名物 where 用式名 = 建名["!", "式"]
 
 建式 :: W物 -> List W物 -> W物
 建式 x ys = 建列 (用式名 : x : ys)
@@ -55,12 +55,15 @@ instance C用式名 M名物 where 用式名 = 建名 ["!", "式"]
 建界名 n = (首尾 用界名 (首尾 (建名 n) 空))
 
 class C用界名 x where 用界名 :: x
-instance C用界名 W物 where 用界名 = 建名 ["!", "界"]
-instance C用界名 M名物 where 用界名 = 建名 ["!", "界"]
+instance C用界名 W物 where 用界名 = 建名["!", "界"]
+instance C用界名 M名物 where 用界名 = 建名["!", "界"]
 
 class C界誤名 x where 界誤名 :: x
-instance C界誤名 W物 where 界誤名 = 建名 ["!", "界"]
-instance C界誤名 M名物 where 界誤名 = 建名 ["!", "界"]
+instance C界誤名 W物 where 界誤名 = 建名["界", "誤"]
+instance C界誤名 M名物 where 界誤名 = 建名["界", "誤"]
+
+界誤 :: List String -> List W物 -> W物
+界誤 n xs = 誤 (構 界誤名 (首尾 (建界名 n) (建列 xs)))
 
 class C建列 x y | y -> x where 建列 :: List x -> y
 instance C建列 W物 W物 where

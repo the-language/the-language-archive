@@ -12,7 +12,6 @@
 
 --    You should have received a copy of the GNU Affero General Public License
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-{-# LANGUAGE ScopedTypeVariables #-}
 module Lang.Lang where
 import Lang.Value
 import Lang.Cast
@@ -24,9 +23,6 @@ wip = error "WIP"
 infixr 0 ?
 W誤 _ ? _ = Nothing
 _ ? x = x
-
-界誤 :: List String -> List W物 -> W物
-界誤 n xs = 誤 (構 界誤名 (首尾 (建名 n) (建列 xs)))
 
 mkfM :: List String -> (List W物 -> Maybe W物) -> (List W物 -> W物)
 mkfM n f = \xs -> case f xs of
@@ -172,7 +168,7 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
     (fM["算"]2(\[x,e] -> x?e? 算 x <$> 物To境 e)),
     (m["境","名今"]2(\e [n, x] -> 物To名 n >>= \n -> return (算 x (mappingSet e n (境To物 e))))),
     (m["境","改"]2(\_ [e, x] -> 算 x <$> 物To境 e)),
-    (建名["境","空"], W映 (境ToMapping 空境)),
+    (建名["境","空"], 境To物 空境),
     (m["命名"]2(\e [n, body] -> do
         n <- 物ToList n
         n <- mapM (\x -> do { W首尾 (W名 m) (W首尾 v W空) <- return x ; return (名 m, v) }) n
@@ -196,7 +192,7 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
     (fM["取","未算"]1(\[x] -> x? case x of
         W名 x -> wip
         _ -> Nothing)),
-    (建名["取"], wip),
+    (建名["取"], W機 MappingNil (建列[建名["x"]]) (建列[建界名["算"], 建列[建界名["取","未算"], 建名["x"]], 建界名["境","空"]])),
     (fM["界","含","?"]1(\[x] -> x? case x of
         W名 x -> case x of
             _ -> Just 陰
