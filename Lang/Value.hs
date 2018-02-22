@@ -21,6 +21,8 @@ import Lang.Common
 data W物 = W首尾 W物 W物|W空|W字 Char|W數 Rational|W名 L列|
            W映 (Mapping W物 W物)|W境 (Mapping M名物 W物)|W機 (Mapping M名物 W物) X形 W物|W界機 JJ界機物|
            W陰|W陽|W引機 J機物|W譯機 J機物|W誤 W物|W構 M名物 L列 deriving (Eq, Ord, Show)
+data Y映 = Y物映 (Mapping W物 W物)|Y境 (Mapping M名物 W物) -- deriving (Ord, Show) -- bug fixing
+
 data L列 = L首尾 W物 L列|L空 deriving (Eq, Ord, Show)
 data M名物 = M名 L列 deriving (Eq, Ord, Show)
 data X形 = X首尾 M名物 X形|X空|X名 L列 deriving (Eq, Ord, Show)
