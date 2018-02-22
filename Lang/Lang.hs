@@ -36,9 +36,6 @@ class C建參 x where 建參 :: Nat -> x
 instance C建參 X形 where 建參 x = 建列 (map (\x -> 建名[show x]) [x,x-1..1])
 instance C建參 W物 where 建參 x = 建列 (map (\x -> 建名[show x]) [x,x-1..1])
 
-建界名 :: List String -> W物
-建界名 n = (首尾 用界名 (首尾 (建名 n) 空))
-
 f :: List String -> Nat -> (List W物 -> W物) -> (M名物, W物)
 f n c x = (建名 n, 界機 (MkJJ界機物 n c x (建參 c) (首尾 (建界名 n) (建參 c))))
 
@@ -142,7 +139,7 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
         W機 _ x _ -> Just (形To物 x)
         W界機 (MkJJ界機物 _ _ _ x _) -> Just (形To物 x)
         _ -> Nothing)),
-    (fM["機","物"]1(\[x] -> x? wip)),
+    (fM["機","物"]1(\[x] -> 機Get物 x)),
     (m["入"]2(\e [x, w] -> 物To形 x >>= \x -> Just (機 e x w))),
     (建名["陰"], 陰),
     (建名["陽"], 陽),
@@ -201,6 +198,30 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
             _ -> Just y
         _ -> Nothing))
     ])
+
+機Get物 :: W物 -> Maybe W物
+機Get物 (W機 e x w) = Just $ 機mk物 (mappingToList e) (mkSet x) w
+  where
+    mkSet :: X形 -> (M名物 -> Bool)
+    mkSet x = let xs = toList x in \v -> memQ xs v
+      where
+        toList (X名 x) = [名 x]
+        toList (X首尾 m xs) = m : toList xs
+        toList X空 = []
+        
+        memQ [] _ = False
+        memQ (x:xs) y = x==y || memQ xs y
+    
+    機mk物 :: List (M名物, W物) -> (M名物 -> Bool) -> W物 -> W物
+    機mk物 xs q b = mkLet (filter (\(m, _) -> not (q m)) xs) b
+      where
+        mkLet :: List (M名物, W物) -> W物 -> W物
+        mkLet xs b = 建列 ((mkF (map (\(m, x) -> m) xs) b) : (map (\(m, x) -> x) xs))
+          where
+            mkF :: List M名物 -> W物 -> W物
+            mkF xs y = 建式 (建界名["入"]) [建列 (map (\(M名 x) -> 名 x) xs), y]
+機Get物 (W界機 (MkJJ界機物 _ _ _ _ x)) = Just x
+機Get物 _ = Nothing
 
 算 :: W物 -> Mapping M名物 W物 -> W物
 算 x@(W名 m) e = mappingRef e (名 m) (界誤 ["算"] [x,境To物 e])

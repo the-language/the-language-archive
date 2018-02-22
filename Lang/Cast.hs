@@ -51,6 +51,9 @@ instance C用式名 M名物 where 用式名 = 建名 ["!", "式"]
 建式 :: W物 -> List W物 -> W物
 建式 x ys = 建列 (用式名 : x : ys)
 
+建界名 :: List String -> W物
+建界名 n = (首尾 用界名 (首尾 (建名 n) 空))
+
 class C用界名 x where 用界名 :: x
 instance C用界名 W物 where 用界名 = 建名 ["!", "界"]
 instance C用界名 M名物 where 用界名 = 建名 ["!", "界"]
