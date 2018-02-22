@@ -12,6 +12,7 @@
 
 --    You should have received a copy of the GNU Affero General Public License
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{-# LANGUAGE ScopedTypeVariables #-}
 module Lang.Lang where
 import Lang.Value
 import Lang.Cast
@@ -172,7 +173,14 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
     (m["境","名今"]2(\e [n, x] -> 物To名 n >>= \n -> return (算 x (mappingSet e n (境To物 e))))),
     (m["境","改"]2(\_ [e, x] -> 算 x <$> 物To境 e)),
     (建名["境","空"], W映 (境ToMapping 空境)),
-    (建名["命名"], wip),
+    (m["命名"]2(\e [n, body] -> do
+        n <- 物ToList n
+        n <- mapM (\x -> do { W首尾 (W名 m) (W首尾 v W空) <- return x ; return (名 m, v) }) n
+        return $
+            let
+              e' = foldl (\h (k, v) -> mappingSet h k v) e n'
+              n' = map (\(m, x) -> (m, 算 x e')) n
+            in 算 body e')),
     (fM["構","?"]1(\[x] -> x? case x of
         W構 _ _ -> Just 陽
         _ -> Just 陰)),
