@@ -232,7 +232,9 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
 算 (W首尾 y x) e | y == 用式名 = case x of
     W首尾 f xs -> wip
     _ -> 界誤 ["算"] [x,境To物 e]
-算 (W首尾 y x) e | y == 用界名 = wip
+算 _x@(W首尾 y x) e | y == 用界名 = case x of
+    W首尾 (W名 m) W空 -> mappingRef e (名 m) (界誤 ["算"] [_x,境To物 e])
+    _ -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 f as) e = case 物ToList as of
     Just xs -> case 物To機物 f of
         Just f -> 用 f (map (\x->算 x e) xs)
