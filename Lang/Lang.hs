@@ -18,8 +18,6 @@ import Lang.Cast
 import Lang.Common
 import Mapping
 
-wip = error "WIP"
-
 infixr 0 ?
 W誤 _ ? _ = Nothing
 _ ? x = x
@@ -195,7 +193,7 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
         W構 _ xs -> Just (列To物 xs)
         _ -> Nothing)),
     (fM["取","未算"]1(\[x] -> x? case x of
-        W名 x -> wip
+        W名 x -> error "WIP"
         _ -> Nothing)),
     (建名["取"], W機 MappingNil (建列[建名["x"]]) (建列[建界名["算"], 建列[建界名["取","未算"], 建名["x"]], 建界名["境","空"]])),
     (fM["界","含","?"]1(\[x] -> x? case x of
@@ -233,17 +231,25 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
 機Get物 _ = Nothing
 
 算 :: W物 -> Mapping M名物 W物 -> W物
-算 x@(W名 m) e = mappingRef e (名 m) (界誤 ["算"] [x,境To物 e])
-算 (W首尾 y x) e | y == 用式名 = case x of
-    W首尾 f xs -> wip
-    _ -> 界誤 ["算"] [x,境To物 e]
+算 _x@(W名 m) e = mappingRef e (名 m) (界誤 ["算"] [_x,境To物 e])
+算 _x@(W首尾 y x) e | y == 用式名 =
+    let r = do
+        W首尾 f xs <- return x
+        xs' <- 物ToList xs
+        return (f, xs')
+    in case r of
+        Just (f, xs) -> case 算 f e of
+            W引機 f -> 用 f ((境To物 e) : xs)
+            W譯機 f -> 算 (用 f xs) e
+            _ -> 界誤 ["算"] [_x,境To物 e]
+        Nothing -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 y x) e | y == 用界名 = case x of
     W首尾 (W名 m) W空 -> mappingRef e (名 m) (界誤 ["算"] [_x,境To物 e])
     _ -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 f as) e = case 物ToList as of
-    Just xs -> case 物To機物 f of
-        Just f -> 用 f (map (\x->算 x e) xs)
-        Nothing -> 界誤 ["用"] [f,as]
+    Just xs -> let (xs', f') = (map (\x->算 x e) xs, 算 f e) in case 物To機物 f' of
+        Just f'' -> 用 f'' xs'
+        Nothing -> 界誤 ["用"] [f', 建列 xs']
     Nothing -> 界誤 ["算"] [_x,境To物 e]
 算 x@(W誤 _) e = 界誤 ["算"] [x,境To物 e]
 算 x e = x
