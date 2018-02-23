@@ -12,10 +12,13 @@
 
 --    You should have received a copy of the GNU Affero General Public License
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-module Lang.Read where
+module Lang.Read(readW) where
 import Lang.Value
 import Lang.Common
 import Lang.Cast
+
+readW :: String -> Maybe (W物, String)
+readW xs = mapM 預 xs >>= 讀
 
 has [] _ = False
 has (y:ys) x = if x==y then True else has ys x
