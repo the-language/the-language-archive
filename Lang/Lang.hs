@@ -92,39 +92,44 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
         _ -> Nothing)),
     (fM["映","?"]1(\[x] -> x? case x of
         W映 _ -> Just 陽
-        W境 _ -> Just 陽
         _ -> Just 陰)),
-    (建名["映","空"], 映 MappingNil),
-    (fM["映","改"]3(\[h, k, v] -> h? case h of
-        W映 h -> Just (W映 (mappingSet h k v))
-        W境 h -> Just (case k of
-            W名 k -> W境 (mappingSet h (名 k) v)
-            _ -> W映 (mappingSet (境ToMapping h) k v))
+    (建名["映","空"], W映 (Y境 MappingNil)),
+    (fM["映","改"]3(\[h, k, v] -> case h of
+        W映 h -> Just $ case h of
+            Y物映 h -> W映 (Y物映 (mappingSet h k v))
+            Y境 h -> W映 $ case k of
+                W名 k -> Y境 (mappingSet h (名 k) v)
+                _ -> Y物映 (mappingSet (境ToMapping h) k v)
         _ -> Nothing)),
-    (fM["映","取"]3(\[h, k, d] -> h? case h of
-        W映 h -> Just (mappingRef h k d)
-        W境 h -> Just (case k of
-            W名 k -> mappingRef h (名 k) d
-            _ -> d)
+    (fM["映","取"]3(\[h, k, d] -> case h of
+        W映 h -> Just $ case h of
+            Y物映 h -> mappingRef h k d
+            Y境 h -> case k of
+                W名 k -> mappingRef h (名 k) d
+                _ -> d
         _ -> Nothing)),
-    (fM["映","含","?"]2(\[h, k] -> h? case h of
-        W映 h -> Just (建陰陽 (mappingHas h k))
-        W境 h -> Just (case k of
-            W名 k -> 建陰陽 (mappingHas h (名 k))
-            _ -> 陰)
+    (fM["映","含","?"]2(\[h, k] -> case h of
+        W映 h -> Just $ case h of
+            Y物映 h -> 建陰陽 (mappingHas h k)
+            Y境 h -> case k of
+                W名 k -> 建陰陽 (mappingHas h (名 k))
+                _ -> 陰
         _ -> Nothing)),
     (f["映","删"]2(\[hw, k] -> case hw of
-        W映 h -> case mappingRemove h k of
-            Just x -> W映 x
-            Nothing -> 界誤["映","删"][建名 ["無"], hw, k]
-        W境 h -> case k of
-            W名 kl -> case mappingRemove h (名 kl) of
-                Just x -> W境 x
+        W映 h -> case h of
+            Y物映 h -> case mappingRemove h k of
+                Just x -> W映 (Y物映 x)
                 Nothing -> 界誤["映","删"][建名 ["無"], hw, k]
+            Y境 h -> case k of
+                W名 kl -> case mappingRemove h (名 kl) of
+                    Just x -> W映 (Y境 x)
+                    Nothing -> 界誤["映","删"][建名 ["無"], hw, k]
+                _ -> 界誤["映","删"][建名 ["無"], hw, k]
         _ -> 界誤["映","删"][建名 ["非"], hw, k])),
     (fM["映","→","列"]1(\[h] -> h? case h of
-        W映 h -> Just (建列 (map (\(a, d) -> 首尾 a d) (mappingToList h)))
-        W境 h -> Just (建列 (map (\(M名 a, d) -> 首尾 (名 a) d) (mappingToList h)))
+        W映 h -> Just $ case h of
+            Y物映 h -> 建列 (map (\(a, d) -> 首尾 a d) (mappingToList h))
+            Y境 h -> 建列 (map (\(M名 a, d) -> 首尾 (名 a) d) (mappingToList h))
         _ -> Nothing)),
     (fM["機","?"]1(\[x] -> x? case x of
         W機 _ _ _ -> Just 陽

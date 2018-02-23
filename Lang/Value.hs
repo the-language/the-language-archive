@@ -19,14 +19,19 @@ import Lang.Common
 -- 模擬subtype
 -- Shen的Type System更好，但Shen不支持中國字
 data W物 = W首尾 W物 W物|W空|W字 Char|W數 Rational|W名 L列|
-           W映 (Mapping W物 W物)|W境 (Mapping M名物 W物)|W機 (Mapping M名物 W物) X形 W物|W界機 JJ界機物|
+           W映 Y映|W機 (Mapping M名物 W物) X形 W物|W界機 JJ界機物|
            W陰|W陽|W引機 J機物|W譯機 J機物|W誤 W物|W構 M名物 L列 deriving (Eq, Ord, Show)
-data Y映 = Y物映 (Mapping W物 W物)|Y境 (Mapping M名物 W物) deriving Show -- bug fixing
+data Y映 = Y物映 (Mapping W物 W物)|Y境 (Mapping M名物 W物) deriving Show
 instance Eq Y映 where
     Y境 x == Y境 y = x == y
     Y物映 x == Y物映 y = x == y
-    Y境 x == Y物映 y = error ""
-    Y物映 x == Y境 y = error ""
+    Y境 x == Y物映 y = 境ToMapping x == y
+    Y物映 x == Y境 y = x == 境ToMapping y
+instance Ord Y映 where
+    Y境 x `compare` Y境 y = x `compare` y
+    Y物映 x `compare` Y物映 y = x `compare` y
+    Y境 x `compare` Y物映 y = 境ToMapping x `compare` y
+    Y物映 x `compare` Y境 y = x `compare` 境ToMapping y
 data L列 = L首尾 W物 L列|L空 deriving (Eq, Ord, Show)
 data M名物 = M名 L列 deriving (Eq, Ord, Show)
 data X形 = X首尾 M名物 X形|X空|X名 L列 deriving (Eq, Ord, Show)
@@ -61,11 +66,12 @@ instance C界機 W物 where 界機 = W界機
 instance C界機 J機物 where 界機 = J界機
 字 = W字
 數 = W數
-映 = W映
 陰 = W陰
 陽 = W陽
 引機 = W引機
 譯機 = W譯機
 誤 = W誤
 構 = W構
-境 = W境
+
+境ToMapping :: Mapping M名物 W物 -> Mapping W物 W物
+境ToMapping x = listToMapping (map (\(M名 k, v) -> (名 k, v)) (mappingToList x))
