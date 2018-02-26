@@ -18,6 +18,7 @@ import Mapping
 import Lang.Common
 -- 模擬subtype
 -- Shen的Type System更好，但Shen不支持中國字
+-- W數用来优化
 data W物 = W首尾 W物 W物|W空|W字 Char|W數 Rational|W名 L列|
            W映 Y映|W機 (Mapping M名物 W物) X形 W物|W界機 JJ界機物|
            W陰|W陽|W引機 J機物|W譯機 J機物|W誤 W物|W構 M名物 L列 deriving (Eq, Ord, Show)
@@ -65,7 +66,6 @@ class C界機 x where 界機 :: JJ界機物 -> x
 instance C界機 W物 where 界機 = W界機
 instance C界機 J機物 where 界機 = J界機
 字 = W字
-數 = W數
 陰 = W陰
 陽 = W陽
 引機 = W引機
