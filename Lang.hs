@@ -33,7 +33,7 @@ loop _s@(e, it) = do
     l <- getLine
     case l of
         '!' : cmd -> runCmd cmd _s
-        _ -> case readW l of
+        _ -> case 讀 l of
             Just (x, "") -> do
                 let it = 算 x e
                 putStrLn (示 it)
@@ -45,7 +45,7 @@ loop _s@(e, it) = do
 runCmd :: String -> St -> IO St
 runCmd ('名':' ':名)  _s@(e, it) =
     let m' = do
-        (x, "") <- readW 名
+        (x, "") <- 讀 名
         物To名 x
     in case m' of
         Just 名 -> return (mappingSet e 名 it, it)
