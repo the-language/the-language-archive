@@ -16,15 +16,7 @@ module Lang.Read(讀) where
 import Lang.Value
 import Lang.Common
 import Lang.Cast
-
-讀 :: String -> Maybe (W物, String)
-讀 xs = mapM 預 xs >>= p讀
-
-has [] _ = False
-has (y:ys) x = if x==y then True else has ys x
-
-is非名 :: Char -> Bool
-is非名 x = has " \t\r\n()[]:|‘’,“”→<>-?" x
+import Mapping
 
 預 '\t'=Just ' '
 預 '\r'=Just ' '
@@ -39,6 +31,56 @@ is非名 x = has " \t\r\n()[]:|‘’,“”→<>-?" x
 預 '！'=Just '!'
 預 '？'=Just '?'
 預 x=Just x
+
+infixl 1 >?=
+x >?= f = fmap f x
+
+type RMap = Mapping String W物
+type Reader x = RMap -> String -> Maybe (x, String)
+
+r :: Reader W物
+r m ('名':'(':xs) = r列 m xs >?= \(xs, rs) -> (名 (建列 xs), rs)
+r m ('(':xs) = r物列 m xs >?= \(xs, rs) -> (建列 xs, rs)
+r m ('字':x:xs) = pure (字 x, xs)
+r m ('定':'(':xs)) = r定甲 xs
+r _ _ = Nothing
+
+r定甲 :: Reader (List (String, String))
+r定甲 m ('(':rs) = do
+    (名, rs) <- r至空 m rs
+    (值, ')':rs) <- r式 m rs
+    (_, rs) <- r空 m rs
+    (xs, rs) <- r定甲 m rs
+    return ((名, 值):xs, rs)
+r定甲 m xs = pure ([], xs)
+
+r式 :: Reader String
+
+r至空 :: Reader String
+r至空 m r@(' ':_) = pure ("", r)
+r至空 m (x:xs) = r至空 m xs >?= \(xs, rs) -> (x:xs, rs)
+r至空 m "" = pure ("", "")
+
+r空 :: Reader String
+r空 m xs = pure $ rs "" xs
+  where
+    rs :: String -> String -> (String, String)
+    rs x "" = ("", x)
+    rs a (' ':xs) = rs (' ':a) xs
+
+r列 :: Reader (List String)
+
+r物列 :: Reader (List W物)
+
+-----------------Rewriting
+
+讀 xs = mapM 預 xs >>= p讀
+
+has [] _ = False
+has (y:ys) x = if x==y then True else has ys x
+
+is非名 :: Char -> Bool
+is非名 x = has " \t\r\n()[]:|‘’,“”→<>-?" x
 
 p讀 :: String -> Maybe (W物, String)
 p讀 (' ':xs) = p讀 xs

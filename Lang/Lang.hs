@@ -177,7 +177,7 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
         n <- mapM (\x -> do { W首尾 (W名 m) (W首尾 v W空) <- return x ; return (名 m, v) }) n
         return $
             let
-              e' = foldl (\h (k, v) -> mappingSet h k v) e n'
+              e' = mappingAppendList e n'
               n' = map (\(m, x) -> (m, 算 x e')) n
             in 算 body e')),
     (fM["構","?"]1(\[x] -> x? case x of
