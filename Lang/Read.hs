@@ -21,7 +21,7 @@ import Mapping
 type Env = Mapping String W物
 
 讀 :: String -> Maybe (W物, String)
-讀 xs = r MappingNil xs
+讀 xs = r MappingNil (map 預 xs)
 
 預 '\t'=Just ' '
 預 '\r'=Just ' '
