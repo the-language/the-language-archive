@@ -99,12 +99,12 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
                 W名 k -> Y境 (mappingSet h (名 k) v)
                 _ -> Y物映 (mappingSet (境ToMapping h) k v)
         _ -> Nothing)),
-    (fM["映","取"]3(\[h, k, d] -> case h of
-        W映 h -> Just $ case h of
-            Y物映 h -> mappingRef h k d
+    (fM["映","取"]3(\[h, k] -> case h of
+        W映 h -> case h of
+            Y物映 h -> mappingRef h k
             Y境 h -> case k of
-                W名 k -> mappingRef h (名 k) d
-                _ -> d
+                W名 k -> mappingRef h (名 k)
+                _ -> Nothing
         _ -> Nothing)),
     (fM["映","含","?"]2(\[h, k] -> case h of
         W映 h -> Just $ case h of
@@ -113,17 +113,17 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
                 W名 k -> 建陰陽 (mappingHas h (名 k))
                 _ -> 陰
         _ -> Nothing)),
-    (f["映","删"]2(\[hw, k] -> case hw of
+    (fM["映","删"]2(\[hw, k] -> case hw of
         W映 h -> case h of
             Y物映 h -> case mappingRemove h k of
-                Just x -> W映 (Y物映 x)
-                Nothing -> 界誤["映","删"][建名 ["無"], hw, k]
+                Just x -> Just $ W映 (Y物映 x)
+                Nothing -> Nothing
             Y境 h -> case k of
                 W名 kl -> case mappingRemove h (名 kl) of
-                    Just x -> W映 (Y境 x)
-                    Nothing -> 界誤["映","删"][建名 ["無"], hw, k]
-                _ -> 界誤["映","删"][建名 ["無"], hw, k]
-        _ -> 界誤["映","删"][建名 ["非"], hw, k])),
+                    Just x -> Just $ W映 (Y境 x)
+                    Nothing -> Nothing
+                _ -> Nothing
+        _ -> Nothing)),
     (fM["映","→","列"]1(\[h] -> h? case h of
         W映 h -> Just $ case h of
             Y物映 h -> 建列 (map (\(a, d) -> 首尾 a d) (mappingToList h))
@@ -200,10 +200,7 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
         W名 x -> case x of
             _ -> Just 陰
         _ -> Nothing)),
-    (fM["界","取"]1(\[x,y] -> x? case x of
-        W名 x -> case x of
-            _ -> Just y
-        _ -> Nothing))
+    (fM["界","取"]1(\[x] -> Nothing))
     ])
 
 機Get物 :: W物 -> Maybe W物
@@ -231,7 +228,9 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
 機Get物 _ = Nothing
 
 算 :: W物 -> Mapping M名物 W物 -> W物
-算 _x@(W名 m) e = mappingRef e (名 m) (界誤 ["算"] [_x,境To物 e])
+算 _x@(W名 m) e = case mappingRef e (名 m) of
+    Just x -> x
+    Nothing -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 y x) e | y == 用式名 =
     let r = do
         W首尾 f xs <- return x
@@ -244,7 +243,9 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
             _ -> 界誤 ["算"] [_x,境To物 e]
         Nothing -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 y x) e | y == 用界名 = case x of
-    W首尾 (W名 m) W空 -> mappingRef e (名 m) (界誤 ["算"] [_x,境To物 e])
+    W首尾 (W名 m) W空 -> case mappingRef e (名 m) of
+        Just x -> x
+        Nothing -> 界誤 ["算"] [_x,境To物 e]
     _ -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 f as) e = case 物ToList as of
     Just xs -> let (xs', f') = (map (\x->算 x e) xs, 算 f e) in case 物To機物 f' of

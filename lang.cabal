@@ -20,6 +20,6 @@ library
   exposed-modules:     Lang, Lang.Read, Lang.Value, Lang.Lang, Lang.Show
   -- other-modules:       
   other-extensions:    MultiParamTypeClasses, FunctionalDependencies
-  build-depends:       base, Mapping, http-streams, bytestring
+  build-depends:       base, Mapping >=2.0.0.0 && <3.0.0.0, http-streams, bytestring
   -- hs-source-dirs:      
   default-language:    Haskell2010
