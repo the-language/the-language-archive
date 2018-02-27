@@ -18,6 +18,8 @@ import Lang.Common
 import Lang.Cast
 import Mapping
 
+type Env = Mapping String W物
+
 讀 :: String -> Maybe (W物, String)
 讀 xs = r MappingNil xs
 
@@ -50,8 +52,7 @@ r :: Reader W物
 r m ('名':'(':xs) = r物列 m xs >?= \(xs, rs) -> (名 (建列 xs), rs)
 r m ('(':xs) = r首尾 m xs
 r m ('字':x:xs) = pure (字 x, xs)
-r m ('定':'(':xs) = r定 m xs
-r m ('定':xs) = r至空 m xs >>= \x -> if mappingHas m x then pure (mappingRef m x (error "")) else Nothing
+r m ('周':xs) = r周 m xs
 r m ('空':xs) = pure (空, xs)
 r m ('陰':xs) = pure (陰, xs)
 r m ('陽':xs) = pure (陽, xs)
@@ -61,53 +62,49 @@ r m ('引':'機':rs) = r機 (\x b -> 引機 (機 MappingNil x b)) m rs
 r m ('譯':'機':rs) = r機 (\x b -> 譯機 (機 MappingNil x b)) m rs
 r m ('誤':'(':rs) = do
     (x, ')':rs) <- r m rs
-    return (誤 x)
+    return (誤 x, rs)
 r m ('構':'(':'(':rs) = do
     (ns, rs) <- r物列 m rs
     let n = 名 (建列 ns)
     (_, '(':rs) <- r空 m rs
     (x, ')':rs) <- r物列 m rs
-    return (構 ns (建列 x))
+    return (構 n (建列 x), rs)
 r m (' ':rs) = r m rs
 r _ _ = Nothing
 
-r列式 :: Nat -> Reader String
-r列式 n m (')':rs) = if x==0 then pure ("", rs) else r列式 (n-1) m rs >?= \(xs, rs) -> (x:xs, rs)
-r列式 n m (x:rs) = r列式 n m rs >?= \(xs, rs) -> (x:xs, rs)
-r列式 n m ('(':rs) = r列式 (n+1) m rs >?= \(xs, rs) -> (x:xs, rs)
-r列式 _ _ = Nothing
+r映 :: Reader W物
+r映 = error "WIP"
+
+r周 :: Reader W物
+r周 m xs = let (b, as, bs) = r甲 xs in
+    if b
+      then
+        let
+          m' = mappingSet m as x'
+          x = do
+              (x, ')':rs) <- r m' bs
+              return (x, rs)
+          x' = case x of Just (v, _) -> v -- 有Lazy，所以不會有error
+        in x
+      else (,) <$> mappingRef m as <*> pure bs
+  where
+    r甲 :: String -> (Bool, String, String)
+    r甲 ('(':xs) = (True, "", xs)
+    r甲 xs@(')':_) = (False, "", xs)
+    r甲 xs@(' ':_) = (False, "", xs)
+    r甲 (x:xs) = let (b, as, bs) = r甲 xs in (b, x:as, bs)
+    r甲 "" = (False, "", "")
 
 r式 :: Reader String
 r式 m ('名':'(':xs) = error "WIP"
 
 r機 :: (X形 -> W物 -> a) -> Reader a
-r機 r m rs = do
+r機 re m rs = do
     '(':rs <- return rs
     (x, rs) <- r m rs
     x <- 物To形 x
     (b, ')':rs) <- r m rs
-    return (r x b)
-
-r定甲 :: Reader (List (String, String))
-r定甲 m ('(':rs) = do
-    (名, rs) <- r至空 m rs
-    (值, ')':rs) <- r式 m rs
-    (_, rs) <- r空 m rs
-    (xs, rs) <- r定甲 m rs
-    return ((名, 值):xs, rs)
-r定甲 m xs = pure ([], xs)
-
-r定 :: Reader W物
-r定 m ('(':rs) = do
-    (xs, ')':rs) <- r定甲 m rs
-    let m' = (let {m' = mappingAppendList m xs'; xs' = map (\(k, v) -> (k, r完 m' v)) xs} in m')
-    (x, ')':rs) <- r m' rs
-    return (x, rs)
-
-r至空 :: Reader String
-r至空 m r@(' ':_) = pure ("", r)
-r至空 m (x:xs) = r至空 m xs >?= \(xs, rs) -> (x:xs, rs)
-r至空 m "" = pure ("", "")
+    return (re x b, rs)
 
 r空 :: Reader String
 r空 m xs = pure $ rs "" xs
