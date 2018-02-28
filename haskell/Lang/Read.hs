@@ -116,4 +116,9 @@ r物列 m (' ':xs) = r物列 m xs
 r物列 m rs = r m rs >>= \(x, rs) -> r物列 m rs >?= \(xs, rs) -> (x:xs, rs)
 
 r首尾 :: Reader W物
-r首尾 = error "WIP"
+r首尾 m (')':xs) = pure (空, xs)
+r首尾 m (' ':'-':' ':rs) = do
+    (x, ')':rs) <- r m rs
+    return (x, rs)
+r首尾 m (' ':xs) = r首尾 m xs
+r首尾 m rs = r m rs >>= \(x, rs) -> r首尾 m rs >?= \(xs, rs) -> (首尾 x xs, rs)
