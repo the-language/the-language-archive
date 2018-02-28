@@ -36,8 +36,13 @@ loop _s@(e, it) = do
         _ -> case 讀 l of
             Just (x, "") -> do
                 let it = 算 x e
-                putStrLn (示 it)
-                return (e, it)
+                case it of
+                    W誤 _ -> do
+                        putStrLn "ERROR"
+                        return (e, it)
+                    _ -> do
+                        putStrLn (示 it)
+                        return (e, it)
             _ -> do
                 parseError
                 return _s
