@@ -95,9 +95,6 @@ r周 m xs = let (b, as, bs) = r甲 xs in
     r甲 (x:xs) = let (b, as, bs) = r甲 xs in (b, x:as, bs)
     r甲 "" = (False, "", "")
 
-r式 :: Reader String
-r式 m ('名':'(':xs) = error "WIP"
-
 r機 :: (X形 -> W物 -> a) -> Reader a
 r機 re m rs = do
     '(':rs <- return rs
@@ -114,7 +111,9 @@ r空 m xs = pure $ rs "" xs
     rs a (' ':xs) = rs (' ':a) xs
 
 r物列 :: Reader (List W物)
-r物列 = error "WIP"
+r物列 m (')':xs) = pure ([], xs)
+r物列 m (' ':xs) = r物列 m xs
+r物列 m rs = r m rs >>= \(x, rs) -> r物列 m rs >?= \(xs, rs) -> (x:xs, rs)
 
 r首尾 :: Reader W物
 r首尾 = error "WIP"
