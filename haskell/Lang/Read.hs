@@ -73,7 +73,20 @@ r m (' ':rs) = r m rs
 r _ _ = Nothing
 
 r映 :: Reader W物
-r映 = error "WIP"
+r映 m rs = do
+    '(':rs <- return rs
+    (x, rs) <- r甲 MappingNil m rs
+    return (W映 (Y物映 x), rs)
+  where
+    r甲 :: Mapping W物 W物 -> Reader (Mapping W物 W物)
+    r甲 物 m ('(':rs) = do
+        (k, rs) <- r m rs
+        (_, rs) <- r空 m rs
+        (v, ')':rs) <- r m rs
+        (_, rs) <- r空 m rs
+        r甲 (mappingSet 物 k v) m rs
+    r甲 物 m (')':rs) = return (物, rs)
+    r甲 物 m _ = Nothing
 
 r周 :: Reader W物
 r周 m xs = let (b, as, bs) = r甲 xs in
