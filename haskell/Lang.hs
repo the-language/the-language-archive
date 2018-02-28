@@ -44,7 +44,8 @@ loop _s@(e, it) = do
 
 runCmd :: String -> St -> IO St
 runCmd ('名':' ':名)  _s@(e, it) =
-    let m' = do
+    let
+      m' = do
         (x, "") <- 讀 名
         物To名 x
     in case m' of

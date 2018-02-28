@@ -232,7 +232,8 @@ m n c x = (建名 n, 引機 (界機 (MkJJ界機物 n ce f (建參 ce) (建列[�
     Just x -> x
     Nothing -> 界誤 ["算"] [_x,境To物 e]
 算 _x@(W首尾 y x) e | y == 用式名 =
-    let r = do
+    let
+      r = do
         W首尾 f xs <- return x
         xs' <- 物ToList xs
         return (f, xs')
