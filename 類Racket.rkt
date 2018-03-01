@@ -26,11 +26,29 @@
     ['() 空]
     [#f 陰]
     [#t 陽]
-    [(? symbol? s) (符 (symbol->string s))]
+    [(? symbol? s) (符 s)]
     ))
 (define 空 "空")
 (define 陰 "陰")
 (define 陽 "陽")
+(define (名 . xs)
+  (++ "名"(apply 列 xs)))
+(define (列 . xs)
+  (++ "("(apply ++ (add-between xs " "))")"))
+(define (简名 s)
+  (简名-字列 (string->list s)))
+(define (简名-字列 cs)
+  (apply 名 (map 字 cs)))
+(define (建名 . xs)
+  (apply 名 (map 简名 xs)))
+(define (符 s) (apply 名 (%符 (string->list (symbol->string s)))))
+(define (%符 s)
+  (match s
+    [(list c ... (or #\？ #\?)) (append (%符 c) (list (简名 "？")))]
+    [(list (and a (not #\-)) ... #\- d ...) (cons (简名-字列 a) (%符 d))]
+    [(list (and a (not #\→)) ... #\→ (and d (not #\→)) ...) (append (%符 a) (list (简名-字列 "→")) (%符 d))]
+    [_ (list (简名-字列 s))]
+    ))
 (define (字 c)
   (++ "字"(string c)))
 (define (映 ps)
