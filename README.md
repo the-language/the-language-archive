@@ -20,6 +20,10 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
 # 文档
 <div>
+	<script type="text/javascript">
+		console.log(document.getElementById("coredoc"));
+	</script>
+	<div id="coredoc">
 	<iframe src='the-language.github.io'>
 	</iframe>
 </div>
