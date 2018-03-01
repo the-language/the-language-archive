@@ -19,8 +19,10 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 因爲杭十五中西溪中学差等原因，我使用傳統寫法。我聽說臺灣不使用這種寫法。
 
 # 文档
-<iframe src='the-language.github.io'>
-</iframe>
+<div>
+	<iframe src='the-language.github.io'>
+	</iframe>
+</div>
 
 歷史/特性
 -------
