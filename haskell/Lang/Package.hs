@@ -54,6 +54,6 @@ cast (M名 x) = f1 x
 取 :: M名物 -> W物
 取 m = 讀完 $ case cast m of
     Just [x] -> unsafePerformIO $ do
-        (Just r) <- (<|>) <$> langGet x ["述"] <*> langGet "libs" [x]
+        (Just r) <- langGet "the-language" ["册", x]
         return r
 
