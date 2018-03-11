@@ -28,14 +28,23 @@
 
 (define 字？ char?)
 
-(define (名？ 甲) (and (symbol? 甲) (let ([xs (string->list (symbol->string 甲))]) (and (pair? xs) (equal? (car xs) #\名)))))
-(define (列→名 列)
-  (let ([o (open-output-string)])
-    (write 列 o)
-    (string->symbol (string-append "名" (get-output-string o)))))
-(define (名→列 名)
-  (match (string->list (symbol->string 名))
-    [(cons #\名 xs) (read (open-input-string (list->string xs)))]))
+(define-values (名？ 列→名 名→列)
+  ((λ ()
+     (define h-un (make-hash))
+     (define h (make-hash))
+     (define c 0)
+     (define (名？ 甲) (hash-has-key? h 甲))
+     (define (列→名 列)
+       (hash-ref
+        h 列
+        (λ ()
+          (let ([s (string->symbol (number->string c))])
+            (set! c (+ c 1))
+            (hash-set! h-un s 列)
+            (hash-set! h 列 s)
+            s))))
+     (define (名→列 名) (hash-ref h-un 名))
+     (values 名？ 列→名 名→列))))
 
 (define-custom-hash-types 映 等？)
 (define 映？ immutable-映?)
