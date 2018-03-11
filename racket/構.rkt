@@ -10,11 +10,13 @@
 (define 首-尾.尾 cdr)
 (define 空？ null?)
 (define 空 '())
+
 (define 字？ char?)
-(define-record-type 名
-  (列→名 列)
-  名？
-  (列 名→列))
+
+;(define-record-type 名
+;  (列→名 列)
+;  名？
+;  (列 名→列))
 
 (define-custom-hash-types 映 等？)
 (define 映？ immutable-映?)
@@ -32,3 +34,23 @@
 
 (define 陰 #f)
 (define 楊 #t)
+
+(define-record-type 機-引
+  (機-引 機)
+  機-引？
+  (機 機-引/反))
+(define-record-type 機-譯
+  (機-譯 機)
+  機-譯？
+  (機 機-譯/反))
+
+(define-record-type 誤
+  (誤 甲)
+  誤？
+  (甲 誤/反))
+
+(define-record-type 構
+  (構 名 列)
+  構？
+  (名 構/名)
+  (列 構/列))
