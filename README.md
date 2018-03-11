@@ -6,16 +6,6 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
 這只是核心，不是直接用來solve problems · make languages的。
 
-因爲
-+ Idris的Lazy有Bug
-+ Shen不支持中國字
-+ Agda std-lib缺少一些東西
-+ Scheme，Racket不能很好的編譯到ECMAScript
-+ Clojure-JVM不支持Tail Call Optimization
-+ F#是Microsoft的
-
-所以只能用GHC-Haskell或Ocaml或Coq。
-
 因爲杭十五中西溪中学差等原因，我使用傳統寫法。我聽說臺灣不使用這種寫法。
 
 [文檔](http://the-language.github.io)
