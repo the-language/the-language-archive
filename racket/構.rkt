@@ -30,20 +30,21 @@
 
 (define-values (名？ 列→名 名→列)
   ((λ ()
-     (define h-un (make-hash))
-     (define h (make-hash))
+     (define-custom-hash-types mh 等？)
+     (define h-un (make-mutable-mh))
+     (define h (make-mutable-mh))
      (define c 0)
-     (define (名？ 甲) (hash-has-key? h 甲))
+     (define (名？ 甲) (dict-has-key? h 甲))
      (define (列→名 列)
-       (hash-ref
+       (dict-ref
         h 列
         (λ ()
           (let ([s (string->symbol (number->string c))])
             (set! c (+ c 1))
-            (hash-set! h-un s 列)
-            (hash-set! h 列 s)
+            (dict-set! h-un s 列)
+            (dict-set! h 列 s)
             s))))
-     (define (名→列 名) (hash-ref h-un 名))
+     (define (名→列 名) (dict-ref h-un 名))
      (values 名？ 列→名 名→列))))
 
 (define-custom-hash-types 映 等？)
