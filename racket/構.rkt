@@ -86,12 +86,12 @@
 
 (define-custom-hash-types mh 等？)
 (define gen/c
-  (let ([c (make-channel)])
+  (let ([c 0])
     (λ ()
-      (let ([v (+ 1 (channel-get c))])
-        (channel-put c v)
+      (let ([v (+ 1 c)])
+        (set! c v)
         v))))
-(define gen/s (string->symbol (number->string (gen/c))))
+(define (gen/s) (string->symbol (number->string (gen/c))))
 (define h-名/文:sym->_ (make-mutable-映))
 (define h-名/文:_->sym (make-mutable-映))
 (define (名/文 列)
