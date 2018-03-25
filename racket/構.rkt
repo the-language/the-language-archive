@@ -21,14 +21,50 @@
  首-尾 首-尾？ 首-尾.首 首-尾.尾 空 空？
  文？
  映？ 映/空 映.增-改 映.取 映.含？ 映.删 映→列
- 機 機？ #%機!境 機.形 #%機!物
+ #%機 機 機？ #%機!境 機.形 #%機!物
  陰 楊 #%若
  引-機 引-機？ 引-機-1
  誤 誤？ 誤-1
  構 構？ 構.名 構.列
  )
 
-(define 等？ equal?) ; BUG
+(define (等？ 甲 乙) (#%EQ? (make-hasheq) 甲 乙))
+(define #%_ (set))
+(define (#%EQ? h 甲 乙)
+  (or
+   (eq? 甲 乙)
+   (set-member? (hash-ref h 甲 #%_) 乙)
+   (set-member? (hash-ref h 乙 #%_) 甲)
+   (begin
+     (hash-update! h 甲 (λ (v) (set-add! v 乙)) mutable-seteq)
+     (cond
+       [(promise? 甲) (#%EQ? h (force 甲) 乙)]
+       [(promise? 乙) (#%EQ? h 甲 (force 乙))]
+       [else
+        (match 甲
+          [(cons a1 d1) (match 乙 [(cons a2 d2) (and (#%EQ? h a1 a2) (#%EQ? h d1 d2))] [_ #f])]
+          [(? 映？) (and (映？ 乙) (#%EQ? h (映→列 甲) (映→列 乙)))]
+          [(? 名/文？) (and (名/文？ 乙) (#%EQ? h (名/文-1 甲) (名/文-1 乙)))]
+          [(? 名/構？)
+           (and (名/構？ 乙)
+                (#%EQ? h (名/構.名 甲) (名/構.名 乙))
+                (#%EQ? h (名/構.列 甲) (名/構.列 乙)))]
+          [(#%機 境1 形1 物1)
+           (match 乙
+             [(#%機 境2 形2 物2)
+              (and (#%EQ? h 境1 境2)
+                   (#%EQ? h 形1 形2)
+                   (#%EQ? h 物1 物2))]
+             [_ #f])]
+          [(引-機 x) (match 乙 [(引-機 y) (#%EQ? h x y)] [_ #f])]
+          [(誤 x) (match 乙 [(誤 y) (#%EQ? h x y)] [_ #f])]
+          [(構 名1 列1)
+           (match 乙
+             [(構 名2 列2)
+              (and (#%EQ? h 名1 名2)
+                   (#%EQ? h 列1 列2))]
+             [_ #f])]
+          [_ (equal? 甲 乙)])]))))
 
 (define 首-尾 cons)
 (define 首-尾？ pair?)
@@ -83,11 +119,12 @@
 (define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構)))
 (define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲)))
 
-(struct 機 (境 形 物))
-(define 機？ 機?)
-(define #%機!境 機-境)
-(define 機.形 機-形)
-(define #%機!物 機-物)
+(struct #%機 (境 形 物))
+(define (機 形 物) (#%機 映/空 形 物))
+(define 機？ #%機?)
+(define #%機!境 #%機-境)
+(define 機.形 #%機-形)
+(define #%機!物 #%機-物)
 
 (define 陰 #f)
 (define 楊 #t)
