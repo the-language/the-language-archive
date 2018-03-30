@@ -38,19 +38,20 @@
     [{_ e r (x0 x ...) (v0 v ...)}
      {let ([x0 v0])
        {APP e r (x ...) (v ...)}}]}}
-{define-syntax 定/機%1
-  {syntax-rules ()
-    [{_ (p? x0)} x0]
-    [{_ x0} x0]}}
 {define-syntax-rule {定/機%2 形 ...} ({定/機%1 形} ...)}
+{define-for-syntax (定/機%0 stx)
+  (map {λ (x) (syntax-protect #'t)} (syntax->list stx))}
 {define-syntax-rule {定 名 物}
   {set! 境/空 (映.增 境/空 (symbol→名 {quote 名}) 物)}}
-{define-syntax-rule {定/機 (名 形 ...) 物}
-  {定 名 (#%機-內
-              {λ {定/機%2 形 ...}
-                {APP WIP 物 (形 ...) {定/機%2 形 ...}}}
-              {quote {定/機%2 形 ...}}
-              WIP)}}
+{define-syntax 定/機
+  {λ (stx)
+  {syntax-case stx ()
+    [{_ (名 形 ...) 物} {syntax-case (map {λ (x) (datum->syntax #f (gensym))} (syntax->list #'(形 ...))) ()
+                       [(x ...) (syntax-protect #'{定 名 (#%機-內
+              {λ (x ...)
+                {APP WIP 物 (形 ...) (x ...)}}
+              {quote (x ...)}
+              WIP)})]}]}}}
 {define-syntax-rule {定/機* x ...}
   {begin {定/機 . x} ...}}
 
@@ -63,15 +64,14 @@
 {定 引 WIP}
 {定 境.命名-今 WIP}
 {定 境.改 WIP}
-{定 境/空 WIP}
 {定 命名 WIP}
 {定/機*
  [(等？ 甲 乙) (等？ 甲 乙)]
  
  [(首-尾？ 甲) (undelay 甲 首-尾？)]
  [(首-尾 首 尾) (首-尾 首 尾)]
- [(首-尾.首 (首尾？ 首)) (首-尾.首 首)]
- [(首-尾.尾 (首尾？ 首)) (首-尾.尾 首)]
+ [(首-尾.首 (首-尾？ 首)) (首-尾.首 首)]
+ [(首-尾.尾 (首-尾？ 首)) (首-尾.尾 首)]
  [(空？ 甲) (undelay 甲 空？)]
 
  [(文？ 甲) (undelay 甲 文？)]
@@ -104,7 +104,7 @@
 
  [(引-機？ 甲) (undelay 甲 引-機？)]
  [(引-機 機) (引-機 機)]
- [(引-機-1 (引機？ 甲)) (引-機-1 甲)]
+ [(引-機-1 (引-機？ 甲)) (引-機-1 甲)]
  
  [(誤？ 甲) (undelay 甲 誤？)]
  [(誤 甲) (誤 甲)]
@@ -118,3 +118,4 @@
  [(構.列 (構？ 甲)) (構.列 甲)]
 
  [(取 名) WIP]}
+{定 境/空 境/空}

@@ -121,7 +121,7 @@
 {define (名/構.名 名/構) (car (dict-ref h-名/構:sym->pair 名/構))}
 {define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構))}
 {define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲))}
-{define symbol→名 "WIP"}
+{define symbol→名 gensym}
 
 {struct #%機 (境 形 物)}
 {struct #%機-內 (p 形 物)}
