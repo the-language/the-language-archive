@@ -104,48 +104,48 @@
        (dict-set! h-名/文:_->sym 列 s)
        s}})}
 {define (名/文？ 甲) (dict-has-key? h-名/文:sym->_ 甲)}
-(define (名/文-1 名/文) (dict-ref h-名/文:sym->_ 名/文))
-(define h-名/構:sym->pair (make-hasheq))
-(define h-名/構:pair->sym (make-mutable-映))
-(define (名/構 名 列)
-  (let ([p (cons 名 列)])
+{define (名/文-1 名/文) (dict-ref h-名/文:sym->_ 名/文)}
+{define h-名/構:sym->pair (make-hasheq)}
+{define h-名/構:pair->sym (make-mutable-映)}
+{define (名/構 名 列)
+  {let ([p (cons 名 列)])
     (dict-ref
      h-名/構:pair->sym p
-     (λ ()
-       (let ([s (gen/s)])
+     {λ ()
+       {let ([s (gen/s)])
          (dict-set! h-名/構:sym->pair s p)
-         (dict-set! h-名/構:pair->sym p s))))))
-(define (名/構？ 甲) (dict-has-key? h-名/構:sym->pair 甲))
-(define (名/構.名 名/構) (car (dict-ref h-名/構:sym->pair 名/構)))
-(define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構)))
-(define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲)))
+         (dict-set! h-名/構:pair->sym p s)}})}}
+{define (名/構？ 甲) (dict-has-key? h-名/構:sym->pair 甲)}
+{define (名/構.名 名/構) (car (dict-ref h-名/構:sym->pair 名/構))}
+{define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構))}
+{define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲))}
 
-(struct #%機 (境 形 物))
-(struct #%機-內 (p 形 物))
-(define (機 形 物) (#%機 映/空 形 物))
-(define (機？ 甲) (or (#%機? 甲) (#%機-內? 甲)))
-(define #%機？ #%機?)
-(define #%機-內？ #%機-內?)
-(define #%機-內.形 #%機-內-形)
-(define #%機-內.物 #%機-內-物)
-(define #%機-內.p #%機-內-p)
-(define #%機.境 #%機-境)
-(define (機.形 甲) (if (#%機? 甲) (#%機-形 甲) (#%機-內-形 甲)))
-(define #%機.物 #%機-物)
+{struct #%機 (境 形 物)}
+{struct #%機-內 (p 形 物)}
+{define (機 形 物) (#%機 映/空 形 物)}
+{define (機？ 甲) (or (#%機? 甲) (#%機-內? 甲))}
+{define #%機？ #%機?}
+{define #%機-內？ #%機-內?}
+{define #%機-內.形 #%機-內-形}
+{define #%機-內.物 #%機-內-物}
+{define #%機-內.p #%機-內-p}
+{define #%機.境 #%機-境}
+{define (機.形 甲) (if (#%機? 甲) (#%機-形 甲) (#%機-內-形 甲))}
+{define #%機.物 #%機-物}
 
-(define 陰 #f)
-(define 楊 #t)
-(define-syntax-rule (#%若 b x y) (if b x y))
+{define 陰 #f}
+{define 楊 #t}
+{define-syntax-rule (#%若 b x y) (if b x y)}
 
-(struct 引-機 (機))
-(define 引-機？ 引-機?)
-(define 引-機-1 引-機-機)
+{struct 引-機 (機)}
+{define 引-機？ 引-機?}
+{define 引-機-1 引-機-機}
 
-(struct 誤 (物))
-(define 誤？ 誤?)
-(define 誤-1 誤-物)
+{struct 誤 (物)}
+{define 誤？ 誤?}
+{define 誤-1 誤-物}
 
-(struct 構 (名 列))
-(define 構？ 構?)
-(define 構.名 構-名)
-(define 構.列 構-列)
+{struct 構 (名 列)}
+{define 構？ 構?}
+{define 構.名 構-名}
+{define 構.列 構-列}
