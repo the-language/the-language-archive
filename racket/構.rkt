@@ -16,11 +16,11 @@
 #lang racket
 {require srfi/9}
 {provide
- 名/文？ 名/文 名/文-1 名/構？ 名/構 名/構.名 名/構.列 名？
+ 名/文？ 名/文 名/文-1 名/構？ 名/構 名/構.名 名/構.列 名？ symbol→名
  等？
  首-尾 首-尾？ 首-尾.首 首-尾.尾 空 空？
  文？
- 映？ 映/空 映.增-改 映.取 映.含？ 映.删 映→列
+ 映？ 映/空 映.增 映.改 映.增-改 映.取 映.含？ 映.删 映→列
  #%機 機 機？ #%機.境 機.形 #%機.物
  #%機-內 #%機-內.p #%機-內.形 #%機-內.物
  陰 楊 #%若
@@ -79,7 +79,9 @@
 {define-custom-hash-types 映 等？}
 {define 映？ immutable-映?}
 {define 映/空 (make-immutable-映)}
+{define 映.增 dict-set}
 {define 映.增-改 dict-set}
+{define 映.改 dict-update}
 {define 映.取 dict-ref}
 {define 映.删 dict-remove}
 {define 映.含？ dict-has-key?}
@@ -90,7 +92,7 @@
   {let ([c 0])
     {λ ()
       {let ([v (+ 1 c)])
-        (set! c v)
+        {set! c v}
         v}}}}
 {define (gen/s) (string->symbol (number->string (gen/c)))}
 {define h-名/文:sym->_ (make-hasheq)}
@@ -119,6 +121,7 @@
 {define (名/構.名 名/構) (car (dict-ref h-名/構:sym->pair 名/構))}
 {define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構))}
 {define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲))}
+{define symbol→名 "WIP"}
 
 {struct #%機 (境 形 物)}
 {struct #%機-內 (p 形 物)}

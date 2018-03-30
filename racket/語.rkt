@@ -23,6 +23,9 @@
          (undelay (force x) f)
          (delay (undelay (force x) f)))]
     [else (f x)]}}
+
+{define 境/空 映/空}
+
 {define-syntax APP
   {syntax-rules ()
     [{_ e r () ()} r]
@@ -41,9 +44,10 @@
     [{_ x0} x0]}}
 {define-syntax-rule {定/機%2 形 ...} ({定/機%1 形} ...)}
 {define-syntax-rule {定/機 (名 形 ...) 物}
-  {define 名
-    (#%機-內
-     {λ {定/機%2 形 ...}
-       {APP WIP 物 (形 ...) {定/機%2 形 ...}}}
-     {quote {定/機%2 形 ...}}
-     WIP)}}
+  {set! 境/空 (映.增
+             境/空 (symbol→名 名)
+             (#%機-內
+              {λ {定/機%2 形 ...}
+                {APP WIP 物 (形 ...) {定/機%2 形 ...}}}
+              {quote {定/機%2 形 ...}}
+              WIP))}}
