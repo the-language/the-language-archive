@@ -120,7 +120,12 @@
 {define (名/構.名 名/構) (car (dict-ref h-名/構:sym->pair 名/構))}
 {define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構))}
 {define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲))}
-{define symbol→名 gensym} ; WIP
+{define (symbol→名 s) (mkn (string->list (symbol->string s)))}
+{define q (名/文 (string->list "乎"))}
+{define (mkn cs)
+  {match cs
+    [(list cs ... #\？) (名/構 q (list (mkn cs)))]
+    [_ WIP]}}
 
 {struct #%機 (境 形 物)}
 {struct #%機-內 (p 形 物)}
