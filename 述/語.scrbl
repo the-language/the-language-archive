@@ -4,7 +4,7 @@
 @title{語}
 @author{zaoqi}
 
-@defmodule[zaoqil #:lang]
+@defmodule[lang #:lang #:packages ("lang")]
 
 @define-syntax-rule[(重名詞法 名 原) @define-syntax-rule[(名 . 參) (原 . 參)]]
 
