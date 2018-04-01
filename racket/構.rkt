@@ -171,10 +171,10 @@
          [(list #\！ cs ...) (名/構 式 (list (mkn cs)))]
          [(list (and (not #\.) cs0) ... #\. (and (not #\.) cs1) ...) (名/構 以 (list (mkn cs0) (mkn cs1)))]
          [(list 甲-集 ... #\/ (and (not #\/) 乙-集) ...) (名/構 子 (list (mkn 甲-集) (mkn 乙-集)))]
-         [(list (and (not #\-) 甲-集) ... 乙-集 ...) (mk列 (list (mkn 甲-集)) 乙-集)]
+         [(list (and (not #\-) 甲-集) ... #\- 乙-集 ...) (mk列 (list (mkn 甲-集)) 乙-集)]
          [xs (名/文 xs)]}}
      {define (mk列 xs cs)
        {match cs
-         [(list (and (not #\-) 甲-集) ... 乙-集 ...) (mk列 (append xs (list (mkn 甲-集))) 乙-集)]
+         [(list (and (not #\-) 甲-集) ... #\- 乙-集 ...) (mk列 (append xs (list (mkn 甲-集))) 乙-集)]
          [甲-集 (名/構 列 (append xs (list (mkn 甲-集))))]}}
      (values symbol→名)})}
