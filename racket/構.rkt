@@ -20,8 +20,8 @@
  首-尾 首-尾？ 首-尾.首 首-尾.尾 空 空？
  文？
  映？ 映/空 映.增 映.改 映.增-改 映.取 映.含？ 映.删 映→列
- #%機 機 機？ #%機.境 機.形 #%機.物
- #%機-內 #%機-內.p #%機-內.形 #%機-內.物
+ #%機 #%機？ 機 機？ #%機.境 機.形 #%機.物
+ #%機-內？ #%機-內 #%機-內.p #%機-內.形 #%機-內.物
  陰 陽
  引-機 引-機？ 引-機-1
  誤 誤？ 誤-1
@@ -54,6 +54,12 @@
              [(#%機 境2 形2 物2)
               (and (#%EQ? h 境1 境2)
                    (#%EQ? h 形1 形2)
+                   (#%EQ? h 物1 物2))]
+             [_ #f]}]
+          [(#%機-內 _ 形1 物1)
+           {match 乙
+             [(#%機-內 _ 形2 物2)
+              (and (#%EQ? h 形1 形2)
                    (#%EQ? h 物1 物2))]
              [_ #f]}]
           [(引-機 x) (match 乙 [(引-機 y) (#%EQ? h x y)] [_ #f])]
@@ -120,28 +126,6 @@
 {define (名/構.名 名/構) (car (dict-ref h-名/構:sym->pair 名/構))}
 {define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構))}
 {define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲))}
-{define-values (symbol→名)
-  ({λ ()
-     {define (symbol→名 s) (mkn (string->list (symbol->string s)))}
-     {define q (名/文 (string->list "乎"))}
-     {define 反 (名/文 (string->list "反"))}
-     {define 式 (名/文 (string->list "式"))}
-     {define 以 (名/文 (string->list "以"))}
-     {define 子 (名/文 (string->list "子"))}
-     {define 列 (名/文 (string->list "列"))}
-     {define mkn
-       {match-lambda
-         [(list cs ... #\？) (名/構 q (list (mkn cs)))]
-         [(list cs ... #\- #\1) (名/構 反 (list (mkn cs)))]
-         [(list #\！ cs ...) (名/構 式 (list (mkn cs)))]
-         [(list (and (not #\.) cs0) ... #\. (and (not #\.) cs1) ...) (名/構 以 (list (mkn cs0) (mkn cs1)))]
-         [(list 甲-集 ... (and (not #\/) 乙-集) ...) (名/構 子 (list (mkn 甲-集) (mkn 乙-集)))]
-         [(list (and (not #\-) 甲-集) ... 乙-集 ...) (mk列 (list (mkn 甲-集)) 乙-集)]}}
-     {define (mk列 xs cs)
-       {match cs
-         [(list (and (not #\-) 甲-集) ... 乙-集 ...) (mk列 (append xs (list (mkn 甲-集))) 乙-集)]
-         [甲-集 (名/構 列 (append xs (list (mkn 甲-集))))]}}
-     (values symbol→名)})}
 
 {struct #%機 (境 形 物)}
 {struct #%機-內 (p 形 物)}
@@ -171,3 +155,26 @@
 {define 構？ 構?}
 {define 構.名 構-名}
 {define 構.列 構-列}
+
+{define-values (symbol→名)
+  ({λ ()
+     {define (symbol→名 s) (mkn (string->list (symbol->string s)))}
+     {define-syntax-rule {定-名/文 s}
+       {define s (名/文 (string->list (symbol->string {quote s})))}}
+     {define-syntax-rule {定-名/文* x ...}
+       {begin {定-名/文 x} ...}}
+     {定-名/文* 乎 反 式 以 子 列}
+     {define mkn
+       {match-lambda
+         [(list cs ... #\？) (名/構 乎 (list (mkn cs)))]
+         [(list cs ... #\- #\1) (名/構 反 (list (mkn cs)))]
+         [(list #\！ cs ...) (名/構 式 (list (mkn cs)))]
+         [(list (and (not #\.) cs0) ... #\. (and (not #\.) cs1) ...) (名/構 以 (list (mkn cs0) (mkn cs1)))]
+         [(list 甲-集 ... #\/ (and (not #\/) 乙-集) ...) (名/構 子 (list (mkn 甲-集) (mkn 乙-集)))]
+         [(list (and (not #\-) 甲-集) ... 乙-集 ...) (mk列 (list (mkn 甲-集)) 乙-集)]
+         [xs (名/文 xs)]}}
+     {define (mk列 xs cs)
+       {match cs
+         [(list (and (not #\-) 甲-集) ... 乙-集 ...) (mk列 (append xs (list (mkn 甲-集))) 乙-集)]
+         [甲-集 (名/構 列 (append xs (list (mkn 甲-集))))]}}
+     (values symbol→名)})}
