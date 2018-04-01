@@ -41,17 +41,18 @@
 {define-syntax-rule {定/機%2 形 ...} ({定/機%1 形} ...)}
 {define-for-syntax (定/機%0 stx)
   (map {λ (x) (syntax-protect #'t)} (syntax->list stx))}
+{define-syntax-rule {引 名} (symbol→名 {quote 名})}
 {define-syntax-rule {定 名 物}
-  {set! 境/空 (映.增 境/空 (symbol→名 {quote 名}) 物)}}
+  {set! 境/空 (映.增 境/空 {引 名} 物)}}
 {define-syntax 定/機
   {λ (stx)
-  {syntax-case stx ()
-    [{_ (名 形 ...) 物} {syntax-case (map {λ (x) (datum->syntax #f (gensym))} (syntax->list #'(形 ...))) ()
-                       [(x ...) (syntax-protect #'{定 名 (#%機-內
-              {λ (x ...)
-                {APP WIP 物 (形 ...) (x ...)}}
-              {quote (x ...)}
-              WIP)})]}]}}}
+    {syntax-case stx ()
+      [{_ (名 形 ...) 物} {syntax-case (map {λ (x) (datum->syntax #f (gensym))} (syntax->list #'(形 ...))) ()
+                         [(x ...) (syntax-protect #'{定 名 (#%機-內
+                                                          {λ (x ...)
+                                                            {APP WIP 物 (形 ...) (x ...)}}
+                                                          {quote (x ...)}
+                                                          WIP)})]}]}}}
 {define-syntax-rule {定/機* x ...}
   {begin {定/機 . x} ...}}
 
@@ -120,15 +121,26 @@
 {定 境/空 境/空}
 
 {define (算 物 境)
-  (undelay
-   物
-   {λ (物)
-     {cond
-       [(首-尾？ 物)
-        {let ([首 (首-尾.首 物)] [尾 (首-尾.尾 物)])
-          (undelay
-           首
-           {λ (首)
-             WIP})}]
-       [(名？ 物) (映.取 境 物 WIP)]
-       [else 物]}})}
+  (delay
+    (undelay
+     物
+     {λ (物)
+       {cond
+         [(首-尾？ 物)
+          {let ([首 (首-尾.首 物)] [尾 (首-尾.尾 物)])
+            (if (等？ 首 {引 ！式})
+                (undelay
+                 尾
+                 {λ (尾)
+                   (if (首-尾？ 尾)
+                       {let ([首 (首-尾.首 尾)] [尾 (首-尾.尾 尾)])
+                         WIP
+                         }
+                       WIP)})
+                (算/undelay*
+                 尾
+                 {λ (尾)
+                   WIP}))}]
+         [(名？ 物) (映.取 境 物 WIP)]
+         [else 物]}}))}
+{定 算/undelay* WIP}
