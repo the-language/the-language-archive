@@ -125,7 +125,7 @@
 {define (mkn cs)
   {match cs
     [(list cs ... #\？) (名/構 q (list (mkn cs)))]
-    [_ WIP]}}
+    [_ "WIP"]}}
 
 {struct #%機 (境 形 物)}
 {struct #%機-內 (p 形 物)}
