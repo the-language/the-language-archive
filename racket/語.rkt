@@ -14,15 +14,9 @@
 ;;    You should have received a copy of the GNU Affero General Public License
 ;;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #lang racket
+{require "promise.rkt"}
 {require (file "構.rkt")}
 {define WIP (delay (error))}
-{define (undelay x f)
-  {cond
-    [(promise? x)
-     (if (promise-forced? x)
-         (undelay (force x) f)
-         (delay (undelay (force x) f)))]
-    [else (f x)]}}
 
 {define 境/空 集/定/空}
 
@@ -30,7 +24,7 @@
   {syntax-rules ()
     [{_ s (f ...) r () ()} r]
     [{_ s (f ...) r ((p? x0) x ...) (v0 v ...)}
-     (undelay
+     (promise-undelay
       v0
       {λ (x0)
         (if (p? x0)
@@ -58,7 +52,7 @@
 {define-syntax %L%
   {syntax-rules ()
     [(_ () r) r]
-    [(_ (x0 x ...) r) (undelay x0 {λ (x0) {%L% (x ...) r}})]}}
+    [(_ (x0 x ...) r) (promise-undelay x0 {λ (x0) {%L% (x ...) r}})]}}
 {define-syntax-rule {L ([x v] ...) r} ; Racket的自動縮進導致名字不能長
   {let ([x v] ...) {%L% (x ...) r}}}
 
@@ -102,7 +96,7 @@
 
  [(機？ (非-誤？ 物)) (機？ 物)]
  [(機 形 物) (機 形 物)]
- [(機.用 物 形) WIP]
+ [(機.用 (機？ 物) 形) (機.用 物 形)]
  [(機.形 (機？ 物)) (機.形 物)]
  [(機.物 (機？ 物)) WIP]
 
@@ -126,6 +120,9 @@
  [(取 名) WIP]}
 {定 境/空 境/空}
 
+{define (機.用 機 形)
+  WIP
+  }
 {define (算 物 集/定)
   {define E (delay (誤 (構 {引 誤/界/機} (列 {引 算} (列 物 集/定) {引 物}))))}
   (delay

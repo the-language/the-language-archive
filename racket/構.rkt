@@ -14,6 +14,7 @@
 ;;    You should have received a copy of the GNU Affero General Public License
 ;;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #lang racket
+{require "promise.rkt"}
 {provide
  名/文？ 名/文 名/文-1 名/構？ 名/構 名/構.名 名/構.列 名？ symbol→名 引
  等？
