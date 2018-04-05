@@ -56,7 +56,7 @@
 {define-syntax-rule {定/機* x ...}
   {begin {定/機 . x} ...}}
 
-{define (非-誤？ 甲) (not (誤？ 甲))}
+{define (非-誤？ 甲) (not (誤？ 甲))} ; WIP
 
 {定 空 空}
 {定 集/定/空 集/定/空}
