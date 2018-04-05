@@ -14,7 +14,7 @@
 ;;    You should have received a copy of the GNU Affero General Public License
 ;;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #lang racket
-(provide promise? force set-promise! delay promise-running? promise-forced? promise-undelay)
+(provide promise? force set-promise! delay promise-running? promise-forced? undelay)
 
 (struct #%promise (p) #:transparent)
 (struct #%promise-running () #:transparent)
@@ -22,7 +22,7 @@
 (struct promise ((x #:mutable)) #:transparent)
 
 (define set-promise! set-promise-x!)
-(define (promise-undelay x f) (promise (#%promise-undelaying x f)))
+(define (undelay x f) (promise (#%promise-undelaying x f)))
 
 (define-syntax-rule (delay body ...) (promise (#%promise (λ () body ...))))
 
