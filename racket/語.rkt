@@ -138,11 +138,19 @@
                        (if (空？ 尾@尾)
                            (集/定.取 集/定/頂 物 (delay (誤 (構 {引 誤/界/名} (列 物 集/定/頂)))))
                            E)]
-                      [else WIP]}}
+                      [else
+                       (算@undelay*
+                             E 物
+                             {λ (列)
+                               WIP})]}}
                  E}}]
          [(名？ 物) (集/定.取 集/定 物 (delay (誤 (構 {引 誤/界/名} (列 物 集/定)))))]
          [else 物]}})}
-{define (算@undelay* xs f)
-  (if (空？ xs)
-      (f xs)
-      WIP)}
+{define (算@undelay* E xs f)
+  (undelay
+   xs
+   {λ (xs)
+     (cond
+       [(空？ xs) (f xs)]
+       [(首-尾？ xs) (算@undelay* E (首-尾.尾 xs) {λ (尾) (f (首-尾 (首-尾.首 xs) 尾))})]
+       [else E])})}

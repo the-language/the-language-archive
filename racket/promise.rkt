@@ -22,7 +22,10 @@
 (struct promise ((x #:mutable)) #:transparent)
 
 (define set-promise! set-promise-x!)
-(define (undelay x f) (promise (#%promise-undelaying x f)))
+(define (undelay x f)
+  (if (promise? x)
+      (promise (#%promise-undelaying x f))
+      (f x)))
 
 (define-syntax-rule (delay body ...) (promise (#%promise (λ () body ...))))
 
