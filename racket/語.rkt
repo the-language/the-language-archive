@@ -28,20 +28,20 @@
 
 {define-syntax APP
   {syntax-rules ()
-    [{_ r () ()} r]
-    [{_ r ((p? x0) x ...) (v0 v ...)}
-     (undelay v0
-              {λ (x0)
-                (if (p? x0)
-                    {APP r (x ...) (v ...)}
-                    WIP)})]
-    [{_ r (x0 x ...) (v0 v ...)}
+    [{_ s (f ...) r () ()} r]
+    [{_ s (f ...) r ((p? x0) x ...) (v0 v ...)}
+     (undelay
+      v0
+      {λ (x0)
+        (if (p? x0)
+            {APP s (f ...) r (x ...) (v ...)}
+            (誤 (構 {引 誤/界/機} (列 s (列 f ...) {引 x0}))))})]
+    [{_ s (f ...) r (x0 x ...) (v0 v ...)}
      {let ([x0 v0])
-       {APP r (x ...) (v ...)}}]}}
+       {APP s (f ...) r (x ...) (v ...)}}]}}
 {define-syntax-rule {定/機%2 形 ...} ({定/機%1 形} ...)}
 {define-for-syntax (定/機%0 stx)
   (map {λ (x) (syntax-protect #'t)} (syntax->list stx))}
-{define-syntax-rule {引 名} (symbol→名 {quote 名})}
 {define-syntax-rule {定 名 物}
   {set! 境/空 (集/定.增 境/空 {引 名} 物)}}
 {define-syntax 定/機
@@ -50,7 +50,7 @@
       [{_ (名 形 ...) 物} {syntax-case (map {λ (x) (datum->syntax #f (gensym))} (syntax->list #'(形 ...))) ()
                          [(x ...) (syntax-protect #'{定 名 (#%機-內
                                                           {λ (x ...)
-                                                            {APP 物 (形 ...) (x ...)}}
+                                                            {APP {引 名} (x ...) 物 (形 ...) (x ...)}}
                                                           {quote (x ...)}
                                                           WIP)})]}]}}}
 {define-syntax-rule {定/機* x ...}
@@ -99,7 +99,7 @@
  [(機.形 (機？ 機)) (機.形 機)]
  [(機.物 (機？ 機)) WIP]
 
- [(若 (boolean? 甲) 乙 丙) (if 甲 乙 丙)]
+ [(若 (陰-陽？ 甲) 乙 丙) (if 甲 乙 丙)]
 
  [(式？ 甲) (undelay 甲 式？)]
  [(式 機) (式 機)]

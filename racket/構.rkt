@@ -15,7 +15,7 @@
 ;;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #lang racket
 {provide
- 名/文？ 名/文 名/文-1 名/構？ 名/構 名/構.名 名/構.列 名？ symbol→名
+ 名/文？ 名/文 名/文-1 名/構？ 名/構 名/構.名 名/構.列 名？ symbol→名 引
  等？
  首-尾 首-尾？ 首-尾.首 首-尾.尾 空 空？
  文？
@@ -23,7 +23,8 @@
  #%機 #%機？ #%機.形 #%機.物
  #%機-內 #%機-內？ #%機-內.p #%機-內.形 #%機-內.物
  機 機？ 機.形 機.物
- 陰 陽
+ 列
+ 陰 陽 陰-陽？
  式 式？ 式-1
  誤 誤？ 誤-1
  構 構？ 構.名 構.列
@@ -141,8 +142,11 @@
 {define (機.形 甲) (if (#%機? 甲) (#%機.形 甲) (#%機-內.形 甲))}
 {define (機.物 甲) (if (#%機? 甲) (#%機-物 甲) (#%機-內.物 甲))}
 
+{define 列 list}
+
 {define 陰 #f}
 {define 陽 #t}
+{define 陰-陽？ boolean?}
 
 {struct 式 (機)}
 {define 式？ 式?}
@@ -164,13 +168,14 @@
        {define s (名/文 (string->list (symbol->string {quote s})))}}
      {define-syntax-rule {定-名/文* x ...}
        {begin {定-名/文 x} ...}}
-     {定-名/文* 乎 反 式 以 子 列}
+     {定-名/文* 乎 反 式 以 子 列 化}
      {define mkn
        {match-lambda
          [(list cs ... #\？) (名/構 乎 (list (mkn cs)))]
          [(list cs ... #\- #\1) (名/構 反 (list (mkn cs)))]
          [(list #\！ cs ...) (名/構 式 (list (mkn cs)))]
          [(list (and (not #\.) cs0) ... #\. (and (not #\.) cs1) ...) (名/構 以 (list (mkn cs0) (mkn cs1)))]
+         [(list (and (not #\→) cs0) ... #\→ (and (not #\→) cs1) ...) (名/構 化 (list (mkn cs0) (mkn cs1)))]
          [(list 甲-集 ... #\/ (and (not #\/) 乙-集) ...) (名/構 子 (list (mkn 甲-集) (mkn 乙-集)))]
          [(list (and (not #\-) 甲-集) ... #\- 乙-集 ...) (mk列 (list (mkn 甲-集)) 乙-集)]
          [xs (名/文 xs)]}}
@@ -179,3 +184,5 @@
          [(list (and (not #\-) 甲-集) ... #\- 乙-集 ...) (mk列 (append xs (list (mkn 甲-集))) 乙-集)]
          [甲-集 (名/構 列 (append xs (list (mkn 甲-集))))]}}
      (values symbol→名)})}
+
+{define-syntax-rule {引 名} (symbol→名 {quote 名})}
