@@ -28,16 +28,16 @@
 
 {define-syntax APP
   {syntax-rules ()
-    [{_ e r () ()} r]
-    [{_ e r ((p? x0) x ...) (v0 v ...)}
+    [{_ r () ()} r]
+    [{_ r ((p? x0) x ...) (v0 v ...)}
      (undelay v0
               {λ (x0)
                 (if (p? x0)
-                    {APP e r (x ...) (v ...)}
-                    e)})]
-    [{_ e r (x0 x ...) (v0 v ...)}
+                    {APP r (x ...) (v ...)}
+                    WIP)})]
+    [{_ r (x0 x ...) (v0 v ...)}
      {let ([x0 v0])
-       {APP e r (x ...) (v ...)}}]}}
+       {APP r (x ...) (v ...)}}]}}
 {define-syntax-rule {定/機%2 形 ...} ({定/機%1 形} ...)}
 {define-for-syntax (定/機%0 stx)
   (map {λ (x) (syntax-protect #'t)} (syntax->list stx))}
@@ -50,7 +50,7 @@
       [{_ (名 形 ...) 物} {syntax-case (map {λ (x) (datum->syntax #f (gensym))} (syntax->list #'(形 ...))) ()
                          [(x ...) (syntax-protect #'{定 名 (#%機-內
                                                           {λ (x ...)
-                                                            {APP WIP 物 (形 ...) (x ...)}}
+                                                            {APP 物 (形 ...) (x ...)}}
                                                           {quote (x ...)}
                                                           WIP)})]}]}}}
 {define-syntax-rule {定/機* x ...}
@@ -67,11 +67,11 @@
 {定/機*
  [(等？ 甲 乙) (等？ 甲 乙)]
  
- [(首-尾？ 甲) (undelay 甲 首-尾？)]
+ [(首-尾？ (非-誤？ 甲)) (首-尾？ 甲)]
  [(首-尾 首 尾) (首-尾 首 尾)]
  [(首-尾.首 (首-尾？ 首)) (首-尾.首 首)]
  [(首-尾.尾 (首-尾？ 首)) (首-尾.尾 首)]
- [(空？ 甲) (undelay 甲 空？)]
+ [(空？ (非-誤？ 甲)) (空？ 甲)]
 
  [(文？ 甲) (undelay 甲 文？)]
 
