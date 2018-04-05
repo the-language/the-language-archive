@@ -18,7 +18,7 @@
 {require (file "構.rkt")}
 {define WIP (delay (error))}
 
-{define 境/空 集/定/空}
+{define 集/定/頂 集/定/空}
 
 {define-syntax APP
   {syntax-rules ()
@@ -37,7 +37,7 @@
 {define-for-syntax (定/機%0 stx)
   (map {λ (x) (syntax-protect #'t)} (syntax->list stx))}
 {define-syntax-rule {定 名 物}
-  {set! 境/空 (集/定.增 境/空 {引 名} 物)}}
+  {set! 集/定/頂 (集/定.增 集/定/頂 {引 名} 物)}}
 {define-syntax 定/機
   {λ (stx)
     {syntax-case stx ()
@@ -118,7 +118,7 @@
  [(構.列 (構？ 物)) (構.列 物)]
 
  [(取 名) WIP]}
-{定 境/空 境/空}
+{定 集/定/頂 集/定/頂}
 
 {define (機.用 機 形)
   WIP
@@ -134,7 +134,10 @@
                  {L ([尾@首 (首-尾.首 尾)] [尾@尾 (首-尾.尾 尾)])
                     {cond
                       [(等？ 首 {引 ！式}) WIP]
-                      [(等？ 首 {引 ！頂}) WIP]
+                      [(等？ 首 {引 ！頂})
+                       (if (空？ 尾@尾)
+                           (集/定.取 集/定/頂 物 (delay (誤 (構 {引 誤/界/名} (列 物 集/定/頂)))))
+                           E)]
                       [else WIP]}}
                  E}}]
          [(名？ 物) (集/定.取 集/定 物 (delay (誤 (構 {引 誤/界/名} (列 物 集/定)))))]
