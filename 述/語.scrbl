@@ -1,6 +1,13 @@
 #lang scribble/manual
 @require[@for-label[racket]]
 
+@(require scribble/decode)
+@(require racket)
+@(define (subsubsubsection . args)
+   (match (apply subsubsection args)
+     [(part-start depth tag-prefix tags style title)
+      (part-start (+ 1 depth) tag-prefix tags style title)]))
+
 @title{語}
 @author{zaoqi}
 
@@ -103,5 +110,7 @@
 @語[(非 誤？)]表示不能是一個@語[誤？]，否則返回值是一個@語[誤？]。
 @subsubsection{機}
 內置的任何@語[機？]產生的@語[誤？]是@語[(誤 (構 {引 誤/界/機} (列 -名 -式 -位)))]。@語[-名]是它的名稱，@語[-式]是它的參數，@語[-位]是產生一個@語[誤？]的參數的名稱。
+@subsubsubsection{算}
+T
 @subsubsection{式}
 內置的任何@語[式？]產生的@語[誤？]是@語[(誤 (構 {引 誤/界/式} (列 -名 -境 -式 -位)))]。@語[-名]是它的名稱，@語[-境]是環境，@語[-式]是它的參數，@語[-位]是參數的名稱。
