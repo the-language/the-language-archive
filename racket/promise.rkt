@@ -14,7 +14,7 @@
 ;;    You should have received a copy of the GNU Affero General Public License
 ;;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #lang racket
-(provide promise? set-promise! delay promise-running? promise-forced? promise-undelay)
+(provide promise? force set-promise! delay promise-running? promise-forced? promise-undelay)
 
 (struct #%promise (p) #:transparent)
 (struct #%promise-running () #:transparent)
@@ -28,18 +28,18 @@
 
 (define (force v)
   (if (promise? v)
-      (#%force (promise-x v) (list v) v)
+      (#%force (promise-x v) v (list v) v)
       v))
-(define (#%force x promise-list a-promise)
+(define (#%force x in promise-list out)
   (cond
     [(#%promise-running? x) (error 'force "reentrant promise")] ; BUG 若有multi thread
-    [(promise? x) (#%force (promise-x x) (cons x promise-list) a-promise)]
+    [(promise? x) (#%force (promise-x x) x (cons x promise-list) out)]
     [(#%promise-undelaying? x)
      (let ([t (force (#%promise-undelaying-x x))] [p (#%promise-undelaying-p x)])
        (if (promise? t)
-           (#%force-end a-promise (#%promise-undelaying t p) promise-list)
+           (#%force-end out (#%promise-undelaying t p) promise-list)
            (let ([r (p t)]) (#%force-end r r promise-list))))]
-    [(#%promise? x) (let ([r ((#%promise-p x))]) (#%force-end r r promise-list))]
+    [(#%promise? x) (set-promise! in (#%promise-running)) (let ([r ((#%promise-p x))]) (#%force-end r r promise-list))]
     [else (#%force-end x x promise-list)]))
 (define (#%force-end r v xs)
   (if (null? xs)
