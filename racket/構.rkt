@@ -161,6 +161,12 @@
 {define 構.名 構-名}
 {define 構.列 構-列}
 
+{define memorize1
+  {let ([h (make-hasheq)])
+    {λ (f)
+      {λ (x)
+        (hash-ref! h x {λ () (f x)})}}}}
+
 {define-values (symbol→名)
   ({λ ()
      {define (symbol→名 s) (mkn (string->list (symbol->string s)))}
@@ -183,6 +189,6 @@
        {match cs
          [(list (and (not #\-) 甲-集) ... #\- 乙-集 ...) (mk列 (append xs (list (mkn 甲-集))) 乙-集)]
          [甲-集 (名/構 列 (append xs (list (mkn 甲-集))))]}}
-     (values symbol→名)})}
+     (values (memorize1 symbol→名))})}
 
 {define-syntax-rule {引 名} (symbol→名 {quote 名})}
