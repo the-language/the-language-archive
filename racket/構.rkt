@@ -19,11 +19,12 @@
  等？
  首-尾 首-尾？ 首-尾.首 首-尾.尾 空 空？
  文？
- 映？ 映/空 映.增 映.改 映.增-改 映.取 映.含？ 映.删 映→列
- #%機 #%機？ 機 機？ #%機.境 機.形 #%機.物
- #%機-內？ #%機-內 #%機-內.p #%機-內.形 #%機-內.物
+ 集/定？ 集/定/空 集/定.增 集/定.改 集/定.增-改 集/定.取 集/定.含？ 集/定.删 集/定→列
+ #%機 #%機？ #%機.形 #%機.物
+ #%機-內 #%機-內？ #%機-內.p #%機-內.形 #%機-內.物
+ 機 機？ 機.形 機.物
  陰 陽
- 引-機 引-機？ 引-機-1
+ 式 式？ 式-1
  誤 誤？ 誤-1
  構 構？ 構.名 構.列
  }
@@ -43,17 +44,16 @@
        [else
         {match 甲
           [(cons a1 d1) {match 乙 [(cons a2 d2) (and (#%EQ? h a1 a2) (#%EQ? h d1 d2))] [_ #f]}]
-          [(? 映？) (and (映？ 乙) (#%EQ? h (映→列 甲) (映→列 乙)))]
+          [(? 集/定？) (and (集/定？ 乙) (#%EQ? h (集/定→列 甲) (集/定→列 乙)))]
           [(? 名/文？) (and (名/文？ 乙) (#%EQ? h (名/文-1 甲) (名/文-1 乙)))]
           [(? 名/構？)
            (and (名/構？ 乙)
                 (#%EQ? h (名/構.名 甲) (名/構.名 乙))
                 (#%EQ? h (名/構.列 甲) (名/構.列 乙)))]
-          [(#%機 境1 形1 物1)
+          [(#%機 形1 物1)
            {match 乙
-             [(#%機 境2 形2 物2)
-              (and (#%EQ? h 境1 境2)
-                   (#%EQ? h 形1 形2)
+             [(#%機 形2 物2)
+              (and (#%EQ? h 形1 形2)
                    (#%EQ? h 物1 物2))]
              [_ #f]}]
           [(#%機-內 _ 形1 物1)
@@ -62,7 +62,7 @@
               (and (#%EQ? h 形1 形2)
                    (#%EQ? h 物1 物2))]
              [_ #f]}]
-          [(引-機 x) (match 乙 [(引-機 y) (#%EQ? h x y)] [_ #f])]
+          [(式 x) (match 乙 [(式 y) (#%EQ? h x y)] [_ #f])]
           [(誤 x) (match 乙 [(誤 y) (#%EQ? h x y)] [_ #f])]
           [(構 名1 列1)
            {match 乙
@@ -81,16 +81,16 @@
 
 {define 文？ char?}
 
-{define-custom-hash-types 映 等？}
-{define 映？ immutable-映?}
-{define 映/空 (make-immutable-映)}
-{define 映.增 dict-set}
-{define 映.增-改 dict-set}
-{define 映.改 dict-update}
-{define 映.取 dict-ref}
-{define 映.删 dict-remove}
-{define 映.含？ dict-has-key?}
-{define 映→列 dict->list}
+{define-custom-hash-types 集/定 等？}
+{define 集/定？ immutable-集/定?}
+{define 集/定/空 (make-immutable-集/定)}
+{define 集/定.增 dict-set}
+{define 集/定.增-改 dict-set}
+{define 集/定.改 dict-update}
+{define 集/定.取 dict-ref}
+{define 集/定.删 dict-remove}
+{define 集/定.含？ dict-has-key?}
+{define 集/定→列 dict->list}
 
 {define-custom-hash-types mh 等？}
 {define gen/c
@@ -101,7 +101,7 @@
         v}}}}
 {define (gen/s) (string->symbol (number->string (gen/c)))}
 {define h-名/文:sym->_ (make-hasheq)}
-{define h-名/文:_->sym (make-mutable-映)}
+{define h-名/文:_->sym (make-mutable-集/定)}
 {define (名/文 列)
   (dict-ref
    h-名/文:_->sym 列
@@ -113,7 +113,7 @@
 {define (名/文？ 甲) (dict-has-key? h-名/文:sym->_ 甲)}
 {define (名/文-1 名/文) (dict-ref h-名/文:sym->_ 名/文)}
 {define h-名/構:sym->pair (make-hasheq)}
-{define h-名/構:pair->sym (make-mutable-映)}
+{define h-名/構:pair->sym (make-mutable-集/定)}
 {define (名/構 名 列)
   {let ([p (cons 名 列)])
     (dict-ref
@@ -127,25 +127,26 @@
 {define (名/構.列 名/構) (cdr (dict-ref h-名/構:sym->pair 名/構))}
 {define (名？ 甲) (or (名/文？ 甲) (名/構？ 甲))}
 
-{struct #%機 (境 形 物)}
-{struct #%機-內 (p 形 物)}
-{define (機 形 物) (#%機 映/空 形 物)}
-{define (機？ 甲) (or (#%機? 甲) (#%機-內? 甲))}
+{struct #%機 (形 物)}
 {define #%機？ #%機?}
+{define #%機.形 #%機-形}
+{define #%機.物 #%機-物}
+{struct #%機-內 (p 形 物)}
 {define #%機-內？ #%機-內?}
+{define #%機-內.p #%機-內-p}
 {define #%機-內.形 #%機-內-形}
 {define #%機-內.物 #%機-內-物}
-{define #%機-內.p #%機-內-p}
-{define #%機.境 #%機-境}
-{define (機.形 甲) (if (#%機? 甲) (#%機-形 甲) (#%機-內-形 甲))}
-{define #%機.物 #%機-物}
+{define (機 形 物) (#%機 形 物)}
+{define (機？ 甲) (or (#%機？ 甲) (#%機-內？ 甲))}
+{define (機.形 甲) (if (#%機? 甲) (#%機.形 甲) (#%機-內.形 甲))}
+{define (機.物 甲) (if (#%機? 甲) (#%機-物 甲) (#%機-內.物 甲))}
 
 {define 陰 #f}
 {define 陽 #t}
 
-{struct 引-機 (機)}
-{define 引-機？ 引-機?}
-{define 引-機-1 引-機-機}
+{struct 式 (機)}
+{define 式？ 式?}
+{define 式-1 式-機}
 
 {struct 誤 (物)}
 {define 誤？ 誤?}
