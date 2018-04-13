@@ -133,8 +133,8 @@
 {define (機.用%match E 物 形 參 集/定)
   {cond
     [(null? 形) (if (null? 參) (算 物 集/定) E)]
-    [(pair? 形) (if (pair? 參) WIP E)]
-    [else (error)]}}
+    [(pair? 形) (if (pair? 參) (機.用%match E 物 (cdr 形) (cdr 參) (集/定.增 集/定 (car 形) (car 參))) E)]
+    [else (算 物 (集/定.增 集/定 形 參))]}}
 {define (算 物 集/定)
   {define E (delay (誤 (構 {引 誤/界/機} (列 {引 算} (列 物 集/定) {引 物}))))}
   (delay
