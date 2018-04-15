@@ -178,12 +178,12 @@
      {定-名/文* 乎 反 式 以 子 列 化 創}
      {define mkn
        {match-lambda
-         [(list cs ..1 #\？) (名/構 乎 (list (mkn cs)))]
-         [(list cs ..1 #\- #\1) (名/構 反 (list (mkn cs)))]
          [(list #\！ cs ..1) (名/構 式 (list (mkn cs)))]
-         [(list (and (not #\.) cs0) ..1 #\. (and (not #\.) cs1) ..1) (名/構 以 (list (mkn cs0) (mkn cs1)))]
+         [(list cs ..1 #\？) (名/構 乎 (list (mkn cs)))]
          [(list #\→ (and (not #\→) cs1) ..1) (名/構 創 (list (mkn cs1)))]
          [(list (and (not #\→) cs0) ..1 #\→ (and (not #\→) cs1) ..1) (名/構 化 (list (mkn cs0) (mkn cs1)))]
+         [(list cs ..1 #\- #\1) (名/構 反 (list (mkn cs)))]
+         [(list (and (not #\.) cs0) ..1 #\. (and (not #\.) cs1) ..1) (名/構 以 (list (mkn cs0) (mkn cs1)))]
          [(list 甲-集 ..1 #\/ (and (not #\/) 乙-集) ..1) (名/構 子 (list (mkn 甲-集) (mkn 乙-集)))]
          [(list (and (not #\-) 甲-集) ..1 #\- 乙-集 ..1) (mk列 (list (mkn 甲-集)) 乙-集)]
          [xs (名/文 xs)]}}
