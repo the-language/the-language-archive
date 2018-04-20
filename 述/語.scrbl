@@ -141,6 +141,11 @@
   [(列 #\→ (and (not #\→) cs) ..1) `#(一 #(化 (多 其) ,(L->V cs)))]
   [(列 (and (not #\→) cs1) ..1 #\→ (and (not #\→) cs2) ..1) `#(一 #(化 ,(L->V cs1) ,(L->V cs2)))]
   [(列 (and (not #\.) t) ..1 #\. (and (not #\.) n) ..1) `#(一 #(化 ,(L->V t) (多 其)) ,(L->V n))]
-  [WIP WIP]
-  [(and xs (not (列 _ ... (or #\？ #\！ #\# #\% #\- #\1 #\→ #\.) _ ...))) (string->symbol (list->string xs))]}})
+  [(列 a ..1 (or #\/ #\\) (and (not (or #\/ #\\)) b) ..1) `#(子 ,(L->V a) ,(L->V b))]
+  [(列 (and (not #\-) h) ..1 #\- t ..1)
+   {match (L->V t)
+     [`#(列 ,@xs) `#(列 ,(L->V h) ,@xs)]
+     [s `#(列 ,(L->V h) ,s)]}]
+  [(and xs (not (列 _ ... (or #\？ #\！ #\# #\% #\- #\1 #\→ #\. (or #\/ #\\)) _ ...)))
+   (string->symbol (list->string xs))]}})
 
