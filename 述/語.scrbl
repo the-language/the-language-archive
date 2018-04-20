@@ -128,12 +128,18 @@
 @section{類Racket語法}
 每個vector和symbol會被轉換爲一個@語[名？]。
 
-@(racketblock {define list->名
+@(racketblock {define L->V
  {match-lambda
-  [(列 #\！ cs ..1) (vector->名 `#(一 #(引 式) ,(list->名 cs)))]
-  [(列 #\# #\% cs ..1) (vector->名 `#(式 ,(list->名 cs)))]
-  [(列 cs ..1 #\？) (vector->名 `#(一 #(化 #(一 (引 物)) #(一 #(集 (引 陰) (引 陽)))) ,(list->名 cs)))]
-  [(列 cs ..1 #\- #\1) (vector->名 `#(反 ,(list->名 cs)))]
+  [(列 #\！ cs ..1) `#(一 #(引 (子 類 式)) ,(L->V cs))]
+  [(列 #\# #\% cs ..1) `#(式 ,(L->V cs))]
+  [(列 cs ..1 #\？) `#(一 #(化 #(一 (引 (子 類 物))) #(一 #(集 (引 (子 類 陰)) (引 (子 類 陽))))) ,(L->V cs))]
+  [(列 cs ..1 #\- #\1)
+   {match (L->V cs)
+      [`#(一 ,t) `#(一 ,t 反)]
+      [`#(一 ,t ,n) `#(一 ,t (反 ,n))]
+      [(? symbol? s) `#(反 ,s)]}]
+  [(列 #\→ (and (not #\→) cs) ..1) `#(一 #(化 (多 其) ,(L->V cs)))]
+  [(列 (and (not #\→) cs1) ..1 #\→ (and (not #\→) cs2) ..1) `#(一 #(化 ,(L->V cs1) ,(L->V cs2)))]
   [WIP WIP]
-  [(and xs (not (列 _ ... (or #\？ #\！ #\# #\% #\- #\1) _ ...))) (#%symbol->名/文 (string->symbol (list->string xs)))]}})
+  [(and xs (not (列 _ ... (or #\？ #\！ #\# #\% #\- #\1 #\→) _ ...))) (string->symbol (list->string xs))]}})
 
