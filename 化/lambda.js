@@ -58,6 +58,17 @@ m_set=function(m,k,v){
 			function(){return [m[0],m[1],m[2],m_set(m[3],k,v)];});
 	}
 };
+var m_to_list=function(nul,cons,m){
+	var ms=[m];
+	var r=nul;
+	while(ms.length!==0){
+		var m=ms.pop();
+		ms.push(m[0]);
+		ms.push(m[3]);
+		r=cons(m[1],m[2],r);
+	}
+	return r;
+};
 
 var t_count=0;
 var t_gen=function(){
