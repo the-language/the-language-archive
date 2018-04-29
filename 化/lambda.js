@@ -59,4 +59,17 @@ var d_set=function(d1,d2){
 var d_is=function(t,d){
 	return d[0]===t;
 };
+
+var unjust=function(x){
+	var d=x;
+	var ds=[];
+	while(d_is(t_just,d)){
+		ds.push(d);
+		d=d_x(d);
+	}
+	for(var i=0;i<ds.length;i++){
+		d_remake(ds[i],t_just,d);
+	}
+	return d;
+};
 //WIP
