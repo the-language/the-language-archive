@@ -1,10 +1,3 @@
-語
-==
-Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
-
-化
---
-[HTML](DOC/lambda.html)
 # 語
 
 zaoqi

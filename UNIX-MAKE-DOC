@@ -7,13 +7,20 @@ rm -fr "$doc"
 mkdir "$doc" || exit
 
 lambda="$r"/化/述.scrbl
-
-racket_scribble() {
-scribble --dest "$doc" "$@"
-}
-
-scribble --html --dest "$doc" lambda.html $lambda &
-
-scribble --markdown --dest-name README.md $d &
+scribble --dest "$doc" --html --dest-name lambda.html $lambda &
+scribble --dest "$doc" --markdown --dest-name lambda.md $lambda &
+md_lambda="$doc"/lambda.md
+html_lambda="$doc"/lambda.html
 
 wait
+
+cat > "$r"/README.md <<EOF
+語
+==
+Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
+
+化
+--
+[HTML](DOC/lambda.html)
+$(cat "$md_lambda")
+EOF
