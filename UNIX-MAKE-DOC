@@ -3,14 +3,31 @@ cd $(dirname $0)
 r="$PWD"
 
 doc="$r"/DOC
+doc_html="$doc"/html
+doc_markdown="$doc"
+doc_tex="$doc"
 rm -fr "$doc"
 mkdir "$doc" || exit
+mkdir "$doc_html" || exit
 
-lambda="$r"/化/述.scrbl
-scribble --dest "$doc" --html --dest-name lambda.html $lambda &
-scribble --dest "$doc" --markdown --dest-name lambda.md $lambda &
-md_lambda="$doc"/lambda.md
-html_lambda="$doc"/lambda.html
+doc_scrbl() {
+n="$1"
+f="$2"
+scribble --dest "$doc_html" --html --dest-name "$n".html "$f" &
+scribble --dest "$doc_markdown" --markdown --dest-name "$n".md "$f" &
+scribble --dest "$doc_tex" --latex --dest-name "$n".tex "$f" &
+}
+md() {
+cat "$doc_markdown"/"$1".md
+}
+html() {
+cat "$doc_html"/"$1".html
+}
+tex() {
+cat "$doc_tex"/"$1".tex
+}
+
+doc_scrbl lambda "$r"/化/述.scrbl
 
 wait
 
@@ -21,6 +38,6 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
 化
 --
-[HTML](DOC/lambda.html)
-$(cat "$md_lambda")
+[HTML](DOC/html/lambda.html)
+$(md lambda)
 EOF

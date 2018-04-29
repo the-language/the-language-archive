@@ -4,7 +4,7 @@ Copyright (C) 2014-2018  Zaoqi <zaomir@outlook.com>
 
 化
 --
-[HTML](DOC/lambda.html)
+[HTML](DOC/html/lambda.html)
 # 語
 
 zaoqi
@@ -19,7 +19,7 @@ zaoqi
 (#%式 式 甲 ...)
 ```
 
-等價與使用`:機.用`和\[WIP\]。使用一個`引機？式`。可以寫作`{式 甲 ...}`。
+等價與使用`:機.用`和`→:式-1`。使用一個`引機？式`。可以寫作`{式 甲 ...}`。
 
 ```racket
 (#%頂 名)
