@@ -1,0 +1,19 @@
+#!/bin/sh
+cd $(dirname $0)
+r="$PWD"
+
+doc="$r"/DOC
+rm -fr "$doc"
+mkdir "$doc" || exit
+
+lambda="$r"/化/述.scrbl
+
+racket_scribble() {
+scribble --dest "$doc" "$@"
+}
+
+scribble --html --dest "$doc" lambda.html $lambda &
+
+scribble --markdown --dest-name README.md $d &
+
+wait
