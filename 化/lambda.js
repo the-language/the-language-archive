@@ -63,9 +63,11 @@ var m_to_list=function(nul,cons,m){
 	var r=nul;
 	while(ms.length!==0){
 		var m=ms.pop();
-		ms.push(m[0]);
-		ms.push(m[3]);
-		r=cons(m[1],m[2],r);
+		if(null!==m){
+			ms.push(m[0]);
+			ms.push(m[3]);
+			r=cons(m[1],m[2],r);
+		}
 	}
 	return r;
 };
