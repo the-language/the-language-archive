@@ -14,6 +14,7 @@
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+var d_eval;
 var d_eq;
 var d_lt;
 var d_gt;
@@ -118,12 +119,19 @@ var d_is=function(t,d){
 	return d[0]===t;
 };
 
-var unjust=function(x){
+var d_force=function(x){
 	var d=x;
 	var ds=[];
-	while(d_is(t_just,d)){
-		ds.push(d);
-		d=d_x(d);
+	while(true){
+		if(d_is(t_just,d)){
+			ds.push(d);
+			d=d_x(d);
+		}else if(d_is(t_eval,d)){
+			ds.push(d);
+			d=d_eval(d_x(d),d_y(d));
+		}else{
+			break;
+		}
 	}
 	for(var i=0;i<ds.length;i++){
 		d_remake(ds[i],t_just,d);
