@@ -33,14 +33,20 @@ var d_cp=function(x,y,lt,eq,gt){
 //2 v
 //3 r
 var m_get;
-m_get=function(m,k,no){
+m_get=function(m,k,have,not){
 	if(null===m){
-		return no();
+		return not();
 	}else{
 		return d_cp(k,m[1],function(){return m_get(m[0],k,no);},
-			function(){return m[2];},
+			function(){return have(m[2]);},
 			function(){return m_get(m[3],k,no);});
 	}
+};
+var m_get_with_default=function(m,k,defa){
+	return m_get(m,k,function(x){return x;},function(){return defa;});
+};
+var m_has=function(m,k){
+	return m_get(m,k,function(x){return true;},function(){return false;});
 };
 var m_set;
 m_set=function(m,k,v){
