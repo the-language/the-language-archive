@@ -3,12 +3,16 @@ cd $(dirname $0)
 r="$PWD"
 
 doc="$r"/DOC
-doc_html="$doc"/html
+doc_html="$r"/docs
 doc_markdown="$doc"
 doc_tex="$doc"
 rm -fr "$doc"
 mkdir "$doc" || exit
+
+doc_html_cname="$(cat $doc_html/CNAME)"
+rm -fr "$doc_html"
 mkdir "$doc_html" || exit
+echo "$doc_html_cname" > "$doc_html"/CNAME
 
 doc_scrbl() {
 n="$1"
@@ -55,3 +59,5 @@ cat > "$r"/README.md <<EOF
 [HTML](DOC/html/lambda.html)
 $(md lambda)
 EOF
+
+cp "$doc_html"/lambda.html "$doc_html"/index.html
