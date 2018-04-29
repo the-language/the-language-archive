@@ -890,7 +890,7 @@
 \hbox{\mbox{\hphantom{\Scribtexttt{xx}}}\RktVar{{\hbox{\texttt{:}}}物}\mbox{\hphantom{\Scribtexttt{x}}}:\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{{\hbox{\texttt{:}}}機？}} \\
 \hbox{\mbox{\hphantom{\Scribtexttt{xx}}}\RktVar{形}\mbox{\hphantom{\Scribtexttt{x}}}:\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{{\hbox{\texttt{:}}}物？}}\end{bigtabular}\end{SVInsetFlow}
 
-\noindent 如果\RktVar{形}和\RktVar{{\hbox{\texttt{:}}}物}不能匹配，這個\RktSym{誤？}是\RktVar{形}產生的。
+\noindent 如果\RktVar{形}和\RktVar{{\hbox{\texttt{:}}}物}不能匹配，這個\RktSym{{\hbox{\texttt{:}}}誤}是\RktVar{形}產生的。
 
 \Ssubsubsection{式}{式}\label{t:x28part_x22x5f0fx22x29}
 
@@ -984,6 +984,31 @@
 \RktPn{(}\label{t:x28def_x28x28lib_x22langx2fmainx2erktx22x29_x2192x3ax8aa4x2d1x29x29}\RktSym{\RktSymDef{$\rightarrow${\hbox{\texttt{:}}}誤{-}1}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVar{{\hbox{\texttt{:}}}物}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}$\rightarrow$\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{{\hbox{\texttt{:}}}物？}\end{Subflow} \end{minipage}
  \\
 \hbox{\mbox{\hphantom{\Scribtexttt{xx}}}\RktVar{{\hbox{\texttt{:}}}物}\mbox{\hphantom{\Scribtexttt{x}}}:\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{{\hbox{\texttt{:}}}誤？}}\end{bigtabular}\end{SVInsetFlow}
+
+\sectionNewpage
+
+\Ssection{誤}{誤}\label{t:x28part_x22x8aa4x22x29}
+
+
+
+\Ssubsection{無}{無}\label{t:x28part_x22x7121x22x29}
+
+替換：在進行0或更多次替換後，可以把沒有結果（需要無限的時間的）的任意個\RktSym{{\hbox{\texttt{:}}}物}替換爲\RktPn{(}\RktSym{$\rightarrow${\hbox{\texttt{:}}}誤}\Scribtexttt{ }\RktPn{(}\RktSym{\mbox{{-}{\Stttextmore}}{\hbox{\texttt{:}}}構}\Scribtexttt{ }\RktPn{{\char`\{}}\RktSym{引}\Scribtexttt{ }\RktSym{誤/界/無}\RktPn{{\char`\}}}\Scribtexttt{ }\RktSym{{\Stttextless}未定義{\Stttextmore}}\RktPn{)}\RktPn{)}，\RktSym{{\Stttextless}未定義{\Stttextmore}}是任意的\RktSym{{\hbox{\texttt{:}}}物}。
+
+實現應該儘量避免無限的運行下去。
+
+實現應該儘量避免無用的替換。
+
+\Ssubsection{機}{機}\label{t:x28part_x22x6a5fx22x29}
+
+內置的任何\RktSym{{\hbox{\texttt{:}}}機}產生的\RktSym{{\hbox{\texttt{:}}}誤}是\RktPn{(}\RktSym{$\rightarrow${\hbox{\texttt{:}}}誤}\Scribtexttt{ }\RktPn{(}\RktSym{\mbox{{-}{\Stttextmore}}{\hbox{\texttt{:}}}構}\Scribtexttt{ }\RktPn{{\char`\{}}\RktSym{引}\Scribtexttt{ }\RktSym{誤/界/機}\RktPn{{\char`\}}}\Scribtexttt{ }\RktPn{(}\RktPn{(}\RktSym{$\rightarrow${\hbox{\texttt{:}}}機}\Scribtexttt{ }\RktVal{{\textquotesingle}}\RktVal{(}\RktVal{{\hbox{\texttt{:}}}列}\RktVal{)}\Scribtexttt{ }\RktVal{{\textquotesingle}}\RktVal{{\hbox{\texttt{:}}}列}\RktPn{)}\Scribtexttt{ }\RktSym{{\Stttextless}{\hbox{\texttt{:}}}名{\Stttextmore}}\Scribtexttt{ }\RktSym{{\Stttextless}式{\Stttextmore}}\Scribtexttt{ }\RktSym{{\Stttextless}位{\hbox{\texttt{:}}}名{\Stttextmore}}\RktPn{)}\RktPn{)}\RktPn{)}，
+\RktSym{{\Stttextless}{\hbox{\texttt{:}}}名{\Stttextmore}}是它的名稱，\RktSym{{\Stttextless}式{\Stttextmore}}是它的參數，\RktSym{{\Stttextless}位{\hbox{\texttt{:}}}名{\Stttextmore}}是產生\RktSym{{\hbox{\texttt{:}}}誤}的參數的名稱。
+
+\sectionNewpage
+
+\Ssection{類Racket語法}{類Racket語法}\label{t:x28part_x22x985eRacketx8a9ex6cd5x22x29}
+
+每個vector和symbol會被轉換爲一個\RktSym{{\hbox{\texttt{:}}}名}。
 
 WIP
 
