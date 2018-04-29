@@ -14,6 +14,45 @@
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+var d_eq;
+var d_lt;
+var d_gt;
+var d_cp=function(x,y,lt,eq,gt){
+	if(d_eq(x,y)){
+		return eq();
+	}else if(d_lt(x,y)){
+		return lt();
+	}else{
+		return gt();
+	}
+};
+
+//m [l,k,v,r]
+//0 l
+//1 k
+//2 v
+//3 r
+var m_get;
+m_get=function(m,k,no){
+	if(null===m){
+		return no();
+	}else{
+		return d_cp(k,m[1],function(){return m_get(m[0],k,no);},
+			function(){return m[2];},
+			function(){return m_get(m[3],k,no);});
+	}
+};
+var m_set;
+m_set=function(m,k,v){
+	if(null===m){
+		return [null,k,v,null];
+	}else{
+		return d_cp(k,m[1],function(){return [m_set(m[0],k,v),m[1],m[2],m[3]];},
+			function(){return [m[0],k,v,m[3]];},
+			function(){return [m[0],m[1],m[2],m_set(m[3],k,v)];});
+	}
+};
+
 var t_count=0;
 var t_gen=function(){
 	var r=t_count;
