@@ -34,8 +34,8 @@
 {define 表.取 hash-ref}
 
 {struct 集 (:表)}
-;{define :集？ lazy-set?}
-;{define 空:集 (make-immutable-lazy-set '())}
+{define :集？ 集?}
+{define 空:集 (集 空:表)}
 ;{define 集.增 set-add}
 ;{define 集.含？ set-member?}
 ;{define 集.删 set-remove}
