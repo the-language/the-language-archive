@@ -4,6 +4,7 @@
  陰 陽 陰-陽.若
  :列/連？ →列/連 列/連.首 列/連.尾 其:列/空
  :名/文？ →名/構 :名/構？ 名/構.:名 名/構.:列
+ :化？ →化 #%化.內 #%→化/內 化.形 化.:物
  }
 {define 等？ equal?}
 
@@ -28,3 +29,11 @@
 {define 表.增 hash-set}
 {define 表.改 hash-update}
 {define 表.取 hash-ref}
+
+{struct 化 (內 形 :物)}
+{define :化？ 化?}
+{define (→化 形 :物) (化 #f 形 :物)}
+{define #%化.內 化-內}
+{define #%→化/內 化}
+{define 化.形 化-形}
+{define 化.:物 化-:物}
