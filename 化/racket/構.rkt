@@ -33,6 +33,14 @@
 {define 表.改 hash-update}
 {define 表.取 hash-ref}
 
+{struct 集 (:表)}
+;{define :集？ lazy-set?}
+;{define 空:集 (make-immutable-lazy-set '())}
+;{define 集.增 set-add}
+;{define 集.含？ set-member?}
+;{define 集.删 set-remove}
+;{define 集→列 set->list}
+
 {struct 化 (內 形 :物)}
 {define :化？ 化?}
 {define (→化 形 :物) (化 #f 形 :物)}
