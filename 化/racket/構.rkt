@@ -24,7 +24,7 @@
 {define 其:列/空 '()}
 
 {define :名/文？ symbol?}
-{struct →名/構 (:名 :列)}
+{struct →名/構 (:名 :列) #:transparent}
 {define :名/構？ →名/構?}
 {define 名/構.:名 →名/構-:名}
 {define 名/構.:列 →名/構-:列}
@@ -46,7 +46,7 @@
 {define (集.删 :集 :物) (集 (表.删 (集-:表 :集) :物))}
 {define (集→列 :集) (map 列/連.首 (表→列 (集-:表 :集)))}
 
-{struct 化 (內 形 :物)}
+{struct 化 (內 形 :物) #:transparent}
 {define :化？ 化?}
 {define (→化 形 :物) (化 #f 形 :物)}
 {define #%化.內 化-內}
@@ -54,15 +54,15 @@
 {define 化.形 化-形}
 {define 化.:物 化-:物}
 
-{struct →式 (:物)}
+{struct →式 (:物) #:transparent}
 {define :式？ →式?}
 {define →式-1 →式-:物}
 
-{struct →構 (:名 :列)}
+{struct →構 (:名 :列) #:transparent}
 {define →構？ →構?}
 {define 構.:名 →構-:名}
 {define 構.:列 →構-:列}
 
-{struct →誤 (:物)}
+{struct →誤 (:物) #:transparent}
 {define :誤？ →誤?}
 {define →誤-1 →誤-:物}
