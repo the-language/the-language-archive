@@ -1,5 +1,6 @@
 #lang lazy
 {require (file "cons.rkt")}
+{require (file "名.rkt")}
 
 {define WIP "WIP"}
 

@@ -5,9 +5,11 @@
 {define (symbol→名 sym) (list→名 (string->list (symbol->string sym)))}
 {define list→名
   {match-lambda
-    [(list #\# #\% 甲 ...) (→名/構 '式 (list (list→名 甲)))]
-    [(list 甲 ... #\: 乙 ...) (→名/構 '一 (list (list→type 乙) (list→名 甲)))]
-    [(list #\: 甲 ...) (→名/構 '一 (list (list→type 甲)))]
+    [(list #\# #\% 甲 ..1) (→名/構 '式 (list (list→名 甲)))]
+    [(list 甲 ..1 #\: 乙 ..1) (→名/構 '一 (list (list→type 乙) (list→名 甲)))]
+    [(list #\: 甲 ..1) (→名/構 '一 (list (list→type 甲)))]
+    [(list 甲 ..1 #\→ 乙 ..1) ("WIP" (list→type 甲) (list→type 乙))]
+    [(list #\→ 乙 ..1) ("WIP" (list→type 乙))]
     }}
 {define list→type
   {match-lambda
