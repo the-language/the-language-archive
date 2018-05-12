@@ -15,5 +15,6 @@
     }}
 {define list→type
   {match-lambda
+    [(list #\陰) (→構 (→名/構 '子 (list '類 '陰)) '())]
     }}
 {define-syntax-rule {引 x} (symbol→名 'x)}
