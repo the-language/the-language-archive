@@ -9,7 +9,7 @@
     [(list 甲 ..1 #\: 乙 ..1) (→名/構 '一 (list (list→type 乙) (list→名 甲)))]
     [(list #\: 甲 ..1) (→名/構 '一 (list (list→type 甲)))]
     [(list 甲 ..1 #\→ 乙 ..1) ("WIP" (list→type 甲) (list→type 乙))]
-    [(list #\→ 乙 ..1) ("WIP" (list→type 乙))]
+    [(list #\→ 甲 ..1) ("WIP" (list→type 甲))]
     }}
 {define list→type
   {match-lambda
