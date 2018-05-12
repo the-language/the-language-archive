@@ -30,7 +30,7 @@
 {define 名/構.:列 →名/構-:列}
 
 {define :表？ hash?}
-{define 空:表 (hash)}
+{define 空:表 (make-immutable-hash)}
 {define 表.增 hash-set}
 {define 表.改 hash-update}
 {define 表.取 hash-ref}
@@ -38,7 +38,7 @@
 {define 表.删 hash-remove}
 {define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (hash->list :表))}
 
-{struct 集 (:表)}
+{struct 集 (:表) #:transparent}
 {define :集？ 集?}
 {define 空:集 (集 空:表)}
 {define (集.增 :集 :物) (集 (表.增 (集-:表 :集) :物 #t))}
