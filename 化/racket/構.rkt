@@ -12,6 +12,7 @@
  →誤 :誤？ →誤-1
 
  :名？
+ 引
  }
 {define 等？ equal?}
 
@@ -70,3 +71,5 @@
 {define →誤-1 →誤-:物}
 
 {define (:名？ :物) (or (:名/文？ :物) (:名/構？ :物))}
+
+{define-syntax-rule {引 x} "WIP"}
