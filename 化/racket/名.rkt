@@ -3,6 +3,7 @@
 {provide 引}
 
 {define 其:type (→構 (→名/構 '子 '(類 其)) '())}
+{define 化類名 (→名/構 '子 '(類 化))}
 {define (symbol→名 sym) (list→名 (string->list (symbol->string sym)))}
 {define list→名
   {match-lambda
@@ -10,10 +11,14 @@
     [(list 甲 ..1 (or #\？ #\?)) "WIP"]
     [(list 甲 ..1 #\: 乙 ..1) (→名/構 '一 (list (list→type 乙) (list→名 甲)))]
     [(list #\: 甲 ..1) (→名/構 '一 (list (list→type 甲)))]
-    [(or (list 甲 ..1 #\→ 乙 ..1) (list 甲 ..1 #\- #\> 乙 ..1)) ("WIP" (list→type 甲) (list→type 乙))]
-    [(or (list #\→ 甲 ..1) (list #\- #\> 甲 ..1)) (→名/構 '一 (list
-                                                          (→構 (→名/構 '子 '(類 化)) (list 其:type (list→type 甲)))
-                                                          '其))]
+    [(or (list 甲 ..1 #\→ 乙 ..1) (list 甲 ..1 #\- #\> 乙 ..1))
+     (→名/構 '一 (list
+               (→構 化類名 (list (list→type 甲) (list→type 乙)))
+               '其))]
+    [(or (list #\→ 甲 ..1) (list #\- #\> 甲 ..1))
+     (→名/構 '一 (list
+               (→構 化類名 (list 其:type (list→type 甲)))
+               '其))]
     [(or (list 甲 ..1 #\→) (list 甲 ..1 #\- #\>)) ("WIP" (list→type 甲))]
     [甲 (string->symbol (list->string 甲))]
     }}
@@ -30,7 +35,7 @@
      {define 物 (→構 (→名/構 '子 '(類 物)) '())}
      {define 表 (→構 (→名/構 '子 '(類 表)) 二其)}
      {define 集 (→構 (→名/構 '子 '(類 表)) 一其)}
-     {define 化 (→構 (→名/構 '子 '(類 化)) 二其)}
+     {define 化 (→構 化類名 二其)}
      {define 式 (→構 (→名/構 '子 '(類 式)) 一其)}
      {define 構 (→構 (→名/構 '子 '(類 構)) 二其)}
      {define 誤 (→構 (→名/構 '子 '(類 誤)) 一其)}
