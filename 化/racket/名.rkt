@@ -15,7 +15,7 @@
     }}
 {define list→type
   ({λ ()
-     {define 其 (→構 (→名/構 '子 '(類 其) '()))}
+     {define 其 (→構 (→名/構 '子 '(類 其)) '())}
      {define 二其 (list 其 其)}
      {define 一其 (list 其)}
      {define 陰 (→構 (→名/構 '子 '(類 陰)) '())}
