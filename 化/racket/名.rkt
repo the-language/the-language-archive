@@ -12,6 +12,7 @@
     [(or (list 甲 ..1 #\→ 乙 ..1) (list 甲 ..1 #\- #\> 乙 ..1)) ("WIP" (list→type 甲) (list→type 乙))]
     [(or (list #\→ 甲 ..1) (list #\- #\> 甲 ..1)) ("WIP" (list→type 甲))]
     [(or (list 甲 ..1 #\→) (list 甲 ..1 #\- #\>)) ("WIP" (list→type 甲))]
+    [甲 (string->symbol (list->string 甲))]
     }}
 {define list→type
   ({λ ()
