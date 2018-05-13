@@ -12,7 +12,7 @@
     [(list #\: 甲 ..1) (→名/構 '一 (list (list→type 甲)))]
     [(or (list 甲 ..1 #\→ 乙 ..1) (list 甲 ..1 #\- #\> 乙 ..1)) ("WIP" (list→type 甲) (list→type 乙))]
     [(or (list #\→ 甲 ..1) (list #\- #\> 甲 ..1)) (→名/構 '一 (list
-                                                          (→構 (→名/構 '子 '(類 化)) (list (→列/連 (list→type 甲) 其:type) 其:type))
+                                                          (→構 (→名/構 '子 '(類 化)) (list 其:type (list→type 甲)))
                                                           '其))]
     [(or (list 甲 ..1 #\→) (list 甲 ..1 #\- #\>)) ("WIP" (list→type 甲))]
     [甲 (string->symbol (list->string 甲))]
