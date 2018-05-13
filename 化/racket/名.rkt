@@ -46,6 +46,7 @@
          ['(#\式) 式]
          ['(#\構) 構]
          ['(#\誤) 誤]
+         [甲 (→構 (→名/構 '子 '(類 構)) (list (list→名 甲) 其))]
          }}
      list→type})}
 {define-syntax-rule {引 x} (symbol→名 'x)}
