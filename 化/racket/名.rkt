@@ -10,6 +10,8 @@
 {define list→名
   {match-lambda
     [(list #\# #\% 甲 ..1) (→名/構 '式 (list (list→名 甲)))]
+    [(list 類 ..1 #\. 名 ..1 (or #\？ #\?)) "WIP"]
+    [(list 類 ..1 #\. 名 ..1) "WIP"]
     [(list 甲 ..1 (or #\？ #\?)) "WIP"]
     [(list 甲 ..1 #\: 乙 ..1) (→名/構 '一 (list (list→type 乙) (list→名 甲)))]
     [(list #\: 甲 ..1) (→名/構 '一 (list (list→type 甲)))]
