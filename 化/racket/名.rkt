@@ -5,7 +5,7 @@
 {define 其:type (→構 (→名/構 '子 '(類 其)) '())}
 {define 化:類名 (→名/構 '子 '(類 化))}
 {define 連:類名 (→名/構 '子 '(類 列 連))}
-     {define 空:類 (→構 (→名/構 '子 '(類 列 空)) '())}
+{define 空:類 (→構 (→名/構 '子 '(類 列 空)) '())}
 {define (symbol→名 sym) (list→名 (string->list (symbol->string sym)))}
 {define list→名
   {match-lambda
