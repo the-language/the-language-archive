@@ -1,4 +1,20 @@
 #lang lazy
+{require racket/dict}
+{define-custom-hash-types hash-lazy equal?}
+;{define (memroize1/forever f)
+;  {let ([h (make-mutable-hash-lazy)])
+;    {λ (x)
+;      (dict-ref! h x {λ () (f x)})}}}
+;{define (memroize*/forever f)
+;  {let ([h (make-mutable-hash-lazy)])
+;    {λ xs
+;      (dict-ref! h xs {λ () (apply f xs)})}}}
+;{define-syntax-rule {define/memroize1/forever (f x) v} {define f (memroize1/forever {λ (x) v})}}
+{define-syntax-rule {define/memroize*/forever (f x ...) v}
+  {define f
+    {let ([h (make-mutable-hash-lazy)])
+      {λ (x ...)
+        (dict-ref! h `(,x ...) {λ () v})}}}}
 {provide
  等？
  陰 陽 陰-陽.若
@@ -26,19 +42,20 @@
 {define 其:列/空 '()}
 
 {define :名/文？ symbol?}
-{struct →名/構 (:名 :列) #:transparent}
-{define :名/構？ →名/構?}
-{define 名/構.:名 →名/構-:名}
-{define 名/構.:列 →名/構-:列}
+{struct 名/構 (:名 :列) #:transparent}
+{define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
+{define :名/構？ 名/構?}
+{define 名/構.:名 名/構-:名}
+{define 名/構.:列 名/構-:列}
 
-{define :表？ hash?}
-{define 空:表 (make-immutable-hash)}
-{define 表.增 hash-set}
-{define 表.改 hash-update}
-{define 表.取 hash-ref}
-{define 表.含？ hash-has-key?}
-{define 表.删 hash-remove}
-{define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (hash->list :表))}
+{define :表？ immutable-hash-lazy?}
+{define 空:表 (make-immutable-hash-lazy)}
+{define 表.增 dict-set}
+{define 表.改 dict-update}
+{define 表.取 dict-ref}
+{define 表.含？ dict-has-key?}
+{define 表.删 dict-remove}
+{define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (dict->list :表))}
 
 {struct 集 (:表) #:transparent}
 {define :集？ 集?}
