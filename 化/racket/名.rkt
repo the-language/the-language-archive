@@ -23,7 +23,10 @@
      (→名/構 '一 (list
                (→構 化:類名 (list 其:type (list→type 甲)))
                '其))]
-    [(or (list 甲 ..1 #\→) (list 甲 ..1 #\- #\>)) ("WIP" (list→type 甲))]
+    [(or (list 甲 ..1 #\→) (list 甲 ..1 #\- #\>))
+     (→名/構 '一 (list
+               (→構 化:類名 (list (→構 連:類名 (list (list→type 甲) 空:類)) 其:type))
+               '其))]
     [甲 (string->symbol (list->string 甲))]
     }}
 {define list→type
