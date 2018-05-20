@@ -1,5 +1,5 @@
-#lang lazy
-{require racket/dict}
+#lang racket
+{require (only-in lazy [if lazy-if] equal?)}
 {define-custom-hash-types hash-lazy equal?}
 ;{define (memroize1/forever f)
 ;  {let ([h (make-mutable-hash-lazy)])
@@ -33,7 +33,7 @@
 
 {define 陰 #f}
 {define 陽 #t}
-{define 陰-陽.若 if}
+{define 陰-陽.若 lazy-if}
 
 {define :列/連？ pair?}
 {define →列/連 cons}
