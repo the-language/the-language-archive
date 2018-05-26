@@ -60,7 +60,8 @@
 
 {define :名/文？ symbol?}
 {define-rec :名/構？ (名/構 名/構.:名 名/構.:列)}
-{define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
+;{define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
+{define →名/構 名/構}
 
 {define-rec :表？ (S表 S表→)}
 ;{define 空:表 (S表 (make-immutable-hash-lazy))}
