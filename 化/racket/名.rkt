@@ -1,7 +1,7 @@
 #lang lazy
 {require (file "cons.rkt")}
 
-{define (子 甲 乙) (→名/構 '子 `(,甲 ，乙))}
+{define (子 甲 乙) (→名/構 '子 `(,甲 ,乙))}
 {define (一 . xs) (→名/構 '一 xs)}
 
 {define 物:類

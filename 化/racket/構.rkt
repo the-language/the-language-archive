@@ -63,7 +63,8 @@
 {define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
 
 {define-rec :表？ (S表 S表→)}
-{define 空:表 (S表 (make-immutable-hash-lazy))}
+;{define 空:表 (S表 (make-immutable-hash-lazy))}
+{define 空:表 (S表 '())}
 {define (表.增 :表 名 :物) (S表 (dict-set (S表→ :表) 名 :物))}
 {define (表.改 :表 名 :化) (S表 (dict-update (S表→ :表) 名 :化))}
 {define (表.取 :表 名) (dict-ref (S表→ :表) 名)}
