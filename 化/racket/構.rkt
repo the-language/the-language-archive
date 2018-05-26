@@ -40,9 +40,9 @@
  :表？ 空:表 表.增 表.改 表.取 表.含？ 表.删 表→列
  :集？ 空:集 集.增 集.含？ 集.删 集→列 集
  :化？ →化 #%化.內 #%→化/內 化.形 化.:物
- →式 :式？ →式-1
+ →式 :式？ 式→
  →構 :構？ 構.:名 構.:列
- →誤 :誤？ →誤-1
+ →誤 :誤？ 誤→
 
  :名？
  }
@@ -62,14 +62,14 @@
 {define-rec :名/構？ (名/構 名/構.:名 名/構.:列)}
 {define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
 
-{define :表？ immutable-hash-lazy?}
-{define 空:表 (make-immutable-hash-lazy)}
-{define 表.增 dict-set}
-{define 表.改 dict-update}
-{define 表.取 dict-ref}
-{define 表.含？ dict-has-key?}
-{define 表.删 dict-remove}
-{define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (dict->list :表))}
+{define-rec :表？ (S表 S表→)}
+{define 空:表 (S表 (make-immutable-hash-lazy))}
+{define (表.增 :表 名 :物) (S表 (dict-set (S表→ :表) 名 :物))}
+{define (表.改 :表 名 :化) (S表 (dict-update (S表→ :表) 名 :化))}
+{define (表.取 :表 名) (dict-ref (S表→ :表) 名)}
+{define (表.含？ :表 名) (dict-has-key? (S表→ :表) 名)}
+{define (表.删 :表 名) (dict-remove (S表→ :表) 名)}
+{define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (dict->list (S表→ :表)))}
 
 {define-rec :集？ (S集 S集-:表)}
 {define 空:集 (S集 空:表)}
@@ -86,8 +86,8 @@
 {define (→化 形 :物) (化 #f 形 :物)}
 {define #%→化/內 化}
 
-{define-rec :式？ (→式 →式-1)}
+{define-rec :式？ (→式 式→)}
 {define-rec :構？ (→構 構.:名 構.:列)}
-{define-rec :誤？ (→誤 →誤-1)}
+{define-rec :誤？ (→誤 誤→)}
 
 {define (:名？ :物) (or (:名/文？ :物) (:名/構？ :物))}
