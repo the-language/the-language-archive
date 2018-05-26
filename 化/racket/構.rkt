@@ -41,7 +41,7 @@
  :集？ 空:集 集.增 集.含？ 集.删 集→列 集
  :化？ →化 #%化.內 #%→化/內 化.形 化.:物
  →式 :式？ →式-1
- →構 →構？ 構.:名 構.:列
+ →構 :構？ 構.:名 構.:列
  →誤 :誤？ →誤-1
 
  :名？
@@ -59,11 +59,8 @@
 {define 其:列/空 '()}
 
 {define :名/文？ symbol?}
-{struct 名/構 (:名 :列) #:transparent}
+{define-rec :名/構？ (名/構 名/構.:名 名/構.:列)}
 {define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
-{define :名/構？ 名/構?}
-{define 名/構.:名 名/構-:名}
-{define 名/構.:列 名/構-:列}
 
 {define :表？ immutable-hash-lazy?}
 {define 空:表 (make-immutable-hash-lazy)}
@@ -74,8 +71,7 @@
 {define 表.删 dict-remove}
 {define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (dict->list :表))}
 
-{struct S集 (:表) #:transparent}
-{define :集？ S集?}
+{define-rec :集？ (S集 S集-:表)}
 {define 空:集 (S集 空:表)}
 {define (集.增 :集 :物) (S集 (表.增 (S集-:表 :集) :物 #t))}
 {define (集.含？ :集 :物) (表.含？ (S集-:表 :集) :物)}
@@ -86,25 +82,12 @@
       空:集
       (集.增 (apply 集 (cdr xs)) (car xs)))}
 
-{struct 化 (內 形 :物) #:transparent}
-{define :化？ 化?}
+{define-rec :化？ (化 #%化.內 化.形 化.:物)}
 {define (→化 形 :物) (化 #f 形 :物)}
-{define #%化.內 化-內}
 {define #%→化/內 化}
-{define 化.形 化-形}
-{define 化.:物 化-:物}
 
-{struct →式 (:物) #:transparent}
-{define :式？ →式?}
-{define →式-1 →式-:物}
-
-{struct →構 (:名 :列) #:transparent}
-{define →構？ →構?}
-{define 構.:名 →構-:名}
-{define 構.:列 →構-:列}
-
-{struct →誤 (:物) #:transparent}
-{define :誤？ →誤?}
-{define →誤-1 →誤-:物}
+{define-rec :式？ (→式 →式-1)}
+{define-rec :構？ (→構 構.:名 構.:列)}
+{define-rec :誤？ (→誤 →誤-1)}
 
 {define (:名？ :物) (or (:名/文？ :物) (:名/構？ :物))}
