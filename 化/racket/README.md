@@ -1,3 +1,1 @@
-lang
-====
-README text here.
+../README.md
