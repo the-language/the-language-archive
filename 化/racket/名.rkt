@@ -10,10 +10,13 @@
 {define (引 甲) (列.建+ #%式 #%頂-!引 甲)}
 {define (S 甲) (string->symbol (list->string 甲))}
 
+{define (symbol->未算 s) (string->未算 (symbol->string s))}
+{define (string->未算 s) (list->未算 (string->list s))}
 {define list->未算
   {match-lambda
     [(list #\# #\% 甲 ...) (名.構.建+ '式 `(,(list->未算 甲)))]
     [(list 甲 ... #\. (and 乙 (not #\.)) ...) (列.建+ #%頂-之+ (list->未算 甲) (引 (S 乙)))]
+    [(list (or #\? #\？)) '乎]
     ['WIP 'WIP]
     [甲 (S 甲)]
     }}
