@@ -1,4 +1,10 @@
 #lang racket
+{provide
+ 等？
+ <陰，陽>.？ <陰，陽>.陰.？ <陰，陽>.陰.其 <陰，陽>.陽.？ <陰，陽>.陽.其 <陰，陽>.若+
+ 列.？ 列.連.？ 列.連.建+ 列.連.首+ 列.連.尾+ 列.空.？ 列.空.其
+ 名.文.？
+ }
 {module rec racket
   {provide define-rec}
   {define-syntax-rule {define-rec is? (f p ...)}
@@ -18,11 +24,6 @@
   }{require 'rec}
 {require (only-in lazy [if lazy-if] equal?)}
 
-{provide
- 等？
- <陰，陽>.？ <陰，陽>.陰.？ <陰，陽>.陰.其 <陰，陽>.陽.？ <陰，陽>.陽.其 <陰，陽>.若+
- }
-
 {define 等？ equal?}
 
 {define <陰，陽>.？ boolean?}
@@ -31,3 +32,13 @@
 {define (<陰，陽>.陽.？ x) (eq? x #t)}
 {define <陰，陽>.陽.其 #t}
 {define <陰，陽>.若+ lazy-if}
+
+{define (列.？ x) (or (列.連.？ x) (列.空.？ x))}
+{define 列.連.？ pair?}
+{define 列.連.建+ cons}
+{define 列.連.首+ car}
+{define 列.連.尾+ cdr}
+{define 列.空.？ null?}
+{define 列.空.其 '()}
+
+{define 名.文.？ symbol?}
