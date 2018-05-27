@@ -18,7 +18,7 @@
 
 化
 --
-[HTML](DOC/html/lambda.html)
+[HTML](http://xn--2e3a.ml/)
 # 語
 
 zaoqi
