@@ -1,1 +1,3 @@
-../README.md
+lang
+====
+README text here.
