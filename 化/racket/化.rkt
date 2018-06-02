@@ -43,35 +43,34 @@
 
 {define (:S名? 甲) (or (:S名/文? 甲) (:S名/構? 甲))}
 {define :S名/文? symbol?}
-{define-rec :S名/構? (名/構 名/構.:名 名/構.:列)}
-;{define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
-{define ->S名/構 名/構}
+{define-rec :S名/構? (S名/構 S名/構.:S名 S名/構.:S列)}
+;{define/memroize*/forever (→S名/構 :名 :列) (S名/構 :名 :列)}
+{define ->S名/構 S名/構}
 
-{define-rec :表？ (S表 S表→)}
-;{define 空:表 (S表 (make-immutable-hash-lazy))}
-{define 空:表 (S表 '())}
-{define (表.增 :表 名 :物) (S表 (dict-set (S表→ :表) 名 :物))}
-{define (表.改 :表 名 :化) (S表 (dict-update (S表→ :表) 名 :化))}
-{define (表.取 :表 名) (dict-ref (S表→ :表) 名)}
-{define (表.含？ :表 名) (dict-has-key? (S表→ :表) 名)}
-{define (表.删 :表 名) (dict-remove (S表→ :表) 名)}
-{define (表→列 :表) (map {入 (p) (list (car p) (cdr p))} (dict->list (S表→ :表)))}
+{define-rec :S表? (S表 S表->)}
+;{define 空:S表 (S表 (make-immutable-hash-lazy))}
+{define 空:S表 (S表 '())}
+{define (S表.增 :表 名 :物) (S表 (dict-set (S表-> :表) 名 :物))}
+{define (S表.改 :表 名 :化) (S表 (dict-update (S表-> :表) 名 :化))}
+{define (S表.取 :表 名) (dict-ref (S表-> :表) 名)}
+{define (S表.含？ :表 名) (dict-has-key? (S表-> :表) 名)}
+{define (S表.删 :表 名) (dict-remove (S表-> :表) 名)}
+{define (S表->S列 :表) (map {入 (p) (list (car p) (cdr p))} (dict->list (S表-> :表)))}
 
-{define-rec :集？ (S集 S集-:表)}
-{define 空:集 (S集 空:表)}
-{define (集.增 :集 :物) (S集 (表.增 (S集-:表 :集) :物 #t))}
-{define (集.含？ :集 :物) (表.含？ (S集-:表 :集) :物)}
-{define (集.删 :集 :物) (S集 (表.删 (S集-:表 :集) :物))}
-{define (集→列 :集) (map S列/連.首 (表→列 (S集-:表 :集)))}
+{define-rec :S集? (S集 S集->)}
+{define 空:集 (S集 空:S表)}
+{define (S集.增 :集 :物) (S集 (S表.增 (S集-> :集) :物 #t))}
+{define (S集.含？ :集 :物) (S表.含？ (S集-> :集) :物)}
+{define (S集.删 :集 :物) (S集 (S表.删 (S集-> :集) :物))}
+{define (S集->S列 :集) (map S列/連.首 (S表->S列 (S集-> :集)))}
 {define (集 . xs)
   (if (null? xs)
       空:集
-      (集.增 (apply 集 (cdr xs)) (car xs)))}
+      (S集.增 (apply 集 (cdr xs)) (car xs)))}
 
-{define-rec :化？ (化 #%化.內 化.形 化.:物)}
-{define (→化 形 :物) (化 #f 形 :物)}
-{define #%→化/內 化}
+{define-rec :S化? (S化 #%S化.內 S化.形 S化.:S物)}
+{define (->S化 形 :物) (S化 #f 形 :物)}
 
-{define-rec :式？ (→式 式→)}
-{define-rec :構？ (→構 構.:名 構.:列)}
-{define-rec :誤？ (→誤 誤→)}
+{define-rec :S式? (->S式 S式->)}
+{define-rec :S構? (->S構 S構.:S名 S構.:S列)}
+{define-rec :S誤? (->S誤 S誤->)}
