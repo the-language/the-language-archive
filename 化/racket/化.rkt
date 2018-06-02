@@ -41,10 +41,11 @@
 {define :S列/空? null?}
 {define 其:S列/空 '()}
 
-{define :名/文？ symbol?}
-{define-rec :名/構？ (名/構 名/構.:名 名/構.:列)}
+{define (:S名? 甲) (or (:S名/文? 甲) (:S名/構? 甲))}
+{define :S名/文? symbol?}
+{define-rec :S名/構? (名/構 名/構.:名 名/構.:列)}
 ;{define/memroize*/forever (→名/構 :名 :列) (名/構 :名 :列)}
-{define →名/構 名/構}
+{define ->S名/構 名/構}
 
 {define-rec :表？ (S表 S表→)}
 ;{define 空:表 (S表 (make-immutable-hash-lazy))}
@@ -74,5 +75,3 @@
 {define-rec :式？ (→式 式→)}
 {define-rec :構？ (→構 構.:名 構.:列)}
 {define-rec :誤？ (→誤 誤→)}
-
-{define (:名？ :物) (or (:名/文？ :物) (:名/構？ :物))}
