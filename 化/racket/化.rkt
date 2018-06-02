@@ -2,11 +2,13 @@
 ; WIP
 {require racket/dict}
 {define-custom-hash-types hash-lazy equal?}
+
+{define-syntax-rule {入 . xs} {λ . xs}}
 {define-syntax-rule {define/memroize*/forever (f x ...) v}
   {define f
     {let ([h (make-mutable-hash-lazy)])
-      {λ (x ...)
-        (dict-ref! h `(,x ...) {λ () v})}}}}
+      {入 (x ...)
+        (dict-ref! h `(,x ...) {入 () v})}}}}
 {define-syntax-rule {define-rec is? (f p ...)}
   {begin
     {define s (string->symbol (string-append "rec:" (symbol->string 'f)))}
@@ -22,18 +24,22 @@
        {define n2 (+ n 1)}
        {define-rec%%hel is? n2 ps}}]}}
 
-{define 等？ equal?}
+{define 等? equal?}
 
-{define :<集_陰_陽>？ boolean?}
-{define 陰 #f}
-{define 陽 #t}
-{define 陰-陽.若 if}
+{define :<S集_S陰_S陽>? boolean?}
+{define (:S陰? 甲) (等? 甲 其:S陰)}
+{define 其:S陰 #f}
+{define (:S陽? 甲) (等? 甲 其:S陰)}
+{define 其:S陽 #t}
+{define <S集_S陰_S陽>.若 if}
 
-{define :列/連？ pair?}
-{define →列/連 cons}
-{define 列/連.首 car}
-{define 列/連.尾 cdr}
-{define 其:列/空 '()}
+{define (:S列? 甲) (or (:S列/連? 甲) (:S列/空? 甲))}
+{define :S列/連? pair?}
+{define ->S列/連 cons}
+{define S列/連.首 car}
+{define S列/連.尾 cdr}
+{define :S列/空? null?}
+{define 其:S列/空 '()}
 
 {define :名/文？ symbol?}
 {define-rec :名/構？ (名/構 名/構.:名 名/構.:列)}
@@ -48,14 +54,14 @@
 {define (表.取 :表 名) (dict-ref (S表→ :表) 名)}
 {define (表.含？ :表 名) (dict-has-key? (S表→ :表) 名)}
 {define (表.删 :表 名) (dict-remove (S表→ :表) 名)}
-{define (表→列 :表) (map (λ (p) (list (car p) (cdr p))) (dict->list (S表→ :表)))}
+{define (表→列 :表) (map {入 (p) (list (car p) (cdr p))} (dict->list (S表→ :表)))}
 
 {define-rec :集？ (S集 S集-:表)}
 {define 空:集 (S集 空:表)}
 {define (集.增 :集 :物) (S集 (表.增 (S集-:表 :集) :物 #t))}
 {define (集.含？ :集 :物) (表.含？ (S集-:表 :集) :物)}
 {define (集.删 :集 :物) (S集 (表.删 (S集-:表 :集) :物))}
-{define (集→列 :集) (map 列/連.首 (表→列 (S集-:表 :集)))}
+{define (集→列 :集) (map S列/連.首 (表→列 (S集-:表 :集)))}
 {define (集 . xs)
   (if (null? xs)
       空:集
