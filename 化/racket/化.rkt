@@ -1,6 +1,5 @@
 #lang lazy
-; WIP
-{require racket/dict srfi/9}
+{require racket/dict srfi/9 racket/match}
 {define-custom-hash-types hash-lazy equal?}
 
 {define-syntax-rule {入 . xs} {λ . xs}}
@@ -8,7 +7,8 @@
   {define f
     {let ([h (make-mutable-hash-lazy)])
       {入 (x ...)
-        (dict-ref! h `(,x ...) {入 () v})}}}}
+         (dict-ref! h `(,x ...) {入 () v})}}}}
+
 {define-syntax-rule {define-rec is? (f a ...)}
   {define-record-type is?
     (f a ...)
@@ -28,6 +28,10 @@
 ;       {define (p x) (if (is? x) (vector-ref x n) (error))}
 ;       {define n2 (+ n 1)}
 ;       {define-rec%%hel is? n2 ps}}]}}
+
+{define-match-expander 列
+  {syntax-rules ()
+    [(_ . xs) (list . xs)]}}
 
 {define 等? equal?}
 
@@ -79,3 +83,21 @@
 {define-rec :S式? (->S式 S式->)}
 {define-rec :S構? (->S構 S構.:S名 S構.:S列)}
 {define-rec :S誤? (->S誤 S誤->)}
+
+{define symbol->S名
+  ({入 ()
+      {define pre
+        {match-lambda
+          ['() '()]
+          [(列 #\< 甲 ...) (pre%get 1 甲 {入 (a r) (->S列/連 (list-> a) (pre r))})]
+          [(列 (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
+      {define (pre%get n xs c)
+        (<S集_S陰_S陽>.若 (等? n 0)
+                      (c '() xs)
+                      {match xs
+                        [(列 (and #\< 甲) 乙 ...) (pre%get (+ n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
+                        [(列 (and #\> 甲) 乙 ...) (pre%get (- n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
+                        [(列 甲 乙 ...) (pre%get n 乙 {入 (a r) (c (cons 甲 a) r)})]})}
+      {define symbol->S名 'WIP}
+      symbol->S名
+      })}
