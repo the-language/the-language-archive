@@ -95,9 +95,17 @@
         {match xs
           [(list #\< 甲 ...) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
           [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list f (append as (list (Q 甲))) 乙 c)]
-          [(list #\> 甲 ...) (c (f as) xs)]}}
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\> 乙 ...) (c (f (append as (list (Q 甲)))) xs)]}}
 
-      {define ing 'WIP}
-      {define symbol->S名 'WIP}
+      {define ing-name
+        {match-lambda
+          [(list (and (not (? char?)) 甲))
+           {cond
+             [(:S名? 甲) 甲]
+             ['<LL<type 'WIP]
+             [else 'WIP]}]
+          ['WIP 'WIP]
+          [甲 (Q 甲)]}}
+      {define (symbol->S名 s) (ing-name (pre (string->list (symbol->string s))))}
       symbol->S名
       })}
