@@ -86,23 +86,18 @@
       {define pre
         {match-lambda
           ['() '()]
-          [(list #\< 甲 ...) (read-list 甲 {入 (a r) (cons a (pre r))})]
+          [(list #\< 甲 ...) (read-list 甲 {入 (a r) (->S列/連 a (pre r))})]
           [(list (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
       {define (read-list xs c)
-        {match-lambda
+        {match xs
           [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() xs c)]}}
       {define (%read-list f as xs c)
-        {match-lambda
+        {match xs
           [(list #\< 甲 ...) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
           [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list f (append as (list (Q 甲))) 乙 c)]
           [(list #\> 甲 ...) (c (f as) xs)]}}
-      {define (pre%get n xs c)
-        (<S集_S陰_S陽>.若 (等? n 0)
-                      (c '() xs)
-                      {match xs
-                        [(list (and #\< 甲) 乙 ...) (pre%get (+ n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
-                        [(list (and #\> 甲) 乙 ...) (pre%get (- n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
-                        [(list 甲 乙 ...) (pre%get n 乙 {入 (a r) (c (cons 甲 a) r)})]})}
+
+      {define ing 'WIP}
       {define symbol->S名 'WIP}
       symbol->S名
       })}
