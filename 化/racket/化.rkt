@@ -1,5 +1,5 @@
-#lang lazy
-{require racket/dict srfi/9 racket/match}
+#lang racket
+{require racket/dict srfi/9 racket/match (only-in lazy equal? [if lazy-if])}
 {define-custom-hash-types hash-lazy equal?}
 
 {define-syntax-rule {入 . xs} {λ . xs}}
@@ -36,7 +36,7 @@
 {define 其:S陰 #f}
 {define (:S陽? :S物) (等? :S物 其:S陰)}
 {define 其:S陽 #t}
-{define <S集_S陰_S陽>.若 if}
+{define <S集_S陰_S陽>.若 lazy-if}
 
 {define (:S列? :S物) (or (:S列/連? :S物) (:S列/空? :S物))}
 {define :S列/連? pair?}
@@ -90,12 +90,12 @@
           [(list (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
       {define (read-list xs c)
         {match xs
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() xs c)]}}
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() 乙 c)]}}
       {define (%read-list f as xs c)
         {match xs
           [(list #\< 甲 ...) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
           [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list f (append as (list (Q 甲))) 乙 c)]
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\> 乙 ...) (c (f (append as (list (Q 甲)))) xs)]}}
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\> 乙 ...) (c (f (append as (list (Q 甲)))) 乙)]}}
 
       {define ing-name
         {match-lambda
