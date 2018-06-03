@@ -1,6 +1,6 @@
 #lang lazy
 ; WIP
-{require racket/dict}
+{require racket/dict srfi/9}
 {define-custom-hash-types hash-lazy equal?}
 
 {define-syntax-rule {入 . xs} {λ . xs}}
@@ -9,20 +9,25 @@
     {let ([h (make-mutable-hash-lazy)])
       {入 (x ...)
         (dict-ref! h `(,x ...) {入 () v})}}}}
-{define-syntax-rule {define-rec is? (f p ...)}
-  {begin
-    {define s (string->symbol (string-append "rec:" (symbol->string 'f)))}
-    {define (f p ...) `#(,s ,p ...)}
-    {define (is? x) (and (vector? x) (< 0 (vector-length x)) (eq? (vector-ref x 0) s))}
-    {define-rec%%hel is? 1 (p ...)}}}
-{define-syntax define-rec%%hel
-  {syntax-rules ()
-    [(_ is? n (p)) {define (p x) (if (is? x) (vector-ref x n) (error))}]
-    [(_ is? n (p . ps))
-     {begin
-       {define (p x) (if (is? x) (vector-ref x n) (error))}
-       {define n2 (+ n 1)}
-       {define-rec%%hel is? n2 ps}}]}}
+{define-syntax-rule {define-rec is? (f a ...)}
+  {define-record-type is?
+    (f a ...)
+    is?
+    (a a) ...}}
+;{define-syntax-rule {define-rec is? (f p ...)}
+;  {begin
+;    {define s (string->symbol (string-append "rec:" (symbol->string 'f)))}
+;    {define (f p ...) `#(,s ,p ...)}
+;    {define (is? x) (and (vector? x) (< 0 (vector-length x)) (eq? (vector-ref x 0) s))}
+;    {define-rec%%hel is? 1 (p ...)}}}
+;{define-syntax define-rec%%hel
+;  {syntax-rules ()
+;    [(_ is? n (p)) {define (p x) (if (is? x) (vector-ref x n) (error))}]
+;    [(_ is? n (p . ps))
+;     {begin
+;       {define (p x) (if (is? x) (vector-ref x n) (error))}
+;       {define n2 (+ n 1)}
+;       {define-rec%%hel is? n2 ps}}]}}
 
 {define 等? equal?}
 
