@@ -110,4 +110,9 @@
       symbol->S名
       })}
 
-{define (示 :S物) 'WIP}
+{define 示
+  ({入 ()
+      {define xs '(甲 乙 丙 丁 戊 己 庚 辛 壬 癸)}
+      {define 示 'WIP}
+      示
+      })}
