@@ -53,8 +53,8 @@
 {define ->S名/構 S名/構}
 
 {define-rec :S表? (S表 S表->)}
-;{define 空:S表 (S表 (make-immutable-hash-lazy))}
-{define 空:S表 (S表 '())}
+{define 空:S表 (S表 (make-immutable-hash-lazy))}
+;{define 空:S表 (S表 '())}
 {define (S表.增 :S表 名 :S物) (S表 (dict-set (S表-> :S表) 名 :S物))}
 {define (S表.改 :S表 名 :S化) (S表 (dict-update (S表-> :S表) 名 :S化))}
 {define (S表.取 :S表 名) (dict-ref (S表-> :S表) 名)}
@@ -109,3 +109,5 @@
       {define (symbol->S名 s) (ing-name (pre (string->list (symbol->string s))))}
       symbol->S名
       })}
+
+{define (示 :S物) 'WIP}
