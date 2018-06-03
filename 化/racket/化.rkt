@@ -29,10 +29,6 @@
 ;       {define n2 (+ n 1)}
 ;       {define-rec%%hel is? n2 ps}}]}}
 
-{define-match-expander 列
-  {syntax-rules ()
-    [(_ . xs) (list . xs)]}}
-
 {define 等? equal?}
 
 {define :<S集_S陰_S陽>? boolean?}
@@ -86,18 +82,27 @@
 
 {define symbol->S名
   ({入 ()
+      {define (Q x) (string->symbol (list->string x))}
       {define pre
         {match-lambda
           ['() '()]
-          [(列 #\< 甲 ...) (pre%get 1 甲 {入 (a r) (->S列/連 (list-> a) (pre r))})]
-          [(列 (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
+          [(list #\< 甲 ...) (read-list 甲 {入 (a r) (cons a (pre r))})]
+          [(list (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
+      {define (read-list xs c)
+        {match-lambda
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() xs c)]}}
+      {define (%read-list f as xs c)
+        {match-lambda
+          [(list #\< 甲 ...) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list f (append as (list (Q 甲))) 乙 c)]
+          [(list #\> 甲 ...) (c (f as) xs)]}}
       {define (pre%get n xs c)
         (<S集_S陰_S陽>.若 (等? n 0)
                       (c '() xs)
                       {match xs
-                        [(列 (and #\< 甲) 乙 ...) (pre%get (+ n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
-                        [(列 (and #\> 甲) 乙 ...) (pre%get (- n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
-                        [(列 甲 乙 ...) (pre%get n 乙 {入 (a r) (c (cons 甲 a) r)})]})}
+                        [(list (and #\< 甲) 乙 ...) (pre%get (+ n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
+                        [(list (and #\> 甲) 乙 ...) (pre%get (- n 1) 乙 {入 (a r) (c (->S列/連 甲 a) r)})]
+                        [(list 甲 乙 ...) (pre%get n 乙 {入 (a r) (c (cons 甲 a) r)})]})}
       {define symbol->S名 'WIP}
       symbol->S名
       })}
