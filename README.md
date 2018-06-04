@@ -402,6 +402,6 @@ zaoqi
 
 ## 4. 類Racket語法
 
-每個vector和symbol會被轉換爲一個`:S名`。
+每個symbol會被轉換爲一個`:S名`。
 
 WIP
