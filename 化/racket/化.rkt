@@ -112,7 +112,12 @@
 
 {define 示
   ({入 ()
-      {define xs '(甲 乙 丙 丁 戊 己 庚 辛 壬 癸)}
+      {define xs '(甲 乙 丙 丁 戊 己 庚 辛 壬 癸 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥)}
       {define 示 'WIP}
+      {define (%示 名s 物s 物 k) ; (k 名s 表s str)
+        (if (S集.含？ 物s 物)
+            (k (cdr 名s) (S表.增 空:S表 (car 名s) 物) (string-append "周" (symbol->string (car 名s))))
+            'WIP)
+        }
       示
       })}
