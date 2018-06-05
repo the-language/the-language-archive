@@ -117,16 +117,24 @@
       {define xs '(甲 乙 丙 丁 戊 己 庚 辛 壬 癸 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥)}
       {define 示 'WIP}
       {define (%示 名s 物s 表s 物 k) ; (k 名s 表s str)
+        {define (R 名s 表s str)
+          (if (S表.含？ 表s 物)
+              (k 名s (S表.删 表s 物) (string-append "周("(S表.取 表s 物)" "str")"))
+              (k 名s 表s str))}
+        {define n物s (S集.增 物s 物)}
         {cond
-          [(S集.含？ 物s 物) (k (cdr 名s) (S表.增 表s (car 名s) 物) (string-append "周"(symbol->string (car 名s))))]
+          [(S集.含？ 物s 物)
+           {let ([a (symbol->string (car 名s))])
+                          (k (cdr 名s) (S表.增 表s 物 a) (string-append "周"a))}]
           [(:S陰? 物) (k 名s 表s "陰")]
           [(:S陽? 物) (k 名s 表s "陽")]
           [(:S列/連? 物)
-           (%示 名s 物s 表s (S列/連.首 物)
+           (%示 名s n物s 表s (S列/連.首 物)
                {入 (名s 表s str甲)
-                  (%示 名s 物s 表s (S列/連.尾 物)
+                  (%示 名s n物s 表s (S列/連.尾 物)
                       {入 (名s 表s str乙)
-                         (k 名s 表s (string-append "連("str甲" "str乙")"))})})]
+                         (R 名s 表s (string-append "連("str甲" "str乙")"))})})]
+          [(:S名/文? 物) (k 名s 表s (string-append "文|"(symbol->string 物)"|"))]
           [else 'WIP]}
         }
       示
