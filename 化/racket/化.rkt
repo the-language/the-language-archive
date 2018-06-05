@@ -61,6 +61,8 @@
 {define (S表.含？ :S表 名) (dict-has-key? (S表-> :S表) 名)}
 {define (S表.删 :S表 名) (dict-remove (S表-> :S表) 名)}
 {define (S表->S列 :S表) (map {入 (p) (list (car p) (cdr p))} (dict->list (S表-> :S表)))}
+{define (S列->S表 :S列) (S表 (apply dict-set* (S表-> 空:S表) (apply append :S列)))}
+{define (S表.合 甲 乙) (S表 (apply dict-set* (S表-> 甲) (apply append (S表->S列 乙))))}
 
 {define-rec :S集? (S集 S集->)}
 {define 空:S集 (S集 空:S表)}
@@ -114,10 +116,18 @@
   ({入 ()
       {define xs '(甲 乙 丙 丁 戊 己 庚 辛 壬 癸 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥)}
       {define 示 'WIP}
-      {define (%示 名s 物s 物 k) ; (k 名s 表s str)
-        (if (S集.含？ 物s 物)
-            (k (cdr 名s) (S表.增 空:S表 (car 名s) 物) (string-append "周" (symbol->string (car 名s))))
-            'WIP)
+      {define (%示 名s 物s 表s 物 k) ; (k 名s 表s str)
+        {cond
+          [(S集.含？ 物s 物) (k (cdr 名s) (S表.增 表s (car 名s) 物) (string-append "周"(symbol->string (car 名s))))]
+          [(:S陰? 物) (k 名s 表s "陰")]
+          [(:S陽? 物) (k 名s 表s "陽")]
+          [(:S列/連? 物)
+           (%示 名s 物s 表s (S列/連.首 物)
+               {入 (名s 表s str甲)
+                  (%示 名s 物s 表s (S列/連.尾 物)
+                      {入 (名s 表s str乙)
+                         (k 名s 表s (string-append "連("str甲" "str乙")"))})})]
+          [else 'WIP]}
         }
       示
       })}
