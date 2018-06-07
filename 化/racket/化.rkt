@@ -128,10 +128,14 @@
                   (%示 名s new物s 表s (f2 物)
                       {入 (名s 表s str乙)
                          (R 名s 表s (f3 str甲 str乙))})})}
-        {define (表 名s 物s 表s xs)
+        {define (表 名s 表s xs str)
           (if (null? xs)
-              (R 名s 表s 'WIP)
-              'WIP)}
+              (R 名s 表s (string-append "表("str")"))
+              (%示 名s new物s 表s (first (car xs))
+                  {入 (名s 表s str甲)
+                     (%示 名s new物s 表s (second (car xs))
+                         {入 (名s 表s str乙)
+                            (表 名s 表s (cdr xs) (string-append str" ("str甲" "str乙")"))})}))}
         {cond
           [(S表.含? 表s 物) (string-append "周"(S表.取 表s 物))]
           [(S集.含? old物s 物)
@@ -142,7 +146,7 @@
           [(:S列/連? 物) (二 S列/連.首 S列/連.尾 {入 (甲 乙) (string-append "連("甲" "乙")")})]
           [(:S名/文? 物) (k 名s 表s (string-append "文|"(symbol->string 物)"|"))]
           [(:S名/構? 物) (二 S名/構.:S名 S名/構.:S列 {入 (甲 乙) (string-append "名("甲" "乙")")})]
-          [(:S表? 物) (表 名s new物s 表s (S表->S列 物))]
+          [(:S表? 物) (表 名s 表s (S表->S列 物) "")]
           [else 'WIP]}
         }
       示
