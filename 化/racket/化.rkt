@@ -136,6 +136,7 @@
                      (%示 名s new物s 表s (second (car xs))
                          {入 (名s 表s str乙)
                             (表 名s 表s (cdr xs) (string-append str" ("str甲" "str乙")"))})}))}
+        {define 集 'WIP}
         {cond
           [(S表.含? 表s 物) (string-append "周"(S表.取 表s 物))]
           [(S集.含? old物s 物)
@@ -147,6 +148,7 @@
           [(:S名/文? 物) (k 名s 表s (string-append "文|"(symbol->string 物)"|"))]
           [(:S名/構? 物) (二 S名/構.:S名 S名/構.:S列 {入 (甲 乙) (string-append "名("甲" "乙")")})]
           [(:S表? 物) (表 名s 表s (S表->S列 物) "")]
+          [(:S集? 物) (集 名s 表s (S集->S列 物) "")]
           [else 'WIP]}
         }
       示
