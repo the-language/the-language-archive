@@ -115,7 +115,7 @@
 {define 示
   ({入 ()
       {define xs '(甲 乙 丙 丁 戊 己 庚 辛 壬 癸 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥)}
-      {define 示 'WIP}
+      {define (示 物) (%示 xs 空:S集 空:S表 物 {入 (名s 表s str) str})}
       {define (%示 名s old物s 表s 物 k) ; (k 名s 表s str)
         {define new物s (S集.增 old物s 物)}
         {define (R 名s 表s str)
@@ -150,6 +150,7 @@
           [(:S陰? 物) (k 名s 表s "陰")]
           [(:S陽? 物) (k 名s 表s "陽")]
           [(:S列/連? 物) (二 S列/連.首 S列/連.尾 {入 (甲 乙) (string-append "連("甲" "乙")")})]
+          [(:S列/空? 物) (k 名s 表s "空")]
           [(:S名/文? 物) (k 名s 表s (string-append "文|"(symbol->string 物)"|"))]
           [(:S名/構? 物) (二 S名/構.:S名 S名/構.:S列 {入 (甲 乙) (string-append "名("甲" "乙")")})]
           [(:S表? 物) (表 名s 表s (S表->S列 物) "")]
