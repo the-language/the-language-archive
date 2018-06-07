@@ -136,7 +136,12 @@
                      (%示 名s new物s 表s (second (car xs))
                          {入 (名s 表s str乙)
                             (表 名s 表s (cdr xs) (string-append str" ("str甲" "str乙")"))})}))}
-        {define 集 'WIP}
+        {define (集 名s 表s xs str)
+          (if (null? xs)
+              (R 名s 表s (string-append "集("str")"))
+              (%示 名s new物s 表s (car xs)
+                  {入 (名s 表s str甲)
+                     (集 名s 表s (cdr xs) (string-append str" "str甲))}))}
         {cond
           [(S表.含? 表s 物) (string-append "周"(S表.取 表s 物))]
           [(S集.含? old物s 物)
