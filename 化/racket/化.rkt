@@ -58,7 +58,7 @@
 {define (S表.增 :S表 名 :S物) (S表 (dict-set (S表-> :S表) 名 :S物))}
 {define (S表.改 :S表 名 :S化) (S表 (dict-update (S表-> :S表) 名 :S化))}
 {define (S表.取 :S表 名) (dict-ref (S表-> :S表) 名)}
-{define (S表.含？ :S表 名) (dict-has-key? (S表-> :S表) 名)}
+{define (S表.含? :S表 名) (dict-has-key? (S表-> :S表) 名)}
 {define (S表.删 :S表 名) (dict-remove (S表-> :S表) 名)}
 {define (S表->S列 :S表) (map {入 (p) (list (car p) (cdr p))} (dict->list (S表-> :S表)))}
 {define (S列->S表 :S列) (S表 (apply dict-set* (S表-> 空:S表) (apply append :S列)))}
@@ -67,7 +67,7 @@
 {define-rec :S集? (S集 S集->)}
 {define 空:S集 (S集 空:S表)}
 {define (S集.增 :S集 :S物) (S集 (S表.增 (S集-> :S集) :S物 #t))}
-{define (S集.含？ :S集 :S物) (S表.含？ (S集-> :S集) :S物)}
+{define (S集.含? :S集 :S物) (S表.含? (S集-> :S集) :S物)}
 {define (S集.删 :S集 :S物) (S集 (S表.删 (S集-> :S集) :S物))}
 {define (S集->S列 :S集) (map S列/連.首 (S表->S列 (S集-> :S集)))}
 {define (集 . xs)
@@ -119,7 +119,7 @@
       {define (%示 名s old物s 表s 物 k) ; (k 名s 表s str)
         {define new物s (S集.增 old物s 物)}
         {define (R 名s 表s str)
-          (if (S表.含？ 表s 物)
+          (if (S表.含? 表s 物)
               (k 名s (S表.删 表s 物) (string-append "周("(S表.取 表s 物)" "str")"))
               (k 名s 表s str))}
         {define (二 f1 f2 f3)
@@ -128,9 +128,13 @@
                   (%示 名s new物s 表s (f2 物)
                       {入 (名s 表s str乙)
                          (R 名s 表s (f3 str甲 str乙))})})}
-        {define 表 'WIP}
+        {define (表 名s 物s 表s xs)
+          (if (null? xs)
+              (R 名s 表s 'WIP)
+              'WIP)}
         {cond
-          [(S集.含？ old物s 物)
+          [(S表.含? 表s 物) (string-append "周"(S表.取 表s 物))]
+          [(S集.含? old物s 物)
            {let ([a (symbol->string (car 名s))])
              (k (cdr 名s) (S表.增 表s 物 a) (string-append "周"a))}]
           [(:S陰? 物) (k 名s 表s "陰")]
