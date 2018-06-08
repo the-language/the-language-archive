@@ -100,6 +100,7 @@
           [(list (and 甲 (not #\_)) ..1) (list (R 甲))]}}
 
       {define :Stype? :S構?}
+      {define (子 甲 乙) (->S名/構 '子 (list 甲 乙))}
       {define R
         {match-lambda
           [(list (? :S名? 甲)) 甲]
