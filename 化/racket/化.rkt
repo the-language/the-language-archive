@@ -105,6 +105,8 @@
           [(list (? :S名? 甲)) 甲]
           [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
           ['WIP 'WIP]
+          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (->S名/構 '一 (list (R 乙) ('WIP (Rtype 甲)))]
+          [(list 甲 ..1 #\. 乙 ..1) (->S名/構 '一 (list (R 乙) ('WIP (Rtype 甲))))]
           [(list #\S 甲 ..1) (->S名/構 '類 (list (R 甲)))]
           ['WIP 'WIP]
           [甲 (string->symbol (list->string 甲))]}}
