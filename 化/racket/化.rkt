@@ -99,7 +99,15 @@
           [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (cons (R 甲) (pre%list% 乙))]
           [(list (and 甲 (not #\_)) ..1) (list (R 甲))]}}
 
-      {define R 'WIP}
+      {define :Stype? :S構?}
+      {define R
+        {match-lambda
+          [(list (? :S名? 甲)) 甲]
+          [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
+          ['WIP 'WIP]
+          [(list #\S 甲 ..1) (->S名/構 '類 (list (R 甲)))]
+          ['WIP 'WIP]
+          [甲 (string->symbol (list->string 甲))]}}
       {define symbol->S名 'WIP}
       symbol->S名
       })}
