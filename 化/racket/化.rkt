@@ -88,16 +88,17 @@
       {define pre
         {match-lambda
           ['() '()]
-          [(list #\< 甲 ...) (read-list 甲 {入 (a r) (->S列/連 a (pre r))})]
+          [(list #\< 甲 ..1) (read-list 甲 {入 (a r) (->S列/連 a (pre r))})]
           [(list (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
       {define (read-list xs c)
         {match xs
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() 乙 c)]}}
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ..1 #\_ 乙 ..1) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() 乙 c)]}}
       {define (%read-list f as xs c)
         {match xs
-          [(list #\< 甲 ...) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list f (append as (list (Q 甲))) 乙 c)]
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\> 乙 ...) (c (f (append as (list (Q 甲)))) 乙)]}}
+          [(list #\> 乙 ...) (c (f as) 乙)]
+          [(list #\< 甲 ..1) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ..1 #\_ 乙 ..1) (%read-list f (append as (list (Q 甲))) 乙 c)]
+          [(list (and (not #\>) (not #\<) (not #\_) 甲) ..1 #\> 乙 ...) (c (f (append as (list (Q 甲)))) 乙)]}}
 
       {define type? :S構?}
       {define ing-name
@@ -147,6 +148,12 @@
               (%示 名s new物s 表s (car xs)
                   {入 (名s 表s str甲)
                      (集 名s 表s (cdr xs) (string-append str(if (equal? str "") "" " ")str甲))}))}
+        {define (mk-list 名s 表s xs str)
+          (if (null? xs)
+              (R 名s 表s (string-append "("str")"))
+              (%示 名s new物s 表s (car xs)
+                  {入 (名s 表s str甲)
+                     (mk-list 名s 表s (cdr xs) (string-append str(if (equal? str "") "" " ")str甲))}))}
         {cond
           [(S表.含? 表s 物) (string-append "周"(S表.取 表s 物))]
           [(S集.含? old物s 物)
@@ -154,6 +161,7 @@
              (k (cdr 名s) (S表.增 表s 物 a) (string-append "周"a))}]
           [(:S陰? 物) (k 名s 表s "陰")]
           [(:S陽? 物) (k 名s 表s "陽")]
+          [(list? 物) (mk-list 名s 表s 物 "")]
           [(:S列/連? 物) (二 S列/連.首 S列/連.尾 {入 (甲 乙) (string-append "連("甲" "乙")")})]
           [(:S列/空? 物) (k 名s 表s "空")]
           [(:S名/文? 物) (k 名s 表s (string-append "文|"(symbol->string 物)"|"))]
