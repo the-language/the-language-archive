@@ -84,33 +84,23 @@
 
 {define symbol->S名
   ({入 ()
-      {define (Q x) (string->symbol (list->string x))}
-      {define pre
+      {define pre0
         {match-lambda
-          ['() '()]
-          [(list #\< 甲 ..1) (read-list 甲 {入 (a r) (->S列/連 a (pre r))})]
-          [(list (and (not #\>) 甲) 乙 ...) (->S列/連 甲 (pre 乙))]}}
-      {define (read-list xs c)
-        {match xs
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ..1 #\_ 乙 ..1) (%read-list {入 (xs) (->S名/構 (Q 甲) xs)} '() 乙 c)]}}
-      {define (%read-list f as xs c)
-        {match xs
-          [(list #\> 乙 ...) (c (f as) 乙)]
-          [(list #\< 甲 ..1) (read-list 甲 {入 (a r) (%read-list f (append as (list a)) r c)})]
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ..1 #\_ 乙 ..1) (%read-list f (append as (list (Q 甲))) 乙 c)]
-          [(list (and (not #\>) (not #\<) (not #\_) 甲) ..1 #\> 乙 ...) (c (f (append as (list (Q 甲)))) 乙)]}}
+          [(list 甲 ... #\< #\< (and 乙 (not #\<) (not #\>)) ..1 #\> #\> 丙 ...) (pre0 (append 甲 (list (R 乙)) 丙))]
+          [(list 甲 ... #\< (and 乙 (not #\<) (not #\>)) ..1 #\> 丙 ...) (pre0 (append 甲 (list (pre%list 乙)) 丙))]
+          [(list (and 甲 (not #\<) (not #\>) (not #\_)) ..1) (R 甲)]
+          }}
+      {define pre%list
+        {match-lambda
+          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (->S名/構 (R 甲) (pre%list% 乙))]
+          [(list (and 甲 (not #\_)) ..1) (->S名/構 (R 甲) '())]}}
+      {define pre%list%
+        {match-lambda
+          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (cons (R 甲) (pre%list% 乙))]
+          [(list (and 甲 (not #\_)) ..1) (list (R 甲))]}}
 
-      {define type? :S構?}
-      {define ing-name
-        {match-lambda
-          [(list (and (not (? char?)) 甲))
-           {cond
-             [(:S名? 甲) 甲]
-             [(type? 甲) 'WIP]
-             [else 'WIP]}]
-          ['WIP 'WIP]
-          [甲 (Q 甲)]}}
-      {define (symbol->S名 s) (ing-name (pre (string->list (symbol->string s))))}
+      {define R 'WIP}
+      {define symbol->S名 'WIP}
       symbol->S名
       })}
 
