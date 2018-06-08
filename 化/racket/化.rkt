@@ -99,12 +99,13 @@
           [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\_ 乙 ...) (%read-list f (append as (list (Q 甲))) 乙 c)]
           [(list (and (not #\>) (not #\<) (not #\_) 甲) ... #\> 乙 ...) (c (f (append as (list (Q 甲)))) 乙)]}}
 
+      {define type? :S構?}
       {define ing-name
         {match-lambda
           [(list (and (not (? char?)) 甲))
            {cond
              [(:S名? 甲) 甲]
-             ['<LL<type 'WIP]
+             [(type? 甲) 'WIP]
              [else 'WIP]}]
           ['WIP 'WIP]
           [甲 (Q 甲)]}}
