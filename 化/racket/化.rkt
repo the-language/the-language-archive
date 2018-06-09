@@ -94,6 +94,7 @@
           }}
       {define pre%list
         {match-lambda
+          [(list #\S #\集 #\_ 乙 ..1) (apply ->S集 (pre%list% 乙))]
           [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (->S名/構 (R 甲) (pre%list% 乙))]
           [(list (and 甲 (not #\_)) ..1) (->S名/構 (R 甲) '())]}}
       {define pre%list%
@@ -130,7 +131,7 @@
           [(list 甲 ..1 #\. 乙 ..1) (一\二 (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 其:S類) 其:S類))]
           [(list #\: 乙 ..1) (一\一 (Rtype 乙))]
           [(list 甲 ..1 #\: 乙 ..1) (一\二 (R 甲) (Rtype 乙))]
-          [(list #\S 甲 ..1) (->S名/構 '類 (list (Rtype (cons #\S 甲))))]
+          [(list #\S 甲 ..1) (R (Rtype (cons #\S 甲)))]
           ['WIP 'WIP]
           [甲 (string->symbol (list->string 甲))]}}
       {define Rtype
