@@ -88,19 +88,23 @@
   ({入 ()
       {define pre0
         {match-lambda
-          [(list 甲 ... #\< #\< (and 乙 (not #\<) (not #\>)) ..1 #\> #\> 丙 ...) (pre0 (append 甲 (list (R 乙)) 丙))]
+          [(list 甲 ... #\< #\< (and 乙 (not #\<) (not #\>)) ..1 #\> #\> 丙 ...) (pre0 (append 甲 (list (Rname 乙)) 丙))]
           [(list 甲 ... #\< (and 乙 (not #\<) (not #\>)) ..1 #\> 丙 ...) (pre0 (append 甲 (list (pre%list 乙)) 丙))]
-          [(list (and 甲 (not #\<) (not #\>) (not #\_)) ..1) (R 甲)]
+          [(list (and 甲 (not #\<) (not #\>) (not #\_)) ..1) (Rname 甲)]
           }}
       {define pre%list
         {match-lambda
-          [(list #\S #\集 #\_ 乙 ..1) (apply ->S集 (pre%list% 乙))]
-          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (->S名/構 (R 甲) (pre%list% 乙))]
-          [(list (and 甲 (not #\_)) ..1) (->S名/構 (R 甲) '())]}}
+          [(list #\S #\集 #\_ 乙 ..1) (apply ->S集 (pre%list%type% 乙))]
+          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (->S名/構 (Rname 甲) (pre%list% 乙))]
+          [(list (and 甲 (not #\_)) ..1) (->S名/構 (Rname 甲) '())]}}
       {define pre%list%
         {match-lambda
-          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (cons (R 甲) (pre%list% 乙))]
-          [(list (and 甲 (not #\_)) ..1) (list (R 甲))]}}
+          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (cons (Rname 甲) (pre%list% 乙))]
+          [(list (and 甲 (not #\_)) ..1) (list (Rname 甲))]}}
+      {define pre%list%type%
+        {match-lambda
+          [(list (and 甲 (not #\_)) ..1 #\_ 乙 ..1) (cons (Rtype 甲) (pre%list%type% 乙))]
+          [(list (and 甲 (not #\_)) ..1) (list (Rtype 甲))]}}
 
       {define :Stype? :S構?}
       {define (一\二 類 物) (->S名/構 '一 (list 類 物))}
@@ -122,16 +126,20 @@
       {define S名/構:S類* (->S構 (子 '類 (子 '名 '構)) `(,其:S類 ,其:S類))}
       {define S名/文:S類* (->S構 (子 '類 (子 '名 '文)) '())}
       {define S名:S類* (->S集 S名/構:S類* S名/文:S類*)}
-      {define R
+      {define (Rname xs)
+        {match (Rall xs)
+          [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
+          [甲 甲]}}
+      {define Rall
         {match-lambda
           [(list (? :S名? 甲)) 甲]
           [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
           ['WIP 'WIP]
-          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (一\二 (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) boolean)))]
-          [(list 甲 ..1 #\. 乙 ..1) (一\二 (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 其:S類) 其:S類))]
+          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (一\二 (Rname 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) boolean)))]
+          [(list 甲 ..1 #\. 乙 ..1) (一\二 (Rname 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 其:S類) 其:S類))]
           [(list #\: 乙 ..1) (一\一 (Rtype 乙))]
-          [(list 甲 ..1 #\: 乙 ..1) (一\二 (R 甲) (Rtype 乙))]
-          [(list #\S 甲 ..1) (R (Rtype (cons #\S 甲)))]
+          [(list 甲 ..1 #\: 乙 ..1) (一\二 (Rname 甲) (Rtype 乙))]
+          [(list #\S 甲 ..1) (Rtype (cons #\S 甲))]
           ['WIP 'WIP]
           [甲 (string->symbol (list->string 甲))]}}
       {define Rtype
@@ -151,7 +159,7 @@
           ['(#\S #\式) 'WIP]
           ['(#\S #\構) 'WIP]
           ['(#\S #\誤) 'WIP]
-          [(list #\S 甲 ..1) ('WIP (R 甲))]}}
+          [(list #\S 甲 ..1) ('WIP (Rname 甲))]}}
       {define (symbol->S名 s) (pre0 (string->list (symbol->string s)))}
       symbol->S名
       })}
