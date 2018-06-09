@@ -104,16 +104,20 @@
       {define (一\二 類 物) (->S名/構 '一 (list 類 物))}
       {define (一\一 類) (->S名/構 '一 (list 類))}
       {define 類/集 (子 '類 '集)}
-      {define 集:S類* (->S構 類/集 `(,類/其))}
-      {define 類/:S集 (子 '類 (一\一 (->S名/構 '類 (list 集:S類*))))}
+      {define S集:S類* (->S構 類/集 `(,類/其))}
+      {define 類/<<:S集>> (子 '類 (一\一 (->S名/構 '類 (list S集:S類*))))}
       {define 類/陰 (子 '類 '陰)}
       {define 類/陽 (子 '類 '陽)}
-      {define boolean (->S構 類/:S集 `(,(集 類/陰 類/陽)))}
+      {define (->S集 . xs) (->S構 類/<<:S集>> `(,(apply 集 xs)))}
+      {define boolean (->S集 類/陰 類/陽)}
       {define 類/其 (子 '類 '其)}
       {define 類/化 (子 '類 '化)}
       {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
       {define 類/<<列/連>> (子 '類 (子 '列 '連))}
       {define (->S類/<<列/連>> x y) (->S構 類/<<列/連>> `(,x ,y))}
+      {define S列/連:S類* (->S類/<<列/連>> 類/其 類/其)}
+      {define S列/空:S類* (->S構 (子 '類 (子 '列 '空)) '())}
+      {define S列:S類* (->S集 S列/連:S類* S列/空:S類*)}
       {define R
         {match-lambda
           [(list (? :S名? 甲)) 甲]
@@ -127,11 +131,17 @@
       {define Rtype
         {match-lambda
           ['(#\S #\列) 'WIP]
-          ['(#\S #\列 #\/ #\連) 'WIP]
-          ['(#\S #\列 #\/ #\空) 'WIP]
+          ['(#\S #\列 #\/ #\連) S列/連:S類*]
+          ['(#\S #\列 #\/ #\空) S列/空:S類*]
           ['(#\S #\名) 'WIP]
           ['(#\S #\名 #\/ #\文) 'WIP]
           ['(#\S #\名 #\/ #\構) 'WIP]
+          ['(#\S #\表) 'WIP]
+          ['(#\S #\集) 'WIP]
+          ['(#\S #\化) 'WIP]
+          ['(#\S #\式) 'WIP]
+          ['(#\S #\構) 'WIP]
+          ['(#\S #\誤) 'WIP]
           [(list #\S 甲 ..1) ('WIP (R 甲))]}}
       {define symbol->S名 'WIP}
       symbol->S名
