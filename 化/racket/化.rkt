@@ -104,13 +104,16 @@
       {define 類/集 (子 '類 '集)}
       {define 類/其 (子 '類 '其)}
       {define 類/化 (子 '類 '化)}
+      {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
+      {define 類/<<列/連>> (子 '類 (子 '列 '連))}
+      {define (->S類/<<列/連>> x y) (->S構 類/<<列/連>> `(,x ,y))}
       {define R
         {match-lambda
           [(list (? :S名? 甲)) 甲]
           [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
           ['WIP 'WIP]
           [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (->S名/構 '一 (list (R 乙) ('WIP (Rtype 甲))))]
-          [(list 甲 ..1 #\. 乙 ..1) (->S名/構 '一 (list (R 乙) ('WIP (Rtype 甲))))]
+          [(list 甲 ..1 #\. 乙 ..1) (->S名/構 '一 (list (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 類/其) 類/其)))]
           [(list #\S 甲 ..1) (->S名/構 '類 (list (R 甲)))]
           ['WIP 'WIP]
           [甲 (string->symbol (list->string 甲))]}}
