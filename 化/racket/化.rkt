@@ -82,6 +82,8 @@
 {define-rec :S構? (->S構 S構.:S名 S構.:S列)}
 {define-rec :S誤? (->S誤 S誤->)}
 
+{define (子 甲 乙) (->S名/構 '子 (list 甲 乙))}
+{define 其:S類 (->S構 (子 '類 '其) '())}
 {define symbol->S名
   ({入 ()
       {define pre0
@@ -100,10 +102,8 @@
           [(list (and 甲 (not #\_)) ..1) (list (R 甲))]}}
 
       {define :Stype? :S構?}
-      {define (子 甲 乙) (->S名/構 '子 (list 甲 乙))}
       {define (一\二 類 物) (->S名/構 '一 (list 類 物))}
       {define (一\一 類) (->S名/構 '一 (list 類))}
-      {define 其:S類 (->S構 (子 '類 '其) '())}
       {define 類/集 (子 '類 '集)}
       {define S集:S類* (->S構 類/集 `(,其:S類))}
       {define 類/<<:S集>> (子 '類 (一\一 (->S名/構 '類 (list S集:S類*))))}
@@ -165,14 +165,14 @@
               (k 名s 表s str))}
         {define (二 f1 f2 r)
           (%示 名s new物s 表s (f1 物)
-               {入 (名s 表s str甲)
-                  (%示 名s new物s 表s (f2 物)
-                      {入 (名s 表s str乙)
-                         (R 名s 表s (r str甲 str乙))})})}
+              {入 (名s 表s str甲)
+                 (%示 名s new物s 表s (f2 物)
+                     {入 (名s 表s str乙)
+                        (R 名s 表s (r str甲 str乙))})})}
         {define (一 f1 r)
           (%示 名s new物s 表s (f1 物)
-               {入 (名s 表s str甲)
-                  (R 名s 表s (r str甲))})}
+              {入 (名s 表s str甲)
+                 (R 名s 表s (r str甲))})}
         {define (表 名s 表s xs str)
           (if (null? xs)
               (R 名s 表s (string-append "表("str")"))
@@ -209,6 +209,7 @@
           [(:S集? 物) (集 名s 表s (S集->S列 物) "")]
           [(:S化? 物) (二 S化.形 S化.:S物 {入 (甲 乙) (string-append "化("甲" "乙")")})]
           [(:S式? 物) (一 S式-> {入 (甲) (string-append "式("甲")")})]
+          [(等? 其:S類 物) (k 名s 表s "_")]
           [(:S構? 物) (二 S構.:S名 S構.:S列 {入 (甲 乙) (string-append "構("甲" "乙")")})]
           [(:S誤? 物) (一 S誤-> {入 (甲) (string-append "誤("甲")")})]
           [else 'WIP]}
