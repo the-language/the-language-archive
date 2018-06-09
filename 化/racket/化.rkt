@@ -123,13 +123,16 @@
           [(list (? :S名? 甲)) 甲]
           [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
           ['WIP 'WIP]
-          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (->S名/構 '一 (list (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) boolean))))]
-          [(list 甲 ..1 #\. 乙 ..1) (->S名/構 '一 (list (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 類/其) 類/其)))]
-          [(list #\S 甲 ..1) (->S名/構 '類 (list (R 甲)))]
+          [(list #\: 乙 ..1) (一\一 (Rtype 乙))]
+          [(list 甲 ..1 #\: 乙 ..1) (一\二 (R 甲) (Rtype 乙))]
+          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (一\二 (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) boolean)))]
+          [(list 甲 ..1 #\. 乙 ..1) (一\二 (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 類/其) 類/其))]
+          [(list #\S 甲 ..1) (->S名/構 '類 (list (Rtype (cons #\S 甲))))]
           ['WIP 'WIP]
           [甲 (string->symbol (list->string 甲))]}}
       {define Rtype
         {match-lambda
+          [(list (? :Stype? 甲)) 甲]
           ['(#\S #\列) 'WIP]
           ['(#\S #\列 #\/ #\連) S列/連:S類*]
           ['(#\S #\列 #\/ #\空) S列/空:S類*]
