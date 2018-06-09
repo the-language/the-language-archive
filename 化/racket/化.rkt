@@ -101,6 +101,9 @@
 
       {define :Stype? :S構?}
       {define (子 甲 乙) (->S名/構 '子 (list 甲 乙))}
+      {define 類/集 (子 '類 '集)}
+      {define 類/其 (子 '類 '其)}
+      {define 類/化 (子 '類 '化)}
       {define R
         {match-lambda
           [(list (? :S名? 甲)) 甲]
