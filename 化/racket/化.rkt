@@ -108,10 +108,10 @@
       {define 類/集 (子 '類 '集)}
       {define S集:S類* (->S構 類/集 `(,其:S類))}
       {define 類/<<:S集>> (子 '類 (一\一 (->S名/構 '類 (list S集:S類*))))}
-      {define 類/陰 (子 '類 '陰)}
-      {define 類/陽 (子 '類 '陽)}
+      {define S陰:S類 (->S構 (子 '類 '陰) '())}
+      {define S陽:S類 (->S構 (子 '類 '陽) '())}
       {define (->S集 . xs) (->S構 類/<<:S集>> `(,(apply 集 xs)))}
-      {define boolean (->S集 類/陰 類/陽)}
+      {define boolean (->S集 S陰:S類 S陽:S類)}
       {define 類/化 (子 '類 '化)}
       {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
       {define 類/<<列/連>> (子 '類 (子 '列 '連))}
@@ -137,6 +137,8 @@
       {define Rtype
         {match-lambda
           [(list (? :Stype? 甲)) 甲]
+          ['(#\S #\陰) 'WIP]
+          ['(#\S #\陽) 'WIP]
           ['(#\S #\列) S列:S類*]
           ['(#\S #\列 #\/ #\連) S列/連:S類*]
           ['(#\S #\列 #\/ #\空) S列/空:S類*]
