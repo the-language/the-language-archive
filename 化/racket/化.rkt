@@ -111,7 +111,7 @@
       {define (一\一 類) (->S名/構 '一 (list 類))}
       {define 類/集 (子 '類 '集)}
       {define S集:S類* (->S構 類/集 `(,其:S類))}
-      {define 類/<<:S集>> (子 '類 (一\一 (->S名/構 '類 (list S集:S類*))))}
+      {define 類/<<:S集>> (子 '類 (一\一 S集:S類*))}
       {define S陰:S類 (->S構 (子 '類 '陰) '())}
       {define S陽:S類 (->S構 (子 '類 '陽) '())}
       {define (->S集 . xs) (->S構 類/<<:S集>> `(,(apply 集 xs)))}
