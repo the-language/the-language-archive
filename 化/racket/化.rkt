@@ -101,7 +101,11 @@
 
       {define :Stype? :S構?}
       {define (子 甲 乙) (->S名/構 '子 (list 甲 乙))}
+      {define (一\二 類 物) (->S名/構 '一 (list 類 物))}
+      {define (一\一 類) (->S名/構 '一 (list 類))}
       {define 類/集 (子 '類 '集)}
+      {define 集:S類* (->S構 類/集 `(,類/其))}
+      {define 類/:S集 (子 '類 (一\一 (->S名/構 '類 (list 集:S類*))))}
       {define 類/其 (子 '類 '其)}
       {define 類/化 (子 '類 '化)}
       {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
@@ -112,7 +116,7 @@
           [(list (? :S名? 甲)) 甲]
           [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
           ['WIP 'WIP]
-          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (->S名/構 '一 (list (R 乙) ('WIP (Rtype 甲))))]
+          [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (->S名/構 '一 (list (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 類/其))))]
           [(list 甲 ..1 #\. 乙 ..1) (->S名/構 '一 (list (R 乙) (->S類/化 (->S類/<<列/連>> (Rtype 甲) 類/其) 類/其)))]
           [(list #\S 甲 ..1) (->S名/構 '類 (list (R 甲)))]
           ['WIP 'WIP]
