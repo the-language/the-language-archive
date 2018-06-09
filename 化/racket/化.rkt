@@ -126,6 +126,12 @@
           [甲 (string->symbol (list->string 甲))]}}
       {define Rtype
         {match-lambda
+          ['(#\S #\列) 'WIP]
+          ['(#\S #\列 #\/ #\連) 'WIP]
+          ['(#\S #\列 #\/ #\空) 'WIP]
+          ['(#\S #\名) 'WIP]
+          ['(#\S #\名 #\/ #\文) 'WIP]
+          ['(#\S #\名 #\/ #\構) 'WIP]
           [(list #\S 甲 ..1) ('WIP (R 甲))]}}
       {define symbol->S名 'WIP}
       symbol->S名
