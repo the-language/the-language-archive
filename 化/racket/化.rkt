@@ -103,6 +103,7 @@
       {define (子 甲 乙) (->S名/構 '子 (list 甲 乙))}
       {define (一\二 類 物) (->S名/構 '一 (list 類 物))}
       {define (一\一 類) (->S名/構 '一 (list 類))}
+      {define 類/其 (子 '類 '其)}
       {define 類/集 (子 '類 '集)}
       {define S集:S類* (->S構 類/集 `(,類/其))}
       {define 類/<<:S集>> (子 '類 (一\一 (->S名/構 '類 (list S集:S類*))))}
@@ -110,7 +111,6 @@
       {define 類/陽 (子 '類 '陽)}
       {define (->S集 . xs) (->S構 類/<<:S集>> `(,(apply 集 xs)))}
       {define boolean (->S集 類/陰 類/陽)}
-      {define 類/其 (子 '類 '其)}
       {define 類/化 (子 '類 '化)}
       {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
       {define 類/<<列/連>> (子 '類 (子 '列 '連))}
@@ -133,7 +133,7 @@
       {define Rtype
         {match-lambda
           [(list (? :Stype? 甲)) 甲]
-          ['(#\S #\列) 'WIP]
+          ['(#\S #\列) S列:S類*]
           ['(#\S #\列 #\/ #\連) S列/連:S類*]
           ['(#\S #\列 #\/ #\空) S列/空:S類*]
           ['(#\S #\名) 'WIP]
@@ -146,7 +146,7 @@
           ['(#\S #\構) 'WIP]
           ['(#\S #\誤) 'WIP]
           [(list #\S 甲 ..1) ('WIP (R 甲))]}}
-      {define symbol->S名 'WIP}
+      {define (symbol->S名 s) (pre0 (string->list (symbol->string s)))}
       symbol->S名
       })}
 
