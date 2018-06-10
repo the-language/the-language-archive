@@ -14,20 +14,6 @@
     (f a ...)
     is?
     (a a) ...}}
-;{define-syntax-rule {define-rec is? (f p ...)}
-;  {begin
-;    {define s (string->symbol (string-append "rec:" (symbol->string 'f)))}
-;    {define (f p ...) `#(,s ,p ...)}
-;    {define (is? x) (and (vector? x) (< 0 (vector-length x)) (eq? (vector-ref x 0) s))}
-;    {define-rec%%hel is? 1 (p ...)}}}
-;{define-syntax define-rec%%hel
-;  {syntax-rules ()
-;    [(_ is? n (p)) {define (p x) (if (is? x) (vector-ref x n) (error))}]
-;    [(_ is? n (p . ps))
-;     {begin
-;       {define (p x) (if (is? x) (vector-ref x n) (error))}
-;       {define n2 (+ n 1)}
-;       {define-rec%%hel is? n2 ps}}]}}
 
 {define 等? equal?}
 
@@ -121,7 +107,12 @@
             {define 類/化 (子 '類 '化)}
             {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
             {define S化:S類* (->S構 類/化 '())}
-            {define 類/<<列/連>> (子 '類 (子 '列 '連))}
+            {define S表:S類* (->S構 (子 '類 '表) '())}
+            {define S式:S類* (->S構 (子 '類 '式) '())}
+            {define S構:S類* (->S構 (子 '類 '構) '())}
+            {define S誤:S類* (->S構 (子 '類 '誤) '())}
+            {define 列/連 (子 '列 '連)}
+            {define 類/<<列/連>> (子 '類 列/連)}
             {define (->S類/<<列/連>> x y) (->S構 類/<<列/連>> `(,x ,y))}
             {define S列/連:S類* (->S構 類/<<列/連>> '())}
             {define S列/空:S類* (->S構 (子 '類 (子 '列 '空)) '())}
@@ -148,21 +139,26 @@
             {define Rtype
               {match-lambda
                 [(list (? :Stype? 甲)) 甲]
-                ['(#\S #\陰) S陰:S類]
-                ['(#\S #\陽) S陽:S類]
-                ['(#\S #\列) S列:S類*]
-                ['(#\S #\列 #\/ #\連) S列/連:S類*]
-                ['(#\S #\列 #\/ #\空) S列/空:S類*]
-                ['(#\S #\名) S名:S類*]
-                ['(#\S #\名 #\/ #\文) S名/文:S類*]
-                ['(#\S #\名 #\/ #\構) S名/構:S類*]
-                ['(#\S #\表) 'WIP]
-                ['(#\S #\集) 'WIP]
-                ['(#\S #\化) 'WIP]
-                ['(#\S #\式) 'WIP]
-                ['(#\S #\構) 'WIP]
-                ['(#\S #\誤) 'WIP]
-                [(list #\S 甲 ..1) ('WIP (Rname 甲))]}}
+                [(list #\S 甲 ..1)
+                 {match (Rname 甲)
+                   ['陰 S陰:S類]
+                   ['陽 S陽:S類]
+                   ['列 S列:S類*]
+                   ['名 S名:S類*]
+                   ['(#\S #\列 #\/ #\連) S列/連:S類*]
+                   ['(#\S #\列 #\/ #\空) S列/空:S類*]
+                   ['(#\S #\名 #\/ #\文) S名/文:S類*]
+                   ['(#\S #\名 #\/ #\構) S名/構:S類*]
+                   ['表 S表:S類*]
+                   ['集 S集:S類*]
+                   ['化 S化:S類*]
+                   ['式 S式:S類*]
+                   ['構 S構:S類*]
+                   ['誤 S誤:S類*]
+                   [甲
+                    {cond
+                      [(equal? 甲 列/連) S列/連:S類*]
+                      [else 'WIP]}]}]}}
             {define (symbol->S名 s) (pre0 (string->list (symbol->string s)))}
             symbol->S名
             })}
