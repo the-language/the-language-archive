@@ -136,13 +136,15 @@
               {match-lambda
                 [(list (? :S名? 甲)) 甲]
                 [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
+                [(list #\- #\> 乙 ..1) (一\二 (->S類/化\2 其:S類 (Rname 乙)) '其)]
+                [(list 甲 ..1 #\- #\> 乙 ..1) (一\二 (->S類/化\2 (->S類/<<列/連>>\2 (Rtype 甲) S列/空:S類*) (Rname 乙)) '其)]
+                [(list 甲 ..1 #\- #\>) (一\二 (->S類/化\2 (->S類/<<列/連>>\2 (Rtype 甲) S列/空:S類*) 其:S類) '其)]
                 [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (一\二 (->S類/化\2 (->S類/<<列/連>>\2 (Rtype 甲) boolean)) (Rname 乙))]
                 [(list 甲 ..1 #\. 乙 ..1) (一\二 (->S類/化\2 (->S類/<<列/連>>\2 (Rtype 甲) 其:S類) 其:S類) (Rname 乙))]
                 [(list #\: 乙 ..1) (一\一 (Rtype 乙))]
                 [(list 甲 ..1 #\: 乙 ..1) (一\二 (Rtype 乙) (Rname 甲))]
                 [(list #\S 甲 ..1) (Rtype (cons #\S 甲))]
                 [(list 甲 ..1 #\/ 乙 ..1) (子 (Rname 甲) (Rname 乙))]
-                ['WIP 'WIP]
                 [甲 (string->symbol (list->string 甲))]}}
             {define Rtype
               {match-lambda
