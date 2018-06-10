@@ -105,15 +105,17 @@
             {define (->S集 . xs) (->S構 類/<<:S集>> `(,(apply 集 xs)))}
             {define boolean (->S集 S陰:S類 S陽:S類)}
             {define 類/化 (子 '類 '化)}
-            {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
+            {define (->S類/化\2 x y) (->S構 類/化 `(,x ,y))}
             {define S化:S類* (->S構 類/化 '())}
             {define S表:S類* (->S構 (子 '類 '表) '())}
             {define S式:S類* (->S構 (子 '類 '式) '())}
-            {define S構:S類* (->S構 (子 '類 '構) '())}
+            {define 類/構 (子 '類 '構)}
+            {define (->S構\1 x) (->S構 類/構 `(,1))}
+            {define S構:S類* (->S構 類/構 '())}
             {define S誤:S類* (->S構 (子 '類 '誤) '())}
             {define 列/連 (子 '列 '連)}
             {define 類/<<列/連>> (子 '類 列/連)}
-            {define (->S類/<<列/連>> x y) (->S構 類/<<列/連>> `(,x ,y))}
+            {define (->S類/<<列/連>>\2 x y) (->S構 類/<<列/連>> `(,x ,y))}
             {define S列/連:S類* (->S構 類/<<列/連>> '())}
             {define 列/空 (子 '列 '空)}
             {define S列/空:S類* (->S構 (子 '類 列/空) '())}
@@ -132,8 +134,8 @@
                 [(list (? :S名? 甲)) 甲]
                 [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
                 ['WIP 'WIP]
-                [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (一\二 (->S類/化 (->S類/<<列/連>> (Rtype 甲) boolean)) (Rname 乙))]
-                [(list 甲 ..1 #\. 乙 ..1) (一\二 (->S類/化 (->S類/<<列/連>> (Rtype 甲) 其:S類) 其:S類) (Rname 乙))]
+                [(list 甲 ..1 #\. 乙 ..1 (or #\？ #\?)) (一\二 (->S類/化\2 (->S類/<<列/連>>\2 (Rtype 甲) boolean)) (Rname 乙))]
+                [(list 甲 ..1 #\. 乙 ..1) (一\二 (->S類/化\2 (->S類/<<列/連>>\2 (Rtype 甲) 其:S類) 其:S類) (Rname 乙))]
                 [(list #\: 乙 ..1) (一\一 (Rtype 乙))]
                 [(list 甲 ..1 #\: 乙 ..1) (一\二 (Rtype 乙) (Rname 甲))]
                 [(list #\S 甲 ..1) (Rtype (cons #\S 甲))]
