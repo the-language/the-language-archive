@@ -112,7 +112,7 @@
             {define (一\二 類 物) (->S名/構 '一 (list 類 物))}
             {define (一\一 類) (->S名/構 '一 (list 類))}
             {define 類/集 (子 '類 '集)}
-            {define S集:S類* (->S構 類/集 `(,其:S類))}
+            {define S集:S類* (->S構 類/集 '())}
             {define 類/<<:S集>> (子 '類 (一\一 S集:S類*))}
             {define S陰:S類 (->S構 (子 '類 '陰) '())}
             {define S陽:S類 (->S構 (子 '類 '陽) '())}
@@ -120,12 +120,13 @@
             {define boolean (->S集 S陰:S類 S陽:S類)}
             {define 類/化 (子 '類 '化)}
             {define (->S類/化 x y) (->S構 類/化 `(,x ,y))}
+            {define S化:S類* (->S構 類/化 '())}
             {define 類/<<列/連>> (子 '類 (子 '列 '連))}
             {define (->S類/<<列/連>> x y) (->S構 類/<<列/連>> `(,x ,y))}
-            {define S列/連:S類* (->S類/<<列/連>> 其:S類 其:S類)}
+            {define S列/連:S類* (->S構 類/<<列/連>> '())}
             {define S列/空:S類* (->S構 (子 '類 (子 '列 '空)) '())}
             {define S列:S類* (->S集 S列/連:S類* S列/空:S類*)}
-            {define S名/構:S類* (->S構 (子 '類 (子 '名 '構)) `(,其:S類 ,其:S類))}
+            {define S名/構:S類* (->S構 (子 '類 (子 '名 '構)) '())}
             {define S名/文:S類* (->S構 (子 '類 (子 '名 '文)) '())}
             {define S名:S類* (->S集 S名/構:S類* S名/文:S類*)}
             {define (Rname xs)
