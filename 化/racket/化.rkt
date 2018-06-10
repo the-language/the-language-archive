@@ -125,8 +125,9 @@
             {define 名/文 (子 '名 '文)}
             {define 類/<<名/文>> (子 '類 名/文)}
             {define S名/文:S類* (->S構 類/<<名/文>> '())}
-            {define (->S類/<<名/文>>\1 x) (->S構 類/<<名/文>> `(,x))}
             {define S名:S類* (->S集 S名/構:S類* S名/文:S類*)}
+            {define 類/物 (子 '類 '物)}
+            {define (->S類/物 x) (->S構 類/物 x)}
             {define (Rname xs)
               {match (Rall xs)
                 [(list (? :Stype? 甲)) (->S名/構 '類 (list 甲))]
@@ -143,7 +144,6 @@
                 [(list #\S 甲 ..1) (Rtype (cons #\S 甲))]
                 ['WIP 'WIP]
                 [甲 (string->symbol (list->string 甲))]}}
-            {define n->t 'WIP}
             {define Rtype
               {match-lambda
                 [(list (? :Stype? 甲)) 甲]
@@ -165,7 +165,7 @@
                       [(等? 甲 列/空) S列/空:S類*]
                       [(等? 甲 名/文) S名/文:S類*]
                       [(等? 甲 名/構) S名/構:S類*]
-                      [else (->S構\2 (n->t 甲) 其:S類)]}]}]}}
+                      [else (->S構\2 (->S類/物 甲) 其:S類)]}]}]}}
             {define (symbol->S名 s) (pre0 (string->list (symbol->string s)))}
             symbol->S名
             })}
