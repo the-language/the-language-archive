@@ -66,7 +66,7 @@
 
 {define-rec :S式? (->S式 S式->)}
 {define-rec :S構? (->S構 S構.:S名 S構.:S列)}
-{define-rec :S誤? (->S誤 S誤->)}
+{define-rec :S誤? (->S誤 S誤.:S名 S誤.:S列)}
 
 {define-values (symbol->S名 示)
   ({入 ()
@@ -230,7 +230,7 @@
                 [(:S式? 物) (一 S式-> {入 (甲) (string-append "式("甲")")})]
                 [(等? 其:S類 物) (k 名s 表s "_")]
                 [(:S構? 物) (二 S構.:S名 S構.:S列 {入 (甲 乙) (string-append "構("甲" "乙")")})]
-                [(:S誤? 物) (一 S誤-> {入 (甲) (string-append "誤("甲")")})]
+                [(:S誤? 物) (二 S誤.:S名 S誤.:S列 {入 (甲 乙) (string-append "誤("甲" "乙")")})]
                 [else 'WIP]}
               }
             示
