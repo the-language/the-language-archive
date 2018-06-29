@@ -1,4 +1,0 @@
-#!/bin/sh
-./UNIX-MAKE-DOC
-git add .&&git commit -m MAKE-DOC
-git push
