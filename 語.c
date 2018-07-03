@@ -17,6 +17,7 @@
 */
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include "語.h"
 void countInc(Value* x){
 	x->count++;
