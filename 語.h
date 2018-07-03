@@ -46,3 +46,4 @@ Value* cons(Value* head, Value* tail);
 Value* null();
 Value* symbolCopy(size_t length, char* value);
 Value* data(Value* name, Value* list);
+Value* set(Value* value);
