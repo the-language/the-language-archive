@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stddef.h>
 #include <stdlib.h>
 #include "語.h"
 void countInc(Value* x){
@@ -50,7 +51,8 @@ Value* allocValue(){
 	return r;
 }
 Value* cons(Value* head, Value* tail){
-	head->count++;
+	countInc(head);
+	countInc(tail);
 	Value* r=allocValue();
 	r->type=Cons;
 	r->value.cons.head=head;
@@ -62,3 +64,28 @@ Value nullV={
 	.type=Null
 };
 Value* null(){return &nullV;}
+Value* symbolCopy(size_t length, char* value){
+	char* new=malloc(length);
+	memcpy(new, value, length);
+	Value* r=allocValue();
+	r->type=Symbol;
+	r->value.symbol.length=length;
+	r->value.symbol.value=new;
+	return r;
+}
+Value* data(Value* name, Value* list){
+	countInc(name);
+	countInc(list);
+	Value* r=allocValue();
+	r->type=Data;
+	r->value.data.name=name;
+	r->value.data.list=list;
+	return r;
+}
+Value* set(Value* value){
+	countInc(value);
+	Value* r=allocValue();
+	r->type=Set;
+	r->value.set.value=value;
+	return r;
+}

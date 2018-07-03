@@ -28,7 +28,7 @@ struct Value {
 		} cons;
 		// null
 		struct {
-			size_t length;
+			size_t length;//byte
 			char* value;
 		} symbol;
 		struct {
@@ -44,3 +44,5 @@ void countInc(Value*);
 void countDec(Value*);
 Value* cons(Value* head, Value* tail);
 Value* null();
+Value* symbolCopy(size_t length, char* value);
+Value* data(Value* name, Value* list);
