@@ -30,3 +30,4 @@ Value data(Value name, Value list);
 bool data_p(Value);
 Value set(Value);
 bool set_p(Value);
+void assert_equal_optimize(Value, Value);
