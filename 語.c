@@ -21,6 +21,12 @@
 #include "bool.h"
 #include "eq.h"
 #include "語.h"
+void* must_malloc(size_t size){
+	void* r=NULL;
+	while(!r) r=malloc(size);
+	return r;
+}
+
 struct ValueV {
 	size_t count;
 	enum {Cons, Null, Symbol, Data, Set, Just, Delay} type;
@@ -51,10 +57,12 @@ struct ValueV {
 	} value;
 };
 typedef struct ValueV ValueV;
-typedef struct {
+struct ValueList;
+typedef struct ValueList ValueList;
+struct ValueList {
 	Value head;
 	ValueList* tail;//NULL=>無
-} ValueList;
+};
 void countInc(Value x){
 	x->count++;
 }
@@ -96,11 +104,6 @@ Value unJust(Value x){
 		free(n);
 	}
 	return x;
-}
-void* must_malloc(size_t size){
-	void* r=NULL;
-	until(r) r=malloc(size);
-	return r;
 }
 Value allocValueV(){
 	Value r=must_malloc(sizeof(ValueV));
