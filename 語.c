@@ -18,97 +18,114 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "語.h"
-struct Value {
+struct ValueV {
 	size_t count;
 	enum {Cons, Null, Symbol, Data, Set} type;
 	union {
 		struct {
-			Value* head;
-			Value* tail;
+			Value head;
+			Value tail;
 		} cons;
 		// null
 		struct {
 			size_t length;//byte
-			char* value;
+			char* ValueV;
 		} symbol;
 		struct {
-			Value* name;
-			Value* list;
+			Value name;
+			Value list;
 		} data;
 		struct {
-			Value* value;
+			Value ValueV;
 		} set;
-	} value;
+	} ValueV;
 };
-void countInc(Value* x){
+typedef struct ValueV ValueV;
+void countInc(Value x){
 	x->count++;
 }
-void countDec(Value* x){
+void countDec(Value x){
 	x->count--;
 	if(x->count==0){
 		switch(x->type){
 			case Cons:
-				countDec(x->value.cons.head);
-				countDec(x->value.cons.tail);
+				countDec(x->ValueV.cons.head);
+				countDec(x->ValueV.cons.tail);
 				break;
 			case Null:
 				break;
 			case Symbol:
-				free(x->value.symbol.value);
+				free(x->ValueV.symbol.ValueV);
 				break;
 			case Data:
-				countDec(x->value.data.name);
-				countDec(x->value.data.list);
+				countDec(x->ValueV.data.name);
+				countDec(x->ValueV.data.list);
 				break;
 			case Set:
-				countDec(x->value.set.value);
+				countDec(x->ValueV.set.ValueV);
 				break;
 		}
 		free(x);
 	}
 }
-Value* allocValue(){
-	Value* r=malloc(sizeof(Value));
+Value allocValueV(){
+	Value r=malloc(sizeof(ValueV));
 	r->count=0;
 	return r;
 }
-Value* cons(Value* head, Value* tail){
+Value cons(Value head, Value tail){
 	countInc(head);
 	countInc(tail);
-	Value* r=allocValue();
+	Value r=allocValueV();
 	r->type=Cons;
-	r->value.cons.head=head;
-	r->value.cons.tail=tail;
+	r->ValueV.cons.head=head;
+	r->ValueV.cons.tail=tail;
 	return r;
 }
-Value nullV={
+bool cons_p(Value x){
+	return x->type==Cons;
+}
+ValueV nullV={
 	.count=1,
 	.type=Null
 };
-Value* null(){return &nullV;}
-Value* symbolCopy(size_t length, char* value){
+Value null(){return &nullV;}
+bool null_p(Value x){
+	return x->type==Null;
+}
+Value symbolCopy(size_t length, char* ValueV){
 	char* new=malloc(length);
-	memcpy(new, value, length);
-	Value* r=allocValue();
+	memcpy(new, ValueV, length);
+	Value r=allocValueV();
 	r->type=Symbol;
-	r->value.symbol.length=length;
-	r->value.symbol.value=new;
+	r->ValueV.symbol.length=length;
+	r->ValueV.symbol.ValueV=new;
 	return r;
 }
-Value* data(Value* name, Value* list){
+bool symbol_p(Value x){
+	return x->type==Symbol;
+}
+Value data(Value name, Value list){
 	countInc(name);
 	countInc(list);
-	Value* r=allocValue();
+	Value r=allocValueV();
 	r->type=Data;
-	r->value.data.name=name;
-	r->value.data.list=list;
+	r->ValueV.data.name=name;
+	r->ValueV.data.list=list;
 	return r;
 }
-Value* set(Value* value){
-	countInc(value);
-	Value* r=allocValue();
+bool data_p(Value x){
+	return x->type==Data;
+}
+Value set(Value ValueV){
+	countInc(ValueV);
+	Value r=allocValueV();
 	r->type=Set;
-	r->value.set.value=value;
+	r->ValueV.set.ValueV=ValueV;
 	return r;
+}
+bool set_p(Value x){
+	return x->type==Set;
 }

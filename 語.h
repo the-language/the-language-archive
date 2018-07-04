@@ -16,12 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stddef.h>
-struct Value;
-typedef struct Value Value;
-void countInc(Value*);
-void countDec(Value*);
-Value* cons(Value* head, Value* tail);
-Value* null();
-Value* symbolCopy(size_t length, char* value);
-Value* data(Value* name, Value* list);
-Value* set(Value* value);
+struct ValueV;
+typedef struct ValueV* Value;
+void countInc(Value);
+void countDec(Value);
+Value cons(Value, Value);
+bool cons_p(Value);
+Value null();
+bool null_p(Value);
+Value symbolCopy(size_t length, char* value);
+bool symbol_p(Value);
+Value data(Value name, Value list);
+bool data_p(Value);
+Value set(Value);
+bool set_p(Value);
