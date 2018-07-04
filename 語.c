@@ -84,9 +84,13 @@ void countDec(Value x){
 }
 Value unJust(Value x){
 	ValueList* list=NULL;
-	for(;eq_p(x->type,Just);x=x->value.just.value){
+	while(eq_p(x->type,Just)){
+		ValueList* n=must_malloc(sizeof(ValueList));
+		n.head=x;n.tail=list;
 		
+		x=x->value.just.value;list=n;
 	}
+	//WIP
 }
 void* must_malloc(size_t size){
 	void* r=NULL;
