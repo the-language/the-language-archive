@@ -94,13 +94,13 @@ Value unJust(Value x){
 	ValueList* list=NULL;
 	while(eq_p(x->type,Just)){
 		ValueList* n=must_malloc(sizeof(ValueList));
-		n.head=x;n.tail=list;
+		n->head=x;n->tail=list;
 		
 		x=x->value.just.value;list=n;
 	}
 	while(list){
-		ValueList* n=list;list.head->value.just.value=x;
-		list=list.tail;
+		ValueList* n=list;list->head->value.just.value=x;
+		list=list->tail;
 		free(n);
 	}
 	return x;
