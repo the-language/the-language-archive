@@ -117,7 +117,7 @@ Value cons(Value head, Value tail){
 	return r;
 }
 bool cons_p(Value x){
-	return x->type==Cons;
+	return eq_p(unJust(x)->type,Cons);
 }
 ValueV nullV={
 	.count=1,
@@ -125,7 +125,7 @@ ValueV nullV={
 };
 Value null(){return &nullV;}
 bool null_p(Value x){
-	return eq_p(x->type,Null);
+	return eq_p(unJust(x)->type,Null);
 }
 Value symbolCopy(size_t length, char* ValueV){
 	char* new=must_malloc(length);
@@ -137,7 +137,7 @@ Value symbolCopy(size_t length, char* ValueV){
 	return r;
 }
 bool symbol_p(Value x){
-	return eq_p(x->type,Symbol);
+	return eq_p(unJust(x)->type,Symbol);
 }
 Value data(Value name, Value list){
 	countInc(name);
@@ -149,7 +149,7 @@ Value data(Value name, Value list){
 	return r;
 }
 bool data_p(Value x){
-	return eq_p(x->type,Data);
+	return eq_p(unJust(x)->type,Data);
 }
 Value set(Value ValueV){
 	countInc(ValueV);
@@ -159,7 +159,7 @@ Value set(Value ValueV){
 	return r;
 }
 bool set_p(Value x){
-	return eq_p(x->type,Set);
+	return eq_p(unJust(x)->type,Set);
 }
 void assert_equal_optimize(Value x,Value y){
 	countInc(x);
