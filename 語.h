@@ -18,28 +18,6 @@
 #include <stddef.h>
 struct Value;
 typedef struct Value Value;
-struct Value {
-	size_t count;
-	enum {Cons, Null, Symbol, Data, Set} type;
-	union {
-		struct {
-			Value* head;
-			Value* tail;
-		} cons;
-		// null
-		struct {
-			size_t length;//byte
-			char* value;
-		} symbol;
-		struct {
-			Value* name;
-			Value* list;
-		} data;
-		struct {
-			Value* value;
-		} set;
-	} value;
-};
 void countInc(Value*);
 void countDec(Value*);
 Value* cons(Value* head, Value* tail);

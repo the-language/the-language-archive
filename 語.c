@@ -19,6 +19,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include "語.h"
+struct Value {
+	size_t count;
+	enum {Cons, Null, Symbol, Data, Set} type;
+	union {
+		struct {
+			Value* head;
+			Value* tail;
+		} cons;
+		// null
+		struct {
+			size_t length;//byte
+			char* value;
+		} symbol;
+		struct {
+			Value* name;
+			Value* list;
+		} data;
+		struct {
+			Value* value;
+		} set;
+	} value;
+};
 void countInc(Value* x){
 	x->count++;
 }
