@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bool.h"
+#include "eq.h"
 #include "語.h"
 struct ValueV {
 	size_t count;
@@ -50,12 +51,16 @@ struct ValueV {
 	} value;
 };
 typedef struct ValueV ValueV;
+typedef struct {
+	Value head;
+	ValueList* tail;//NULL=>無
+} ValueList;
 void countInc(Value x){
 	x->count++;
 }
 void countDec(Value x){
 	x->count--;
-	if(x->count==0){
+	if(eq_p(x->count,0)){
 		switch(x->type){
 			case Cons:
 				countDec(x->value.cons.head);
@@ -77,8 +82,19 @@ void countDec(Value x){
 		free(x);
 	}
 }
+Value unJust(Value x){
+	ValueList* list=NULL;
+	for(;eq_p(x->type,Just);x=x->value.just.value){
+		
+	}
+}
+void* must_malloc(size_t size){
+	void* r=NULL;
+	until(r) r=malloc(size);
+	return r;
+}
 Value allocValueV(){
-	Value r=malloc(sizeof(ValueV));
+	Value r=must_malloc(sizeof(ValueV));
 	r->count=0;
 	return r;
 }
@@ -100,10 +116,10 @@ ValueV nullV={
 };
 Value null(){return &nullV;}
 bool null_p(Value x){
-	return x->type==Null;
+	return eq_p(x->type,Null);
 }
 Value symbolCopy(size_t length, char* ValueV){
-	char* new=malloc(length);
+	char* new=must_malloc(length);
 	memcpy(new, ValueV, length);
 	Value r=allocValueV();
 	r->type=Symbol;
@@ -112,7 +128,7 @@ Value symbolCopy(size_t length, char* ValueV){
 	return r;
 }
 bool symbol_p(Value x){
-	return x->type==Symbol;
+	return eq_p(x->type,Symbol);
 }
 Value data(Value name, Value list){
 	countInc(name);
@@ -124,7 +140,7 @@ Value data(Value name, Value list){
 	return r;
 }
 bool data_p(Value x){
-	return x->type==Data;
+	return eq_p(x->type,Data);
 }
 Value set(Value ValueV){
 	countInc(ValueV);
@@ -134,7 +150,7 @@ Value set(Value ValueV){
 	return r;
 }
 bool set_p(Value x){
-	return x->type==Set;
+	return eq_p(x->type,Set);
 }
 void assert_equal_optimize(Value x,Value y){
 	countInc(x);
