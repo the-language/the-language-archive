@@ -90,7 +90,12 @@ Value unJust(Value x){
 		
 		x=x->value.just.value;list=n;
 	}
-	//WIP
+	while(list){
+		ValueList* n=list;list.head->value.just.value=x;
+		list=list.tail;
+		free(n);
+	}
+	return x;
 }
 void* must_malloc(size_t size){
 	void* r=NULL;
