@@ -22,7 +22,7 @@
 #include "語.h"
 struct ValueV {
 	size_t count;
-	enum {Cons, Null, Symbol, Data, Set} type;
+	enum {Cons, Null, Symbol, Data, Set, Just, Delay} type;
 	union {
 		struct {
 			Value head;
@@ -40,6 +40,13 @@ struct ValueV {
 		struct {
 			Value value;
 		} set;
+		struct {
+			Value value;
+		} just;
+		struct {
+			void* x;
+			Value (*f)(void*);
+		} delay;
 	} value;
 };
 typedef struct ValueV ValueV;
@@ -128,4 +135,9 @@ Value set(Value ValueV){
 }
 bool set_p(Value x){
 	return x->type==Set;
+}
+void assert_equal_optimize(Value x,Value y){
+	countInc(x);
+	y->type=Just;
+	y->value.just.value=x;
 }
