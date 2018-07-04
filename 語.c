@@ -31,16 +31,16 @@ struct ValueV {
 		// null
 		struct {
 			size_t length;//byte
-			char* ValueV;
+			char* value;
 		} symbol;
 		struct {
 			Value name;
 			Value list;
 		} data;
 		struct {
-			Value ValueV;
+			Value value;
 		} set;
-	} ValueV;
+	} value;
 };
 typedef struct ValueV ValueV;
 void countInc(Value x){
@@ -51,20 +51,20 @@ void countDec(Value x){
 	if(x->count==0){
 		switch(x->type){
 			case Cons:
-				countDec(x->ValueV.cons.head);
-				countDec(x->ValueV.cons.tail);
+				countDec(x->value.cons.head);
+				countDec(x->value.cons.tail);
 				break;
 			case Null:
 				break;
 			case Symbol:
-				free(x->ValueV.symbol.ValueV);
+				free(x->value.symbol.value);
 				break;
 			case Data:
-				countDec(x->ValueV.data.name);
-				countDec(x->ValueV.data.list);
+				countDec(x->value.data.name);
+				countDec(x->value.data.list);
 				break;
 			case Set:
-				countDec(x->ValueV.set.ValueV);
+				countDec(x->value.set.value);
 				break;
 		}
 		free(x);
@@ -80,8 +80,8 @@ Value cons(Value head, Value tail){
 	countInc(tail);
 	Value r=allocValueV();
 	r->type=Cons;
-	r->ValueV.cons.head=head;
-	r->ValueV.cons.tail=tail;
+	r->value.cons.head=head;
+	r->value.cons.tail=tail;
 	return r;
 }
 bool cons_p(Value x){
@@ -100,8 +100,8 @@ Value symbolCopy(size_t length, char* ValueV){
 	memcpy(new, ValueV, length);
 	Value r=allocValueV();
 	r->type=Symbol;
-	r->ValueV.symbol.length=length;
-	r->ValueV.symbol.ValueV=new;
+	r->value.symbol.length=length;
+	r->value.symbol.value=new;
 	return r;
 }
 bool symbol_p(Value x){
@@ -112,8 +112,8 @@ Value data(Value name, Value list){
 	countInc(list);
 	Value r=allocValueV();
 	r->type=Data;
-	r->ValueV.data.name=name;
-	r->ValueV.data.list=list;
+	r->value.data.name=name;
+	r->value.data.list=list;
 	return r;
 }
 bool data_p(Value x){
@@ -123,7 +123,7 @@ Value set(Value ValueV){
 	countInc(ValueV);
 	Value r=allocValueV();
 	r->type=Set;
-	r->ValueV.set.ValueV=ValueV;
+	r->value.set.value=ValueV;
 	return r;
 }
 bool set_p(Value x){
