@@ -81,7 +81,7 @@ void Value_sub_unhold(Value x){
 			unhold(x->value.just.value);
 			break;
 		case Delay:
-			unhold(x->value.just.x);
+			unhold(x->value.just.value);
 			break;
 	}
 }
@@ -121,7 +121,7 @@ while(xs){ \
 	body \
 }
 
-Value unJustDelay(Value x){
+Value unJustDelay(Value x){//不增加hold
 	hold(x);
 	ValueList* justs=NULL;
 	ValueList* delays=NULL;
@@ -136,7 +136,7 @@ Value unJustDelay(Value x){
 			case Delay:
 				ValueList_push_alloc_hold(&justs,x);
 				Value new=x->value.delay.f(x->value.delay.x);
-				unhold(x->value.just.x);hold(new);
+				unhold(x->value.just.value);hold(new);
 				x->type=Just;x->value.just.value=new;
 				unhold(x);unhold(new);
 				x=new;
