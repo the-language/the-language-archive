@@ -166,25 +166,28 @@ Value unJustDelay(Value x){//不增加hold
 inline Value allocValueV(){
 	Value r=memory_alloc_type(ValueV);
 	r->count=1;
+	//[r]
 	return r;
 }
 extern Value cons(Value head, Value tail){
-	hold(head);
-	hold(tail);
+	hold(head);hold(tail);
 	Value r=allocValueV();
 	r->type=Cons;
 	r->value.cons.head=head;
 	r->value.cons.tail=tail;
+	//[r]
 	return r;
 }
 extern Value cons_head(Value x){
 	assert(cons_p(x));
 	hold(x->value.cons.head);
+	//[x->value.cons.head]
 	return x->value.cons.head;
 }
 extern Value cons_tail(Value x){
 	assert(cons_p(x));
 	hold(x->value.cons.tail);
+	//[x->value.cons.head]
 	return x->value.cons.tail;
 }
 extern bool cons_p(Value x){
@@ -205,6 +208,7 @@ extern Value symbol_copy(size_t length, char* x){
 	r->type=Symbol;
 	r->value.symbol.length=length;
 	r->value.symbol.value=new;
+	//[r]
 	return r;
 }
 //symbol_const("...")
@@ -213,6 +217,7 @@ extern Value symbol_const(char* x){
 	r->type=SymbolConst;
 	r->value.symbol.length=strlen(x);
 	r->value.symbol.value=x;
+	//[r]
 	return r;
 }
 extern size_t symbol_length(Value x){
@@ -227,22 +232,24 @@ extern bool symbol_p(Value x){
 	return Value_is_p(x, Symbol) || Value_is_p(x, SymbolConst);
 }
 extern Value data(Value name, Value list){
-	hold(name);
-	hold(list);
+	hold(name);hold(list);
 	Value r=allocValueV();
 	r->type=Data;
 	r->value.data.name=name;
 	r->value.data.list=list;
+	//[r]
 	return r;
 }
 extern Value data_name(Value x){
 	assert(data_p(x));
 	hold(x->value.data.name);
+	//[x->value.data.name]
 	return x->value.data.name;
 }
 extern Value data_list(Value x){
 	assert(data_p(x));
 	hold(x->value.data.list);
+	//[x->value.data.list]
 	return x->value.data.list;
 }
 extern bool data_p(Value x){
@@ -253,11 +260,13 @@ extern Value collection(Value x){
 	Value r=allocValueV();
 	r->type=Collection;
 	r->value.collection.value=x;
+	//[r]
 	return r;
 }
 extern Value uncollection(Value x){
 	assert(collection_p(x));
 	hold(x->value.collection.value);
+	//[x->value.collection.value]
 	return x->value.collection.value;
 }
 extern bool collection_p(Value x){return Value_is_p(x, Collection);}
@@ -265,4 +274,5 @@ extern void assert_equal_optimize(Value x,Value y){
 	hold(x);Value_sub_unhold(y);
 	y->type=Just;
 	y->value.just.value=x;
+	//[]
 }
