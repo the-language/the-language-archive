@@ -15,20 +15,29 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "bool.h"
+#include <stddef.h>
 struct ValueV;
 typedef struct ValueV* Value;
 extern void hold(Value x);
 extern void unhold(Value x);
 extern Value cons(Value head, Value tail);
+extern Value cons_head(Value x);
+extern Value cons_tail(Value x);
 extern bool cons_p(Value x);
 extern Value null();
 extern bool null_p(Value x);
 extern Value symbol_copy(size_t length, char* x);
 //symbol_const("...")
 extern Value symbol_const(char* x);
+extern size_t symbol_length(Value x);
+extern void symbol_value_copyTo(Value x, char* s);
 extern bool symbol_p(Value x);
 extern Value data(Value name, Value list);
 extern bool data_p(Value x);
+extern Value data_name(Value x);
+extern Value data_list(Value x);
 extern Value set(Value x);
+extern Value unset(Value x);
 extern bool set_p(Value x);
 extern void assert_equal_optimize(Value x,Value y);

@@ -15,16 +15,16 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "語.h"
 #include <string.h>
 #include <assert.h>
 #include "bool.h"
 #include "eq.h"
-#include "語.h"
 #include "memory.h"
 
 typedef struct ValueV ValueV;
 struct ValueV {
-	size_t count;
+	size_t count; //GC => ARC
 	enum {Cons, Null, Symbol, SymbolConst, Data, Set, Just, Delay} type;
 	union {
 		struct {
@@ -160,6 +160,16 @@ extern Value cons(Value head, Value tail){
 	r->value.cons.tail=tail;
 	return r;
 }
+extern Value cons_head(Value x){
+	assert(cons_p(x));
+	hold(x->value.cons.head);
+	return x->value.cons.head;
+}
+extern Value cons_tail(Value x){
+	assert(cons_p(x));
+	hold(x->value.cons.tail);
+	return x->value.cons.tail;
+}
 extern bool cons_p(Value x){
 	return Value_is_p(x, Cons);
 }
@@ -188,6 +198,14 @@ extern Value symbol_const(char* x){
 	r->value.symbol.value=x;
 	return r;
 }
+extern size_t symbol_length(Value x){
+	assert(symbol_p(x));
+	return x->value.symbol.length;
+}
+extern void symbol_value_copyTo(Value x, char* s){
+	assert(symbol_p(x));
+	memcpy(s, x->value.symbol.value, x->value.symbol.length);
+}
 extern bool symbol_p(Value x){
 	return Value_is_p(x, Symbol) || Value_is_p(x, SymbolConst);
 }
@@ -200,6 +218,16 @@ extern Value data(Value name, Value list){
 	r->value.data.list=list;
 	return r;
 }
+extern Value data_name(Value x){
+	assert(data_p(x));
+	hold(x->value.data.name);
+	return x->value.data.name;
+}
+extern Value data_list(Value x){
+	assert(data_p(x));
+	hold(x->value.data.list);
+	return x->value.data.list;
+}
 extern bool data_p(Value x){
 	return Value_is_p(x, Data);
 }
@@ -210,9 +238,12 @@ extern Value set(Value x){
 	r->value.set.value=x;
 	return r;
 }
-extern bool set_p(Value x){
-	return Value_is_p(x, Set);
+extern Value unset(Value x){
+	assert(set_p(x));
+	hold(x->value.set.value);
+	return x->value.set.value;
 }
+extern bool set_p(Value x){return Value_is_p(x, Set);}
 extern void assert_equal_optimize(Value x,Value y){
 	hold(x);Value_sub_unhold(y);
 	y->type=Just;

@@ -23,5 +23,5 @@ inline void* memory_maybeAlloc(size_t size){
 extern void* memory_alloc(size_t);
 #define memory_alloc_type(t) memory_alloc(sizeof(t))
 inline void memory_free(void* ptr){
-	return free(ptr);
+	free(ptr);
 }
