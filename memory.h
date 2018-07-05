@@ -18,5 +18,5 @@
 #include <stddef.h>
 void* memory_maybeAlloc(size_t);
 void* memory_alloc(size_t);
-#define memory_allocType(t) memory_alloc(sizeof(m))
+#define memory_allocType(t) memory_alloc(sizeof(t))
 void memory_free(void*);
