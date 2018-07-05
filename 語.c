@@ -16,14 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string.h>
+#include <assert.h>
 #include "bool.h"
 #include "eq.h"
 #include "語.h"
 #include "memory.h"
 
+typedef struct ValueV ValueV;
 struct ValueV {
 	size_t count;
-	enum {Cons, Null, Symbol, Data, Set, Just, Delay} type;
+	enum {Cons, Null, Symbol, SymbolConst, Data, Set, Just, Delay} type;
 	union {
 		struct {
 			Value head;
@@ -45,135 +47,174 @@ struct ValueV {
 			Value value;
 		} just;
 		struct {
-			void* x;//f釋放它
-			Value (*f)(void*);
+			void* x;//f釋放x
+			Value (*f)(void*);//不用free
 		} delay;
 	} value;
 };
-typedef struct ValueV ValueV;
+extern void hold(Value x){
+	assert(x->count);
+	x->count++;
+}
+void Value_sub_unhold(Value x){
+	switch(x->type){
+		case Cons:
+			unhold(x->value.cons.head);
+			unhold(x->value.cons.tail);
+			break;
+		case Null:
+			break;
+		case Symbol:
+			memory_free(x->value.symbol.value);
+			break;
+		case SymbolConst:
+			break;
+		case Data:
+			unhold(x->value.data.name);
+			unhold(x->value.data.list);
+			break;
+		case Set:
+			unhold(x->value.set.value);
+			break;
+	}
+}
+extern void unhold(Value x){
+	x->count--;
+	if(eq_p(x->count,0)){
+		Value_sub_unhold(x);
+		memory_free(x);
+	}
+}
+#define Value_is_p(v, t) eq_p(unJustDelay(v)->type, t)
+
 struct ValueList;
 typedef struct ValueList ValueList;
 struct ValueList {
 	Value head;
 	ValueList* tail;//NULL=>無
 };
-void countInc(Value x){
-	x->count++;
+inline void ValueList_push_alloc(ValueList** l,Value x){
+	ValueList* r=memory_alloc_type(ValueList);
+	r->head=x;r->tail=*l;
+	*l=r;
 }
-void countDec(Value x){
-	x->count--;
-	if(eq_p(x->count,0)){
+inline void ValueList_push_alloc_hold(ValueList** l,Value x){
+	hold(x);
+	return ValueList_push_alloc(l,x);
+}
+inline Value ValueList_pop_free(ValueList** l){
+	ValueList* nl=(*l)->tail;Value r=(*l)->head;
+	memory_free(*l);
+	*l=nl;
+	return r;
+}
+#define ValueList_for_free_m(xs,i,body) \
+while(xs){ \
+	Value i=ValueList_pop_free(&xs); \
+	body \
+}
+
+Value unJustDelay(Value x){
+	hold(x);
+	ValueList* justs=NULL;
+	ValueList* delays=NULL;
+	while(true){
 		switch(x->type){
-			case Cons:
-				countDec(x->value.cons.head);
-				countDec(x->value.cons.tail);
+			case Just:
+				ValueList_push_alloc_hold(&justs,x);
+				unhold(x);
+				x=x->value.just.value;
+				hold(x);
 				break;
-			case Null:
+			case Delay:
+				ValueList_push_alloc_hold(&justs,x);
+				Value new=x->value.delay.f(x->value.delay.x);
+				hold(new);
+				x->type=Just;x->value.just.value=new;
+				unhold(x);
 				break;
-			case Symbol:
-				memory_free(x->value.symbol.value);
-				break;
-			case Data:
-				countDec(x->value.data.name);
-				countDec(x->value.data.list);
-				break;
-			case Set:
-				countDec(x->value.set.value);
-				break;
+			default:
+				goto out;
 		}
-		memory_free(x);
 	}
-}
-Value unJust(Value x){
-	ValueList* list=NULL;
-	while(eq_p(x->type,Just)){
-		ValueList* n=memory_allocType(ValueList);
-		n->head=x;n->tail=list;
-		
-		x=x->value.just.value;list=n;
-	}
-	while(list){
-		ValueList* n=list;list->head->value.just.value=x;
-		list=list->tail;
-		memory_free(n);
-	}
+	out:
+	ValueList_for_free_m(justs,v,{
+		unhold(v->value.just.value);hold(x);
+		v->value.just.value=x;
+		unhold(v);
+	});
+	unhold(x);
 	return x;
 }
-Value unDelay(Value x){
-	ValueList* list=NULL;
-	while(eq_p(x->type, Delay)){//WIP-Just
-		ValueList* n=memory_allocType(ValueList);
-		n->head=x;n->tail=list;
-		
-		x=x->value.delay.f(x->value.delay.x);list=n;
-	}
-	while(list){
-		ValueList* n=list;list->head->type=Just;list->head->value.just.value=x;
-		list=list->tail;countDec(n->head);
-		memory_free(n);
-	}
-}
-Value allocValueV(){
-	Value r=memory_allocType(ValueV);
+inline Value allocValueV(){
+	Value r=memory_alloc_type(ValueV);
 	r->count=1;
 	return r;
 }
-Value cons(Value head, Value tail){
-	countInc(head);
-	countInc(tail);
+extern Value cons(Value head, Value tail){
+	hold(head);
+	hold(tail);
 	Value r=allocValueV();
 	r->type=Cons;
 	r->value.cons.head=head;
 	r->value.cons.tail=tail;
 	return r;
 }
-bool cons_p(Value x){
-	return eq_p(unJust(x)->type,Cons);
+extern bool cons_p(Value x){
+	return Value_is_p(x, Cons);
 }
 ValueV nullV={
 	.count=1,
 	.type=Null
 };
-Value null(){return &nullV;}
-bool null_p(Value x){
-	return eq_p(unJust(x)->type,Null);
+extern Value null(){return &nullV;}
+extern bool null_p(Value x){
+	return Value_is_p(x, Null);
 }
-Value symbolCopy(size_t length, char* ValueV){
+extern Value symbol_copy(size_t length, char* x){
 	char* new=memory_alloc(length);
-	memcpy(new, ValueV, length);
+	memcpy(new, x, length);
 	Value r=allocValueV();
 	r->type=Symbol;
 	r->value.symbol.length=length;
 	r->value.symbol.value=new;
 	return r;
 }
-bool symbol_p(Value x){
-	return eq_p(unJust(x)->type,Symbol);
+//symbol_const("...")
+extern Value symbol_const(char* x){
+	Value r=allocValueV();
+	r->type=SymbolConst;
+	r->value.symbol.length=strlen(x);
+	r->value.symbol.value=x;
+	return r;
 }
-Value data(Value name, Value list){
-	countInc(name);
-	countInc(list);
+extern bool symbol_p(Value x){
+	return Value_is_p(x, Symbol) || Value_is_p(x, SymbolConst);
+}
+extern Value data(Value name, Value list){
+	hold(name);
+	hold(list);
 	Value r=allocValueV();
 	r->type=Data;
 	r->value.data.name=name;
 	r->value.data.list=list;
 	return r;
 }
-bool data_p(Value x){
-	return eq_p(unJust(x)->type,Data);
+extern bool data_p(Value x){
+	return Value_is_p(x, Data);
 }
-Value set(Value ValueV){
-	countInc(ValueV);
+extern Value set(Value x){
+	hold(x);
 	Value r=allocValueV();
 	r->type=Set;
-	r->value.set.value=ValueV;
+	r->value.set.value=x;
 	return r;
 }
-bool set_p(Value x){
-	return eq_p(unJust(x)->type,Set);
+extern bool set_p(Value x){
+	return Value_is_p(x, Set);
 }
-void assert_equal_optimize(Value x,Value y){
-	countInc(x);
+extern void assert_equal_optimize(Value x,Value y){
+	hold(x);Value_sub_unhold(y);
 	y->type=Just;
 	y->value.just.value=x;
 }

@@ -16,7 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stddef.h>
-void* memory_maybeAlloc(size_t);
-void* memory_alloc(size_t);
-#define memory_allocType(t) memory_alloc(sizeof(t))
-void memory_free(void*);
+#include <stdlib.h>
+inline void* memory_maybeAlloc(size_t size){
+	return malloc(size);
+}
+extern void* memory_alloc(size_t);
+#define memory_alloc_type(t) memory_alloc(sizeof(t))
+inline void memory_free(void* ptr){
+	return free(ptr);
+}

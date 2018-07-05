@@ -17,16 +17,18 @@
 */
 struct ValueV;
 typedef struct ValueV* Value;
-void countInc(Value);
-void countDec(Value);
-Value cons(Value, Value);
-bool cons_p(Value);
-Value null();
-bool null_p(Value);
-Value symbolCopy(size_t length, char* value);
-bool symbol_p(Value);
-Value data(Value name, Value list);
-bool data_p(Value);
-Value set(Value);
-bool set_p(Value);
-void assert_equal_optimize(Value, Value);
+extern void hold(Value x);
+extern void unhold(Value x);
+extern Value cons(Value head, Value tail);
+extern bool cons_p(Value x);
+extern Value null();
+extern bool null_p(Value x);
+extern Value symbol_copy(size_t length, char* x);
+//symbol_const("...")
+extern Value symbol_const(char* x);
+extern bool symbol_p(Value x);
+extern Value data(Value name, Value list);
+extern bool data_p(Value x);
+extern Value set(Value x);
+extern bool set_p(Value x);
+extern void assert_equal_optimize(Value x,Value y);
