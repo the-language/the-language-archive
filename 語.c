@@ -138,7 +138,7 @@ Value unJustDelay(Value x){
 				Value new=x->value.delay.f(x->value.delay.x);
 				unhold(x->value.just.x);hold(new);
 				x->type=Just;x->value.just.value=new;
-				unhold(x);
+				unhold(x);unhold(new);
 				x=new;
 				break;
 			default:
