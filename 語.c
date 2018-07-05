@@ -48,8 +48,8 @@ struct ValueV{
 			Value value;
 		} just;
 		struct {
-			void* x;//f釋放x
-			Value (*f)(void*);//不用free
+			Value x;
+			Value (*f)(Value);//f不用free
 		} delay;
 	} value;
 };
@@ -76,6 +76,12 @@ void Value_sub_unhold(Value x){
 			break;
 		case Set:
 			unhold(x->value.set.value);
+			break;
+		case Just:
+			unhold(x->value.just.value);
+			break;
+		case Delay:
+			unhold(x->value.just.x);
 			break;
 	}
 }
@@ -130,9 +136,10 @@ Value unJustDelay(Value x){
 			case Delay:
 				ValueList_push_alloc_hold(&justs,x);
 				Value new=x->value.delay.f(x->value.delay.x);
-				hold(new);
+				unhold(x->value.just.x);hold(new);
 				x->type=Just;x->value.just.value=new;
 				unhold(x);
+				x=new;
 				break;
 			default:
 				goto out;
