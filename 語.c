@@ -144,6 +144,7 @@ Value unJustDelay(Value x){//不增加hold
 				unhold(x);
 				//[new]
 				x=new;
+				//[x]
 				break;
 			default:
 				goto out;
