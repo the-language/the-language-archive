@@ -15,6 +15,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#define true 0
-#define false 1
-typedef char bool;
+#include <stddef.h>
+void* memory_maybeAlloc(size_t);
+void* memory_alloc(size_t);
+#define memory_allocType(t) memory_alloc(sizeof(m))
+void memory_free(void*);

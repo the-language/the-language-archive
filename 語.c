@@ -2,9 +2,9 @@
     語: The Language
     Copyright (C) 2018  Zaoqi
 
-    This program is free software: you can redistribute it and/or modify
+    This program is memory_free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
+    by the memory_free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,17 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 #include "bool.h"
 #include "eq.h"
 #include "語.h"
-void* must_malloc(size_t size){
-	void* r=NULL;
-	while(!r) r=malloc(size);
-	return r;
-}
+#include "memory.h"
 
 struct ValueV {
 	size_t count;
@@ -51,7 +45,7 @@ struct ValueV {
 			Value value;
 		} just;
 		struct {
-			void* x;
+			void* x;//f釋放它
 			Value (*f)(void*);
 		} delay;
 	} value;
@@ -77,7 +71,7 @@ void countDec(Value x){
 			case Null:
 				break;
 			case Symbol:
-				free(x->value.symbol.value);
+				memory_free(x->value.symbol.value);
 				break;
 			case Data:
 				countDec(x->value.data.name);
@@ -87,13 +81,13 @@ void countDec(Value x){
 				countDec(x->value.set.value);
 				break;
 		}
-		free(x);
+		memory_free(x);
 	}
 }
 Value unJust(Value x){
 	ValueList* list=NULL;
 	while(eq_p(x->type,Just)){
-		ValueList* n=must_malloc(sizeof(ValueList));
+		ValueList* n=memory_allocType(ValueList);
 		n->head=x;n->tail=list;
 		
 		x=x->value.just.value;list=n;
@@ -101,13 +95,27 @@ Value unJust(Value x){
 	while(list){
 		ValueList* n=list;list->head->value.just.value=x;
 		list=list->tail;
-		free(n);
+		memory_free(n);
 	}
 	return x;
 }
+Value unDelay(Value x){
+	ValueList* list=NULL;
+	while(eq_p(x->type, Delay)){//WIP-Just
+		ValueList* n=memory_allocType(ValueList);
+		n->head=x;n->tail=list;
+		
+		x=x->value.delay.f(x->value.delay.x);list=n;
+	}
+	while(list){
+		ValueList* n=list;list->head->type=Just;list->head->value.just.value=x;
+		list=list->tail;countDec(n->head);
+		memory_free(n);
+	}
+}
 Value allocValueV(){
-	Value r=must_malloc(sizeof(ValueV));
-	r->count=0;
+	Value r=memory_allocType(ValueV);
+	r->count=1;
 	return r;
 }
 Value cons(Value head, Value tail){
@@ -131,7 +139,7 @@ bool null_p(Value x){
 	return eq_p(unJust(x)->type,Null);
 }
 Value symbolCopy(size_t length, char* ValueV){
-	char* new=must_malloc(length);
+	char* new=memory_alloc(length);
 	memcpy(new, ValueV, length);
 	Value r=allocValueV();
 	r->type=Symbol;
