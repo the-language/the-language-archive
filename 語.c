@@ -120,38 +120,47 @@ while(xs){ \
 	Value i=ValueList_pop_free(&xs); \
 	body \
 }
+#define Value_set(x,y) {unhold(x);hold(y);x=y;}
 
 Value unJustDelay(Value x){//不增加hold
 	hold(x);
+	//[x] //部分hold列表
 	ValueList* justs=NULL;
 	ValueList* delays=NULL;
 	while(true){
 		switch(x->type){
 			case Just:
 				ValueList_push_alloc_hold(&justs,x);
-				unhold(x);
-				x=x->value.just.value;
-				hold(x);
+				//[x]
+				Value_set(x,x->value.just.value);//[x->value.just.value]
+				//[x]
 				break;
 			case Delay:
 				ValueList_push_alloc_hold(&justs,x);
 				Value new=x->value.delay.f(x->value.delay.x);
-				unhold(x->value.just.value);hold(new);
-				x->type=Just;x->value.just.value=new;
-				unhold(x);unhold(new);
+				//[new,x]
+				unhold(x->value.delay.x);x->type=Just;hold(new);x->value.just.value=new;
+				//[new,x]
+				unhold(x);
+				//[new]
 				x=new;
 				break;
 			default:
 				goto out;
 		}
+		//[x]
 	}
+	//[x]
 	out:
 	ValueList_for_free_m(justs,v,{
-		unhold(v->value.just.value);hold(x);
-		v->value.just.value=x;
+		//[v,v->value.just.value,x]
+		Value_set(v->value.just.value,x);//[v,x]
 		unhold(v);
+		//[x]
 	});
+	//[x]
 	unhold(x);
+	//[]
 	return x;
 }
 inline Value allocValueV(){
