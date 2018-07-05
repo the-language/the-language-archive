@@ -23,9 +23,10 @@
 #include "memory.h"
 
 typedef struct ValueV ValueV;
+enum Type{Cons, Null, Symbol, SymbolConst, Data, Set, Just, Delay};
 struct ValueV {
 	size_t count; //GC => ARC
-	enum {Cons, Null, Symbol, SymbolConst, Data, Set, Just, Delay} type;
+	enum Type type;
 	union {
 		struct {
 			Value head;
