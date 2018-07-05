@@ -23,7 +23,7 @@
 #include "memory.h"
 
 typedef struct ValueV ValueV;
-typedef enum {Cons, Null, Symbol, SymbolConst, Data, Set, Just, Delay} ValueVType;
+typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
 struct ValueV{
 	size_t count; //GC => ARC
 	ValueVType type;
@@ -43,7 +43,7 @@ struct ValueV{
 		} data;
 		struct {
 			Value value;
-		} set;
+		} collection;
 		struct {
 			Value value;
 		} just;
@@ -74,8 +74,8 @@ void Value_sub_unhold(Value x){
 			unhold(x->value.data.name);
 			unhold(x->value.data.list);
 			break;
-		case Set:
-			unhold(x->value.set.value);
+		case Collection:
+			unhold(x->value.collection.value);
 			break;
 		case Just:
 			unhold(x->value.just.value);
@@ -239,19 +239,19 @@ extern Value data_list(Value x){
 extern bool data_p(Value x){
 	return Value_is_p(x, Data);
 }
-extern Value set(Value x){
+extern Value collection(Value x){
 	hold(x);
 	Value r=allocValueV();
-	r->type=Set;
-	r->value.set.value=x;
+	r->type=Collection;
+	r->value.collection.value=x;
 	return r;
 }
-extern Value unset(Value x){
-	assert(set_p(x));
-	hold(x->value.set.value);
-	return x->value.set.value;
+extern Value uncollection(Value x){
+	assert(collection_p(x));
+	hold(x->value.collection.value);
+	return x->value.collection.value;
 }
-extern bool set_p(Value x){return Value_is_p(x, Set);}
+extern bool collection_p(Value x){return Value_is_p(x, Collection);}
 extern void assert_equal_optimize(Value x,Value y){
 	hold(x);Value_sub_unhold(y);
 	y->type=Just;
