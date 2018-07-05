@@ -24,7 +24,7 @@
 
 typedef struct ValueV ValueV;
 enum Type{Cons, Null, Symbol, SymbolConst, Data, Set, Just, Delay};
-struct ValueV {
+struct ValueV{
 	size_t count; //GC => ARC
 	enum Type type;
 	union {
