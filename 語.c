@@ -23,7 +23,9 @@
 #include "memory.h"
 
 typedef struct ValueV ValueV;
-typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
+struct Letrec;
+typedef struct Letrec Letrec;
+typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay, Letrec} ValueVType;
 struct ValueV{
 	size_t count; //GC => ARC
 	ValueVType type;
@@ -41,16 +43,16 @@ struct ValueV{
 			Value name;
 			Value list;
 		} data;
+		Value collection;
+		Value just;
 		struct {
-			Value value;
-		} collection;
-		struct {
-			Value value;
-		} just;
-		struct {
-			Value x;
 			Value (*f)(Value);//f不用free
+			Value x;
 		} delay;
+		struct {
+			Letrec* rec;
+			size_t id;
+		} letrec;
 	} value;
 };
 extern void hold(Value x){
@@ -75,13 +77,13 @@ void Value_sub_unhold(Value x){
 			unhold(x->value.data.list);
 			break;
 		case Collection:
-			unhold(x->value.collection.value);
+			unhold(x->value.collection);
 			break;
 		case Just:
-			unhold(x->value.just.value);
+			unhold(x->value.just);
 			break;
 		case Delay:
-			unhold(x->value.just.value);
+			unhold(x->value.delay.x);
 			break;
 	}
 }
@@ -122,6 +124,74 @@ while(xs){ \
 }
 #define Value_set(x,y) {unhold(x);hold(y);x=y;}
 
+
+struct LetrecValue;
+typedef struct LetrecValue LetrecValue;
+struct Letrec{
+	size_t count;
+	
+	size_t size;
+	LetrecValue* list;
+};
+inline void holdLetrec(Letrec* rec){
+	assert(rec->count);
+	rec->count++
+}
+struct LetrecValue{
+	enum {RecCons, RecData, RecCollection, RecDelay, RecValue} type;
+	union {
+		struct {
+			size_t head;
+			size_t tail;
+		} cons;
+		struct {
+			size_t name;
+			size_t list;
+		} data;
+		size_t collection;
+		struct {
+			Value (*f)(Value);
+			size_t x;
+		} delay;
+		Value value;
+	} value;
+};
+Value makeValueLetrec(Letrec* rec, size_t id){
+	holdLetrec(rec);
+	Value r=allocValueV();
+	r->type=Letrec;
+	r->value.letrec.rec=rec;r->value.letrec.id=id;
+	//[r]
+	return r;
+};
+void unLetrec(Letrec* rec, size_t id){
+	assert(id<rec->size);
+	LetrecValue* v=&(rec->list[id]);
+	switch(v->type){
+		case RecCons:
+			Value head=makeValueLetrec(rec, v->value.cons.head);Value tail=makeValueLetrec(rec, v->value.cons.tail);
+			Value r=cons(head, tail);
+			unhold(head);unhold(tail);
+			return r;
+		case RecData:
+			Value name=makeValueLetrec(rec, v->value.data.name);Value list=makeValueLetrec(rec, v->value.data.list);
+			Value r=data(name, list);
+			unhold(name);unhold(list);
+			return r;
+		case RecCollection:
+			return makeValueLetrec(rec, v->value.collection);
+		case RecValue:
+			Value x=makeValueLetrec(rec, v->value.delay.x);
+			//WIP
+			
+		
+}
+void LetrecValue_unDelay(Letrec* rec, size_t id){
+	assert(id<rec->size);
+	LetrecValue* v=rec->list[id];
+	//WIP
+}
+
 Value unJustDelay(Value x){//不增加hold
 	hold(x);
 	//[x] //部分hold列表
@@ -132,14 +202,14 @@ Value unJustDelay(Value x){//不增加hold
 			case Just:
 				ValueList_push_alloc_hold(&justs,x);
 				//[x]
-				Value_set(x,x->value.just.value);//[x->value.just.value]
+				Value_set(x,x->value.just);//[x->value.just]
 				//[x]
 				break;
 			case Delay:
 				ValueList_push_alloc_hold(&justs,x);
 				Value new=x->value.delay.f(x->value.delay.x);
 				//[new,x]
-				unhold(x->value.delay.x);x->type=Just;hold(new);x->value.just.value=new;
+				unhold(x->value.delay.x);x->type=Just;hold(new);x->value.just=new;
 				//[new,x]
 				unhold(x);
 				//[new]
@@ -154,8 +224,8 @@ Value unJustDelay(Value x){//不增加hold
 	//[x]
 	out:
 	ValueList_for_free_m(justs,v,{
-		//[v,v->value.just.value,x]
-		Value_set(v->value.just.value,x);//[v,x]
+		//[v,v->value.just,x]
+		Value_set(v->value.just,x);//[v,x]
 		unhold(v);
 		//[x]
 	});
@@ -181,6 +251,7 @@ extern Value cons(Value head, Value tail){
 }
 extern Value cons_head(Value x){
 	assert(cons_p(x));
+	//BUGS
 	hold(x->value.cons.head);
 	//[x->value.cons.head]
 	return x->value.cons.head;
@@ -260,20 +331,29 @@ extern Value collection(Value x){
 	hold(x);
 	Value r=allocValueV();
 	r->type=Collection;
-	r->value.collection.value=x;
+	r->value.collection=x;
 	//[r]
 	return r;
 }
 extern Value uncollection(Value x){
 	assert(collection_p(x));
-	hold(x->value.collection.value);
-	//[x->value.collection.value]
-	return x->value.collection.value;
+	hold(x->value.collection);
+	//[x->value.collection]
+	return x->value.collection;
 }
 extern bool collection_p(Value x){return Value_is_p(x, Collection);}
 extern void assert_equal_optimize(Value x,Value y){
 	hold(x);Value_sub_unhold(y);
 	y->type=Just;
-	y->value.just.value=x;
+	y->value.just=x;
 	//[]
 }
+extern Value delay(Value (*f)(Value), Value x){
+	hold(x);
+	Value r=allocValueV();
+	r->type=Delay;
+	r->value.delay.f=f;r->value.delay.x=x;
+	//[r]
+	return r;
+}
+	

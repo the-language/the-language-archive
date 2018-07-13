@@ -41,3 +41,4 @@ extern Value collection(Value x);
 extern Value uncollection(Value x);
 extern bool collection_p(Value x);
 extern void assert_equal_optimize(Value x,Value y);
+extern Value delay(Value (*f)(Value), Value x);
