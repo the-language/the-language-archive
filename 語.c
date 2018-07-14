@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+		//WIP
 #include "語.h"
 #include <string.h>
 #include <assert.h>
@@ -138,6 +139,7 @@ inline void holdLetrec(Letrec* rec){
 	rec->count++
 }
 struct LetrecValue{
+	Value un;//“弱引用”，可以是NULL。 ->type爲Letrec。
 	enum {RecCons, RecData, RecCollection, RecDelay, RecValue} type;
 	union {
 		struct {
@@ -156,47 +158,75 @@ struct LetrecValue{
 		Value value;
 	} value;
 };
-Value makeValueLetrec(Letrec* rec, size_t id){
-	holdLetrec(rec);
-	Value r=allocValueV();
-	r->type=Letrec;
-	r->value.letrec.rec=rec;r->value.letrec.id=id;
-	//[r]
-	return r;
+void LetrecGC(Letrec* rec){
+	//WIP
+}
+Value make_ValueLetrec(Letrec* rec, size_t id){
+	assert(id<rec->size);
+	Value r=rec->list[id]->un;
+	if(r){
+		hold(r);
+		//[r]
+		return r;
+	}else{
+		holdLetrec(rec);
+		Value r=allocValueV();
+		r->type=Letrec;
+		r->value.letrec.rec=rec;r->value.letrec.id=id;
+		rec->list[id]->un=r;
+		//[r]
+		return r;
+	}
 };
-void unLetrec(Letrec* rec, size_t id){
+Value unLetrec(Letrec* rec, size_t id){
 	assert(id<rec->size);
 	LetrecValue* v=&(rec->list[id]);
 	switch(v->type){
 		case RecCons:
-			Value head=makeValueLetrec(rec, v->value.cons.head);Value tail=makeValueLetrec(rec, v->value.cons.tail);
+			Value head=make_ValueLetrec(rec, v->value.cons.head);Value tail=make_ValueLetrec(rec, v->value.cons.tail);
 			Value r=cons(head, tail);
 			unhold(head);unhold(tail);
+			//[r]
 			return r;
 		case RecData:
-			Value name=makeValueLetrec(rec, v->value.data.name);Value list=makeValueLetrec(rec, v->value.data.list);
+			Value name=make_ValueLetrec(rec, v->value.data.name);Value list=make_ValueLetrec(rec, v->value.data.list);
 			Value r=data(name, list);
 			unhold(name);unhold(list);
+			//[r]
 			return r;
 		case RecCollection:
-			return makeValueLetrec(rec, v->value.collection);
+			return make_ValueLetrec(rec, v->value.collection); //[make_ValueLetrec(rec, v->value.collection)]
 		case RecDelay:
-			Value x=makeValueLetrec(rec, v->value.delay.x);
+			Value x=make_ValueLetrec(rec, v->value.delay.x);
 			Value r=delay(v->value.delay.f, x);
 			unhold(x);
+			//[r]
 			return r;
 		case RecValue:
-			Value x=makeValueLetrec(rec, v->value.delay.x);
+			Value x=make_ValueLetrec(rec, v->value.delay.x);
 			Value r=delay(v->value.delay.f, x);
 			unhold(x);
+			//[r]
 			return r;
 		default:assert(0);
 	}
 }
-void LetrecValue_unDelay(Letrec* rec, size_t id){
+Value un_LetrecValue_Delay(Letrec* rec, size_t id){
 	assert(id<rec->size);
-	LetrecValue* v=rec->list[id];
-	if(v->type==R
+	Value value=unLetrec(rec, id);
+	//[value] //部分hold列表
+	if(eq_p(value->type, Delay)){
+		Value value=unJustDelay(value);
+		//[value]
+		//WIP
+		//[
+		size_t new=rec->size;//新的最后一个
+		rec->size++
+		rec->list=realloc(rec->list, (rec->size)*sizeof(LetrecValue));
+		//]
+	}else{
+		return value;
+	}
 }
 
 Value unJustDelay(Value x){//不增加hold
@@ -205,6 +235,7 @@ Value unJustDelay(Value x){//不增加hold
 	ValueList* justs=NULL;
 	ValueList* delays=NULL;
 	while(true){
+		//[x]
 		switch(x->type){
 			case Just:
 				ValueList_push_alloc_hold(&justs,x);
