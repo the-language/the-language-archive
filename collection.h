@@ -24,10 +24,13 @@ typedef struct MutableCollectionPointer{
 	MutableCollectionPointer* zero;
 	MutableCollectionPointer* one;
 } MutableCollectionPointer;
-inline MutableCollectionPointer* make_MutableCollectionPointer(){
+inline MutableCollectionPointer* new_MutableCollectionPointer(){
 	MutableCollectionPointer* r=memory_new_type(MutableCollectionPointer);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;
 };
+inline void delete_MutableMapPointer(MutableCollectionPointer* c){
+	memory_remove(c);
+}
 extern void MutableCollectionPointer_add(MutableCollectionPointer* c, void* x);
 extern bool MutableCollectionPointer_has(MutableCollectionPointer* c, void* x);
