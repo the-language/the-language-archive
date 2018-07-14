@@ -29,6 +29,7 @@ extern void delete_MapPointer(MapPointer* m){
 		if(m->has_zeros){memory_delete(m->zeros);}
 		if(m->has_zero){ListPointer_push_m(ms, m->zero);}
 		if(m->has_one){ListPointer_push_m(ms, m->one);}
+		memory_delete(m);
 	}
 }
 extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
