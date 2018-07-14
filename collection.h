@@ -44,4 +44,5 @@ inline bool CollectionPointer_null_p(CollectionPointer* c){
 	return !CollectionPointer_not_null_p(c);
 }
 
+
 #endif

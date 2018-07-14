@@ -42,5 +42,12 @@ extern void* orNull_MapPointer_ref(MapPointer* m, void* key);
 extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v);
 extern void* assert_MapPointer_ref(MapPointer* m, void* key);
 
+inline bool MapPointer_not_null_p(MapPointer* m){
+	return m->has_zeros||m->has_zero||m->has_one;
+}
+inline bool MapPointer_null_p(MapPointer* c){
+	return !MapPointer_not_null_p(c);
+}
+
 
 #endif
