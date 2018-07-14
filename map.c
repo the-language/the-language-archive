@@ -25,7 +25,7 @@ struct MutableMapPointer{
 	MutableMapPointer* aZero;
 	MutableMapPointer* aOne;
 };
-extern MutableMapPointer* make_MutableMapPointer(){
+extern MutableMapPointer* new_MutableMapPointer(){
 	MutableMapPointer* r=memory_new_type(MutableMapPointer);
 	r->zeros=NULL;
 	r->aZero=NULL;

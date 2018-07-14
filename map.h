@@ -18,7 +18,7 @@
 #include <stdio.h>
 struct MutableMapPointer;
 typedef struct MutableMapPointer MutableMapPointer;
-extern MutableMapPointer* make_MutableMapPointer();
+extern MutableMapPointer* new_MutableMapPointer();
 extern void delete_MutableMapPointer(MutableMapPointer* m);
 // key value 非 NULL
 extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value);
