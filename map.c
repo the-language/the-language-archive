@@ -33,7 +33,7 @@ extern MapPointer* new_MapPointer(){
 }
 extern void delete_MapPointer(MapPointer* m){
 //BUGS
-	memory_remove(m);
+	memory_delete(m);
 }
 extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
 	size_t k=(size_t)key;

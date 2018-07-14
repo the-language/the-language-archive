@@ -32,7 +32,7 @@ inline MapPointer* new_MapPointer(){
 	return r;
 }
 inline void delete_MapPointer(MapPointer* m){
-	memory_remove(m);
+	memory_delete(m);
 }
 extern void MapPointer_set_do(MapPointer* m, void* key, void* value);
 

@@ -31,7 +31,7 @@ inline CollectionPointer* new_CollectionPointer(){
 }
 inline void delete_CollectionPointer(CollectionPointer* c){
 //BUGS
-	memory_remove(c);
+	memory_delete(c);
 }
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
 extern bool CollectionPointer_has(CollectionPointer* c, void* x);
