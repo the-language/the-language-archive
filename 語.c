@@ -180,16 +180,23 @@ void unLetrec(Letrec* rec, size_t id){
 			return r;
 		case RecCollection:
 			return makeValueLetrec(rec, v->value.collection);
+		case RecDelay:
+			Value x=makeValueLetrec(rec, v->value.delay.x);
+			Value r=delay(v->value.delay.f, x);
+			unhold(x);
+			return r;
 		case RecValue:
 			Value x=makeValueLetrec(rec, v->value.delay.x);
-			//WIP
-			
-		
+			Value r=delay(v->value.delay.f, x);
+			unhold(x);
+			return r;
+		default:assert(0);
+	}
 }
 void LetrecValue_unDelay(Letrec* rec, size_t id){
 	assert(id<rec->size);
 	LetrecValue* v=rec->list[id];
-	//WIP
+	if(v->type==R
 }
 
 Value unJustDelay(Value x){//不增加hold
