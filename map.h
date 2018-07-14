@@ -15,7 +15,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stddef.h>
+#include "c.h"
+#include "memory.h"
 #include "bool.h"
 typedef struct MutableMapPointer{
 	bool has_zeros : 1;

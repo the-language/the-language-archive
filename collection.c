@@ -15,8 +15,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "c.h"
 #include "collection.h"
-#include <stddef.h>
 extern void MutableCollectionPointer_add(MutableCollectionPointer* c, void* x){
 	size_t k=(size_t)x;
 	MutableCollectionPointer* i=c;
