@@ -15,6 +15,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+//WIP
 #include "c.h"
 #include "bool.h"
 #include "eq.h"
@@ -48,7 +49,7 @@ struct ValueV{
 			Value (*f)(Value);// f不被remove
 		} delay;
 	} value;
-}
+};
 inline bool Value_exist_p(Value x){
 	return x->count||x->mark;
 }

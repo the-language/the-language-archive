@@ -31,9 +31,7 @@ inline MapPointer* new_MapPointer(){
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;
 }
-inline void delete_MapPointer(MapPointer* m){
-	memory_delete(m);
-}
+extern void delete_MapPointer(MapPointer* m);
 extern void MapPointer_set_do(MapPointer* m, void* key, void* value);
 
 extern void* orNull_MapPointer_ref(MapPointer* m, void* key);

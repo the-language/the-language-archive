@@ -19,21 +19,16 @@
 #include "memory.h"
 #include "map.h"
 #include "bool.h"
-struct MapPointer{
-	void* zeros;
-	MapPointer* aZero;
-	MapPointer* aOne;
-}
-extern MapPointer* new_MapPointer(){
-	MapPointer* r=memory_new_type(MapPointer);
-	r->zeros=NULL;
-	r->aZero=NULL;
-	r->aOne=NULL;
-	return r;
-}
+#include "list.h"
 extern void delete_MapPointer(MapPointer* m){
-//BUGS
-	memory_delete(m);
+	ListPointer* ms=ListPointer_null;
+	ListPointer_push_m(ms, m);
+	while(ListPointer_cons_p(ms)){
+		MapPointer* m=assert_ListPointer_pop_m(ms);
+		if(m->has_zeros){memory_delete(m->zeros);}
+		if(m->has_zero){ListPointer_push_m(ms, m->zero);}
+		if(m->has_one){ListPointer_push_m(ms, m->one);}
+	}
 }
 extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
 	size_t k=(size_t)key;

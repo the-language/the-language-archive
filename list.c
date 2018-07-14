@@ -20,14 +20,9 @@
 #include "c.h"
 #include "eq.h"
 #include "list.h"
-struct ListPointer{
-	void* head;
-	ListPointer* tail;
-}
 ListPointer null={NULL,NULL};
-extern ListPointer* ListPointer_null(){
-	return &null;
-}
+extern ListPointer* ListPointer_null;
+ListPointer* ListPointer_null=&null;
 extern void remove_ListPointer(ListPointer* xs){
 	while(ListPointer_cons_p(xs)){
 		ListPointer* temp=xs->tail;memory_delete(xs);
@@ -38,12 +33,6 @@ extern ListPointer* ListPointer_cons(void* head, ListPointer* tail){
 	ListPointer* r=memory_new_type(ListPointer);
 	r->head=head;r->tail=tail;
 	return r;
-}
-extern bool ListPointer_cons_p(ListPointer* xs){
-	return !ListPointer_null_p(xs);
-}
-extern bool ListPointer_null_p(ListPointer* xs){
-	return eq_p(xs, &null);
 }
 extern void* assert_ListPointer_head(ListPointer* xs){
 	assert(ListPointer_cons_p(xs));
