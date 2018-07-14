@@ -16,8 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "memory.h"
-extern void* memory_alloc(size_t size){
+extern void* must_memory_new(size_t size){
 	void* r=NULL;
-	while(!r){r=maybe_memory_alloc(size);}
+	while(!r){r=maybe_memory_new(size);}
+	return r;
+}
+
+extern void* must_memory_resize(void* pointer, size_t size){
+	void* r=NULL;
+	while(!r){r=maybe_memory_resize(pointer, size);}
 	return r;
 }

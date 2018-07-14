@@ -19,23 +19,25 @@
 #include "memory.h"
 #include "map.h"
 #include "bool.h"
+#include <assert.h>
 struct MutableMapPointer{
 	void* zeros;
 	MutableMapPointer* aZero;
 	MutableMapPointer* aOne;
 };
 extern MutableMapPointer* make_MutableMapPointer(){
-	MutableMapPointer r=memory_alloc_type(MutableMapPointer);
+	MutableMapPointer* r=memory_new_type(MutableMapPointer);
 	r->zeros=NULL;
 	r->aZero=NULL;
 	r->aOne=NULL;
+	return r;
 }
 extern void delete_MutableMapPointer(MutableMapPointer* m){
-	memory_free(m);
+	memory_remove(m);
 }
 extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value){
 	assert(key);assert(value);
-	size_t k=key;
+	size_t k=(size_t)key;
 	MutableMapPointer* point=m;
 	while(k){
 		bool b=k&1;
@@ -49,7 +51,7 @@ extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value){
 }
 extern void* orNull_MutableMapPointer_ref(MutableMapPointer* m, void* key){
 	assert(key);
-	size_t k=key;
+	size_t k=(size_t)key;
 	MutableMapPointer* point=m;
 	while(k){
 		bool b=k&1;
@@ -62,7 +64,7 @@ extern void* orNull_MutableMapPointer_ref(MutableMapPointer* m, void* key){
 }
 extern void* assert_MutableMapPointer_ref(MutableMapPointer* m, void* key){
 	assert(key);
-	size_t k=key;
+	size_t k=(size_t)key;
 	MutableMapPointer* point=m;
 	while(k){
 		bool b=k&1;

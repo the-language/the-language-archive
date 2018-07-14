@@ -17,14 +17,23 @@
 */
 #include <stddef.h>
 #include <stdlib.h>
-inline void* maybe_memory_alloc(size_t size){
+inline void* maybe_memory_new(size_t size){
 	return malloc(size);
 }
-extern void* memory_alloc(size_t);
-inline void* must_memory_alloc(size_t size){
-	return memory_alloc(size);
+extern void* must_memory_new(size_t size);
+inline void* memory_new(size_t size){
+	return must_memory_new(size);
 }
-#define memory_alloc_type(t) memory_alloc(sizeof(t))
-inline void memory_free(void* ptr){
+#define memory_new_type(t) must_memory_new(sizeof(t))
+
+inline void* maybe_memory_resize(void* pointer, size_t size){	
+	return realloc(pointer, size);
+}
+extern void* must_memory_resize(void* pointer, size_t size);
+inline void* memory_resize(void* pointer, size_t size){
+	return must_memory_resize(pointer, size);
+}
+
+inline void memory_remove(void* ptr){
 	free(ptr);
 }
