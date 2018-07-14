@@ -33,6 +33,6 @@ inline void* memory_resize(void* pointer, size_t size){
 	return must_memory_resize(pointer, size);
 }
 
-inline void memory_remove(void* ptr){
+inline void memory_delete(void* ptr){
 	free(ptr);
 }

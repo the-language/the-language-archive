@@ -17,30 +17,30 @@
 */
 #include "c.h"
 #include "collection.h"
-extern void MutableCollectionPointer_add(MutableCollectionPointer* c, void* x){
+extern void CollectionPointer_add_do(CollectionPointer* c, void* x){
 	size_t k=(size_t)x;
-	MutableCollectionPointer* i=c;
+	CollectionPointer* i=c;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=make_MutableCollectionPointer();
+				i->has_one=true;i->one=make_CollectionPointer();
 			}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=make_MutableCollectionPointer();
+				i->has_zero=true;i->zero=make_CollectionPointer();
 			}
 			i=i->zero;
 		}
 	}
 	i->has_zeros=true;
 }
-extern bool MutableCollectionPointer_has(MutableCollectionPointer* c, void* x){
+extern bool CollectionPointer_has(CollectionPointer* c, void* x){
 	size_t k=(size_t)x;
-	MutableCollectionPointer* i=c;
+	CollectionPointer* i=c;
 	while(k){
 		bool b=k&1;
 		k=k>>1;

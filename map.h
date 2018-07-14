@@ -18,24 +18,24 @@
 #include "c.h"
 #include "memory.h"
 #include "bool.h"
-typedef struct MutableMapPointer{
+typedef struct MapPointer{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
 	void* zeros;
-	MutableMapPointer* zero;
-	MutableMapPointer* one;
-} MutableMapPointer;
-inline MutableMapPointer* new_MutableMapPointer(){
-	MutableMapPointer* r=memory_new_type(MutableMapPointer);
+	MapPointer* zero;
+	MapPointer* one;
+} MapPointer;
+inline MapPointer* new_MapPointer(){
+	MapPointer* r=memory_new_type(MapPointer);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;
 }
-inline void delete_MutableMapPointer(MutableMapPointer* m){
+inline void delete_MapPointer(MapPointer* m){
 	memory_remove(m);
 }
-extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value);
+extern void MapPointer_set_do(MapPointer* m, void* key, void* value);
 
-extern void* orNull_MutableMapPointer_ref(MutableMapPointer* m, void* key);
-extern void* MutableMapPointer_ref(MutableMapPointer* m, void* key, void* default_v);
-extern void* assert_MutableMapPointer_ref(MutableMapPointer* m, void* key);
+extern void* orNull_MapPointer_ref(MapPointer* m, void* key);
+extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v);
+extern void* assert_MapPointer_ref(MapPointer* m, void* key);

@@ -48,7 +48,7 @@ struct ValueV{
 			Value (*f)(Value);// f不被remove
 		} delay;
 	} value;
-};
+}
 inline bool Value_exist_p(Value x){
 	return x->count||x->mark;
 }
@@ -57,7 +57,7 @@ typedef struct ValueList ValueList;
 struct ValueList {
 	Value head;
 	ValueList* tail;//NULL=>無
-};
+}
 inline void ValueList_push(ValueList** l,Value x){
 	ValueList* r=memory_alloc_type(ValueList);
 	r->head=x;r->tail=*l;

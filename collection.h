@@ -17,21 +17,21 @@
 */
 #include "bool.h"
 #include "memory.h"
-typedef struct MutableCollectionPointer{
+typedef struct CollectionPointer{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
-	MutableCollectionPointer* zero;
-	MutableCollectionPointer* one;
-} MutableCollectionPointer;
-inline MutableCollectionPointer* new_MutableCollectionPointer(){
-	MutableCollectionPointer* r=memory_new_type(MutableCollectionPointer);
+	CollectionPointer* zero;
+	CollectionPointer* one;
+} CollectionPointer;
+inline CollectionPointer* new_CollectionPointer(){
+	CollectionPointer* r=memory_new_type(CollectionPointer);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;
-};
-inline void delete_MutableMapPointer(MutableCollectionPointer* c){
+}
+inline void delete_CollectionPointer(CollectionPointer* c){
 //BUGS
 	memory_remove(c);
 }
-extern void MutableCollectionPointer_add(MutableCollectionPointer* c, void* x);
-extern bool MutableCollectionPointer_has(MutableCollectionPointer* c, void* x);
+extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
+extern bool CollectionPointer_has(CollectionPointer* c, void* x);

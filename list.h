@@ -15,3 +15,12 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+struct ListPointer;
+typedef struct ListPointer ListPointer;
+extern ListPointer* ListPointer_null();
+extern void remove_ListPointer(ListPointer* xs);
+extern ListPointer* ListPointer_cons(void* head, ListPointer* tail);
+extern bool ListPointer_cons_p(ListPointer* xs);
+extern bool ListPointer_null_p(ListPointer* xs);
+extern void* assert_ListPointer_head(ListPointer* xs);
+extern ListPointer* assert_ListPointer_tail(ListPointer* xs);

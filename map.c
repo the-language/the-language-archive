@@ -19,37 +19,37 @@
 #include "memory.h"
 #include "map.h"
 #include "bool.h"
-struct MutableMapPointer{
+struct MapPointer{
 	void* zeros;
-	MutableMapPointer* aZero;
-	MutableMapPointer* aOne;
-};
-extern MutableMapPointer* new_MutableMapPointer(){
-	MutableMapPointer* r=memory_new_type(MutableMapPointer);
+	MapPointer* aZero;
+	MapPointer* aOne;
+}
+extern MapPointer* new_MapPointer(){
+	MapPointer* r=memory_new_type(MapPointer);
 	r->zeros=NULL;
 	r->aZero=NULL;
 	r->aOne=NULL;
 	return r;
 }
-extern void delete_MutableMapPointer(MutableMapPointer* m){
+extern void delete_MapPointer(MapPointer* m){
 //BUGS
 	memory_remove(m);
 }
-extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value){
+extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
 	size_t k=(size_t)key;
-	MutableMapPointer* i=m;
+	MapPointer* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=new_MutableMapPointer();
+				i->has_one=true;i->one=new_MapPointer();
 			}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=new_MutableMapPointer();
+				i->has_zero=true;i->zero=new_MapPointer();
 			}
 			i=i->zero;
 		}
@@ -57,9 +57,9 @@ extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value){
 	i->has_zeros=true;
 	i->zeros=value;
 }
-extern void* orNull_MutableMapPointer_ref(MutableMapPointer* m, void* key){
+extern void* orNull_MapPointer_ref(MapPointer* m, void* key){
 	size_t k=(size_t)key;
-	MutableMapPointer* i=m;
+	MapPointer* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
@@ -78,9 +78,9 @@ extern void* orNull_MutableMapPointer_ref(MutableMapPointer* m, void* key){
 	}
 	return i->has_zeros?i->zeros:NULL;
 }
-extern void* MutableMapPointer_ref(MutableMapPointer* m, void* key, void* default_v){
+extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v){
 	size_t k=(size_t)key;
-	MutableMapPointer* i=m;
+	MapPointer* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
@@ -99,9 +99,9 @@ extern void* MutableMapPointer_ref(MutableMapPointer* m, void* key, void* defaul
 	}
 	return i->has_zeros?i->zeros:default_v;
 }
-extern void* assert_MutableMapPointer_ref(MutableMapPointer* m, void* key){
+extern void* assert_MapPointer_ref(MapPointer* m, void* key){
 	size_t k=(size_t)key;
-	MutableMapPointer* i=m;
+	MapPointer* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
