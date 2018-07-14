@@ -37,5 +37,11 @@ extern void delete_CollectionPointer(CollectionPointer* c);
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
 extern bool CollectionPointer_has(CollectionPointer* c, void* x);
 
+inline bool CollectionPointer_not_null_p(CollectionPointer* c){
+	return c->has_zeros||c->has_zero||c->has_one;
+}
+inline bool CollectionPointer_null_p(CollectionPointer* c){
+	return !CollectionPointer_not_null_p(c);
+}
 
 #endif
