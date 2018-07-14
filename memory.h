@@ -17,10 +17,13 @@
 */
 #include <stddef.h>
 #include <stdlib.h>
-inline void* memory_maybeAlloc(size_t size){
+inline void* maybe_memory_alloc(size_t size){
 	return malloc(size);
 }
 extern void* memory_alloc(size_t);
+inline void* must_memory_alloc(size_t size){
+	return memory_alloc(size);
+}
 #define memory_alloc_type(t) memory_alloc(sizeof(t))
 inline void memory_free(void* ptr){
 	free(ptr);

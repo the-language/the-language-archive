@@ -18,6 +18,6 @@
 #include "memory.h"
 extern void* memory_alloc(size_t size){
 	void* r=NULL;
-	while(!r){r=memory_maybeAlloc(size);}
+	while(!r){r=maybe_memory_alloc(size);}
 	return r;
 }
