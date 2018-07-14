@@ -26,12 +26,12 @@ extern void CollectionPointer_add_do(CollectionPointer* c, void* x){
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=make_CollectionPointer();
+				i->has_one=true;i->one=new_CollectionPointer();
 			}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=make_CollectionPointer();
+				i->has_zero=true;i->zero=new_CollectionPointer();
 			}
 			i=i->zero;
 		}

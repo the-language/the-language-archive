@@ -17,13 +17,15 @@
 */
 #include "bool.h"
 #include "memory.h"
-typedef struct CollectionPointer{
+struct CollectionPointer;
+typedef struct CollectionPointer CollectionPointer;
+struct CollectionPointer{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
 	CollectionPointer* zero;
 	CollectionPointer* one;
-} CollectionPointer;
+};
 inline CollectionPointer* new_CollectionPointer(){
 	CollectionPointer* r=memory_new_type(CollectionPointer);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
