@@ -17,3 +17,5 @@
 */
 struct ValueV;
 typedef struct ValueV* Value;
+extern void Value_hold(Value x);
+extern void Value_unhold(Value x);

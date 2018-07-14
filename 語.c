@@ -16,7 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stddef.h>
+#include <stddef.h>
 #include "bool.h"
+#include "eq.h"
 #include "語.h"
 typedef struct ValueV ValueV;
 typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
@@ -43,8 +45,70 @@ struct ValueV{
 		Value collection;
 		Value just;
 		struct {
-			Value (*f)(Value);// f不被remove
 			Value x;
+			Value (*f)(Value);// f不被remove
 		} delay;
 	} value;
 };
+inline bool Value_exist_p(Value x){
+	return x->count||x->mark;
+}
+struct ValueList;
+typedef struct ValueList ValueList;
+struct ValueList {
+	Value head;
+	ValueList* tail;//NULL=>無
+};
+inline void ValueList_push(ValueList** l,Value x){
+	ValueList* r=memory_alloc_type(ValueList);
+	r->head=x;r->tail=*l;
+	*l=r;
+}
+inline Value ValueList_pop(ValueList** l){
+	ValueList* nl=(*l)->tail;Value r=(*l)->head;
+	memory_free(*l);
+	*l=nl;
+	return r;
+}
+extern void Value_hold(Value x){
+	assert(Value_exist_p(x));
+	x->count++;
+}
+void do_Value_unhold(ValueList* xs){
+	while(xs){
+		Value x=ValueList_pop(&xs);
+		assert(x->count);
+		x->count--;
+		if(!Value_exist_p(x)){Value_ValueList_push_sub(x, &xs);}
+	}
+}
+void Value_ValueList_push_sub(Value x, ValueList** xs){
+	switch(x->type){
+		case Cons:
+			ValueList_push(xs, x->value.cons.head);
+			ValueList_push(xs, x->value.cons.tail);
+			break;
+		case Null:break;
+		case Symbol:break;
+		case SymbolConst:break;
+		case Data:
+			ValueList_push(xs, x->value.data.name);
+			ValueList_push(xs, x->value.data.list);
+			break;
+		case Collection:
+			ValueList_push(xs, x->value.collection);
+			break;
+		case Just:
+			ValueList_push(xs, x->value.just);
+			break;
+		case Delay:
+			ValueList_push(xs, x->value.delay.x);
+			break;
+		default:assert(false);
+	}
+}
+extern void Value_unhold(Value x){
+	ValueList* xs=NULL;
+	ValueList_push(&xs, x);
+	do_Value_unhold(xs);
+}
