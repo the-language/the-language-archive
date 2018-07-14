@@ -33,6 +33,7 @@ extern MutableMapPointer* new_MutableMapPointer(){
 	return r;
 }
 extern void delete_MutableMapPointer(MutableMapPointer* m){
+//BUGS
 	memory_remove(m);
 }
 extern void MutableMapPointer_set(MutableMapPointer* m, void* key, void* value){

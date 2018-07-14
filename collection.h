@@ -30,6 +30,7 @@ inline MutableCollectionPointer* new_MutableCollectionPointer(){
 	return r;
 };
 inline void delete_MutableMapPointer(MutableCollectionPointer* c){
+//BUGS
 	memory_remove(c);
 }
 extern void MutableCollectionPointer_add(MutableCollectionPointer* c, void* x);
