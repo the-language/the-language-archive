@@ -20,6 +20,7 @@
 #include "map.h"
 #include "bool.h"
 #include "list.h"
+#include "eq.h"
 extern void delete_MapPointer(MapPointer* m){
 	ListPointer* ms=ListPointer_null;
 	ListPointer_push_m(ms, m);

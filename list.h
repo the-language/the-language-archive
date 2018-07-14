@@ -15,6 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef _HEAD_list_
+#define _HEAD_list_
+
+
+#include "eq.h"
 struct ListPointer;
 typedef struct ListPointer ListPointer;
 struct ListPointer{
@@ -47,3 +52,6 @@ inline void* assert_ListPointer_pop(ListPointer** l){
 	return r;
 }
 #define assert_ListPointer_pop_m(xs) assert_ListPointer_pop(&xs)
+
+
+#endif

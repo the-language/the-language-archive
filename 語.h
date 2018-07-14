@@ -15,8 +15,15 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef _HEAD_lang_
+#define _HEAD_lang_
+
+
 //WIP
 struct ValueV;
 typedef struct ValueV* Value;
 extern void Value_hold(Value x);
 extern void Value_unhold(Value x);
+
+
+#endif

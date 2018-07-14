@@ -15,17 +15,21 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef _HEAD_map_
+#define _HEAD_map_
+
+
 #include "c.h"
 #include "memory.h"
 #include "bool.h"
-typedef struct MapPointer{
+struct MapPointer;typedef struct MapPointer MapPointer;struct MapPointer{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
 	void* zeros;
 	MapPointer* zero;
 	MapPointer* one;
-} MapPointer;
+};
 inline MapPointer* new_MapPointer(){
 	MapPointer* r=memory_new_type(MapPointer);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
@@ -37,3 +41,6 @@ extern void MapPointer_set_do(MapPointer* m, void* key, void* value);
 extern void* orNull_MapPointer_ref(MapPointer* m, void* key);
 extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v);
 extern void* assert_MapPointer_ref(MapPointer* m, void* key);
+
+
+#endif

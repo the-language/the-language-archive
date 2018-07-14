@@ -15,11 +15,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef _HEAD_collection_
+#define _HEAD_collection_
+
+
 #include "bool.h"
 #include "memory.h"
-struct CollectionPointer;
-typedef struct CollectionPointer CollectionPointer;
-struct CollectionPointer{
+struct CollectionPointer;typedef struct CollectionPointer CollectionPointer;struct CollectionPointer{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
@@ -37,3 +39,6 @@ inline void delete_CollectionPointer(CollectionPointer* c){
 }
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
 extern bool CollectionPointer_has(CollectionPointer* c, void* x);
+
+
+#endif
