@@ -17,6 +17,17 @@
 */
 #include "c.h"
 #include "collection.h"
+#include "list.h"
+extern void delete_CollectionPointer(CollectionPointer* c){
+	ListPointer* cs=ListPointer_null;
+	ListPointer_push_m(cs, c);
+	while(ListPointer_cons_p(cs)){
+		CollectionPointer* c=assert_ListPointer_pop_m(cs);
+		if(c->has_zero){ListPointer_push_m(cs, c->zero);}
+		if(c->has_one){ListPointer_push_m(cs, c->one);}
+		memory_delete(c);
+	}
+}
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x){
 	size_t k=(size_t)x;
 	CollectionPointer* i=c;

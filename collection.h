@@ -33,16 +33,7 @@ inline CollectionPointer* new_CollectionPointer(){
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;
 }
-inline void delete_CollectionPointer(CollectionPointer* c){
-	ListPointer* cs=ListPointer_null;
-	ListPointer_push_m(cs, c);
-	while(ListPointer_cons_p(cs)){
-		CollectionPointer* c=assert_ListPointer_pop_m(cs);
-		if(m->has_zero){ListPointer_push_m(cs, c->zero);}
-		if(m->has_one){ListPointer_push_m(cs, c->one);}
-		memory_delete(c);
-	}
-}
+extern void delete_CollectionPointer(CollectionPointer* c);
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
 extern bool CollectionPointer_has(CollectionPointer* c, void* x);
 
