@@ -20,6 +20,8 @@
 
 
 #include "eq.h"
+#include "bool.h"
+#include "memory.h"
 struct ListPointer;
 typedef struct ListPointer ListPointer;
 struct ListPointer{

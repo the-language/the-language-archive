@@ -15,9 +15,9 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "list.h"
 #include "c.h"
 #include "collection.h"
-#include "list.h"
 extern void delete_CollectionPointer(CollectionPointer* c){
 	ListPointer* cs=ListPointer_null;
 	ListPointer_push_m(cs, c);

@@ -53,23 +53,6 @@ struct ValueV{
 inline bool Value_exist_p(Value x){
 	return x->count||x->mark;
 }
-struct ValueList;
-typedef struct ValueList ValueList;
-struct ValueList {
-	Value head;
-	ValueList* tail;//NULL=>無
-}
-inline void ValueList_push(ValueList** l,Value x){
-	ValueList* r=memory_alloc_type(ValueList);
-	r->head=x;r->tail=*l;
-	*l=r;
-}
-inline Value ValueList_pop(ValueList** l){
-	ValueList* nl=(*l)->tail;Value r=(*l)->head;
-	memory_free(*l);
-	*l=nl;
-	return r;
-}
 extern void Value_hold(Value x){
 	assert(Value_exist_p(x));
 	x->count++;
