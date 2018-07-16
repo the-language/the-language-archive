@@ -43,7 +43,8 @@ inline bool lock_unlock_do(lock* x){
 		else{return false;}}
 #define lock_unlock_do_m(x) lock_unlock_do(&x)
 inline void assert_lock_unlock_do(lock* x){
-	assert(lock_unlock_do(x));}
+	bool b=lock_unlock_do(x);
+	assert(b);}
 #define assert_lock_unlock_do_m(x) assert_lock_unlock_do(&x)
 
 
