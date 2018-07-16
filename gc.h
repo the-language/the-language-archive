@@ -15,17 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "memory.h"
-#include "gc.h"
-#include "c.h"
-#include "eq.h"
-extern void* must_memory_new(size_t size){
-	void* r=maybe_memory_new(size);
-	while(eq_p(r, NULL)){gc();r=maybe_memory_new(size);}
-	return r;
-}
-extern void* must_memory_resize(void* pointer, size_t size){
-	void* r=maybe_memory_resize(pointer, size);
-	while(eq_p(r, NULL)){gc();r=maybe_memory_resize(pointer, size);}
-	return r;
-}
+#ifndef _HEAD_gc_
+#define _HEAD_gc_
+
+
+extern void gc();
+
+
+#endif
