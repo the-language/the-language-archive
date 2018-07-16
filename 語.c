@@ -56,7 +56,7 @@ inline bool Value_exist_p(Value x){
 extern void Value_hold(Value x){
 	assert(Value_exist_p(x));
 	x->count++;}
-void Value_ValueList_push_sub(Value x, ListPointer** xs){
+void Value_ListPointer_push_sub(Value x, ListPointer** xs){
 	switch(x->type){
 		case Cons:
 			ListPointer_push(xs, x->value.cons.head);
@@ -85,7 +85,7 @@ void do_Value_unhold(ListPointer* xs){
 		assert(x->count);
 		x->count--;
 		if(!Value_exist_p(x)){
-			Value_ValueList_push_sub(x, &xs);
+			Value_ListPointer_push_sub(x, &xs);
 			memory_delete(x);}}}
 extern void Value_unhold(Value x){
 	ListPointer* xs=ListPointer_null;
@@ -93,21 +93,32 @@ extern void Value_unhold(Value x){
 	do_Value_unhold(xs);}
 
 ListPointer* marksweep=ListPointer_null;
-ListPointer* marking=ListPointer_null;//子(sub) 未 mark
 mark_t mark_count=1;
 extern void gcValue(){
-	assert(ListPointer_null_p(marking));
-	{ListPointer* xs=marksweep;
+	old_mark_count=mark_count;
+	mark_count++
+	if(eq_p(mark_count, 0)){mark_count=1;}
+	{ListPointer* marked=ListPointer_null;
+		//標記根
+		{ListPointer* xs=marksweep;
+			while(ListPointer_cons_p(xs)){
+				Value x=assert_ListPointer_head(xs);
+				xs=assert_ListPointer_tail(xs);
+				
+				assert(eq_p(x->mark, old_mark_count));
+				if(x->count){ListPointer_push_m(marked, x);}}}
+		//標記子，寫入mark
+		while(ListPointer_cons_p(marked)){
+			Value x=assert_ListPointer_pop_m(marked);
+			Value_ListPointer_push_sub(x, &marked);
+			x->mark=mark_count;}}
+	//清除
+	{ListPointer* new_marksweep=ListPointer_null;ListPointer* xs=marksweep;
 		while(ListPointer_cons_p(xs)){
-			Value x=assert_ListPointer_head(xs);
-			xs=assert_ListPointer_tail(xs);
-			
-			assert(x->mark);
-			if(x->count){ListPointer_push_m(marking, x);}}}
-	while(ListPointer_cons_p(marking)){
-		//WIP
-	}
-	//WIP
-}
-
+			Value x=assert_ListPointer_pop_m(xs);
+			if(eq_p(x->mark, mark_count)){
+				ListPointer_push_m(new_marksweep, x);
+			}else{
+				assert(eq_p(x->mark, old_mark_count));
+				memory_delete(x);}}}}
 

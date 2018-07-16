@@ -2,9 +2,9 @@
     語: The Language
     Copyright (C) 2018  Zaoqi
 
-    This program is free software: you can redistribute it and/or modify
+    This program is memory_free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
+    by the memory_free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,13 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "gc.h"
-#include "語.gc.h"
-bool gcing=false;
-extern void gc(){
-	if(gcing){return;}
-	gcing=true;
-	
-	gcValue();
-	
-	gcing=false;}
+#ifndef _HEAD_lang_gc_
+#define _HEAD_lang_gc_
+
+
+extern void gcValue();
+
+
+endif
