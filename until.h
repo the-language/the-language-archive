@@ -15,14 +15,10 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "gc.h"
-#include "bool.h"
-#include "語.gc.h"
-bool gcing=false;
-extern void gc(){
-	if(gcing){return;}
-	gcing=true;
-	
-	gcValue();
-	
-	gcing=false;}
+#ifndef until
+
+
+#define until(b) while(!(b))
+
+
+#endif

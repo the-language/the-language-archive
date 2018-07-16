@@ -95,8 +95,8 @@ extern void Value_unhold(Value x){
 ListPointer* marksweep=ListPointer_null;
 mark_t mark_count=1;
 extern void gcValue(){
-	old_mark_count=mark_count;
-	mark_count++
+	mark_t old_mark_count=mark_count;
+	mark_count++;
 	if(eq_p(mark_count, 0)){mark_count=1;}
 	{ListPointer* marked=ListPointer_null;
 		//標記根
