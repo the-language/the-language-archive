@@ -26,33 +26,27 @@ struct ListPointer;
 typedef struct ListPointer ListPointer;
 struct ListPointer{
 	void* head;
-	ListPointer* tail;
-};
-extern ListPointer* ListPointer_null;
+	ListPointer* tail;};
+extern ListPointer ListPointer_null_v;
+#define ListPointer_null (&ListPointer_null_v)
 extern void remove_ListPointer(ListPointer* xs);
 extern ListPointer* ListPointer_cons(void* head, ListPointer* tail);
-inline bool ListPointer_null_p(ListPointer* xs){
-	return eq_p(xs, ListPointer_null);
-}
-inline bool ListPointer_cons_p(ListPointer* xs){
-	return !ListPointer_null_p(xs);
-}
+inline bool ListPointer_null_p(ListPointer* xs){return eq_p(xs, ListPointer_null);}
+inline bool ListPointer_cons_p(ListPointer* xs){return !ListPointer_null_p(xs);}
 extern void* assert_ListPointer_head(ListPointer* xs);
 extern ListPointer* assert_ListPointer_tail(ListPointer* xs);
 
 inline void ListPointer_push(ListPointer** l, void* x){
 	ListPointer* r=memory_new_type(ListPointer);
 	r->head=x;r->tail=*l;
-	*l=r;
-}
+	*l=r;}
 #define ListPointer_push_m(xs, x) ListPointer_push(&xs, x)
 inline void* assert_ListPointer_pop(ListPointer** l){
 	assert(ListPointer_cons_p(*l));
 	ListPointer* nl=(*l)->tail;void* r=(*l)->head;
 	memory_delete(*l);
 	*l=nl;
-	return r;
-}
+	return r;}
 #define assert_ListPointer_pop_m(xs) assert_ListPointer_pop(&xs)
 
 

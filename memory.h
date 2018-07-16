@@ -21,25 +21,20 @@
 
 #include "c.h"
 inline void* maybe_memory_new(size_t size){
-	return malloc(size);
-}
+	return malloc(size);}
 extern void* must_memory_new(size_t size);
 inline void* memory_new(size_t size){
-	return must_memory_new(size);
-}
+	return must_memory_new(size);}
 #define memory_new_type(t) must_memory_new(sizeof(t))
 
 inline void* maybe_memory_resize(void* pointer, size_t size){	
-	return realloc(pointer, size);
-}
+	return realloc(pointer, size);}
 extern void* must_memory_resize(void* pointer, size_t size);
 inline void* memory_resize(void* pointer, size_t size){
-	return must_memory_resize(pointer, size);
-}
+	return must_memory_resize(pointer, size);}
 
 inline void memory_delete(void* ptr){
-	free(ptr);
-}
+	free(ptr);}
 
 
 #endif

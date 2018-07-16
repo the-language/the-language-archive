@@ -29,9 +29,7 @@ extern void delete_MapPointer(MapPointer* m){
 		if(m->has_zeros){memory_delete(m->zeros);}
 		if(m->has_zero){ListPointer_push_m(ms, m->zero);}
 		if(m->has_one){ListPointer_push_m(ms, m->one);}
-		memory_delete(m);
-	}
-}
+		memory_delete(m);}}
 extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
 	size_t k=(size_t)key;
 	MapPointer* i=m;
@@ -41,19 +39,14 @@ extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=new_MapPointer();
-			}
+				i->has_one=true;i->one=new_MapPointer();}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=new_MapPointer();
-			}
-			i=i->zero;
-		}
-	}
+				i->has_zero=true;i->zero=new_MapPointer();}
+			i=i->zero;}}
 	i->has_zeros=true;
-	i->zeros=value;
-}
+	i->zeros=value;}
 extern void* orNull_MapPointer_ref(MapPointer* m, void* key){
 	size_t k=(size_t)key;
 	MapPointer* i=m;
@@ -63,18 +56,13 @@ extern void* orNull_MapPointer_ref(MapPointer* m, void* key){
 		
 		if(b){
 			if(!i->has_one){
-				return NULL;
-			}
+				return NULL;}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				return NULL;
-			}
-			i=i->zero;
-		}
-	}
-	return i->has_zeros?i->zeros:NULL;
-}
+				return NULL;}
+			i=i->zero;}}
+	return i->has_zeros?i->zeros:NULL;}
 extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v){
 	size_t k=(size_t)key;
 	MapPointer* i=m;
@@ -84,18 +72,13 @@ extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v){
 		
 		if(b){
 			if(!i->has_one){
-				return default_v;
-			}
+				return default_v;}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				return default_v;
-			}
-			i=i->zero;
-		}
-	}
-	return i->has_zeros?i->zeros:default_v;
-}
+				return default_v;}
+			i=i->zero;}}
+	return i->has_zeros?i->zeros:default_v;}
 extern void* assert_MapPointer_ref(MapPointer* m, void* key){
 	size_t k=(size_t)key;
 	MapPointer* i=m;
@@ -108,9 +91,6 @@ extern void* assert_MapPointer_ref(MapPointer* m, void* key){
 			i=i->one;
 		}else{
 			assert(i->has_zero);
-			i=i->zero;
-		}
-	}
+			i=i->zero;}}
 	assert(i->has_zeros);
-	return i->zeros;
-}
+	return i->zeros;}

@@ -25,9 +25,7 @@ extern void delete_CollectionPointer(CollectionPointer* c){
 		CollectionPointer* c=assert_ListPointer_pop_m(cs);
 		if(c->has_zero){ListPointer_push_m(cs, c->zero);}
 		if(c->has_one){ListPointer_push_m(cs, c->one);}
-		memory_delete(c);
-	}
-}
+		memory_delete(c);}}
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x){
 	size_t k=(size_t)x;
 	CollectionPointer* i=c;
@@ -37,18 +35,13 @@ extern void CollectionPointer_add_do(CollectionPointer* c, void* x){
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=new_CollectionPointer();
-			}
+				i->has_one=true;i->one=new_CollectionPointer();}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=new_CollectionPointer();
-			}
-			i=i->zero;
-		}
-	}
-	i->has_zeros=true;
-}
+				i->has_zero=true;i->zero=new_CollectionPointer();}
+			i=i->zero;}}
+	i->has_zeros=true;}
 extern bool CollectionPointer_has(CollectionPointer* c, void* x){
 	size_t k=(size_t)x;
 	CollectionPointer* i=c;
@@ -57,16 +50,9 @@ extern bool CollectionPointer_has(CollectionPointer* c, void* x){
 		k=k>>1;
 		
 		if(b){
-			if(!i->has_one){
-				return false;
-			}
+			if(!i->has_one){return false;}
 			i=i->one;
 		}else{
-			if(!i->has_zero){
-				return false;
-			}
-			i=i->zero;
-		}
-	}
-	return i->has_zeros;
-}
+			if(!i->has_zero){return false;}
+			i=i->zero;}}
+	return i->has_zeros;}

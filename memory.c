@@ -22,10 +22,8 @@
 extern void* must_memory_new(size_t size){
 	void* r=maybe_memory_new(size);
 	while(eq_p(r, NULL)){gc();r=maybe_memory_new(size);}
-	return r;
-}
+	return r;}
 extern void* must_memory_resize(void* pointer, size_t size){
 	void* r=maybe_memory_resize(pointer, size);
 	while(eq_p(r, NULL)){gc();r=maybe_memory_resize(pointer, size);}
-	return r;
-}
+	return r;}

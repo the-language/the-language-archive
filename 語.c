@@ -23,10 +23,11 @@
 #include "list.h"
 typedef struct ValueV ValueV;
 typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
+typedef unsigned char mark_t;// 5 bits
 struct ValueV{
 	size_t count; // 自動引用計數
 	ValueVType type : 3;
-	unsigned long mark : 5;
+	mark_t mark : 5;
 		// 0 => 非 mark-sweep
 		// 其他 => 由GC確定
 	union {
@@ -49,15 +50,12 @@ struct ValueV{
 			Value x;
 			Value (*f)(Value);// f不被remove
 		} delay;
-	} value;
-};
+	} value;};
 inline bool Value_exist_p(Value x){
-	return x->count||x->mark;
-}
+	return x->count||x->mark;}
 extern void Value_hold(Value x){
 	assert(Value_exist_p(x));
-	x->count++;
-}
+	x->count++;}
 void Value_ValueList_push_sub(Value x, ListPointer** xs){
 	switch(x->type){
 		case Cons:
@@ -80,9 +78,7 @@ void Value_ValueList_push_sub(Value x, ListPointer** xs){
 		case Delay:
 			ListPointer_push(xs, x->value.delay.x);
 			break;
-		default:assert(false);
-	}
-}
+		default:assert(false);}}
 void do_Value_unhold(ListPointer* xs){
 	while(ListPointer_cons_p(xs)){
 		Value x=assert_ListPointer_pop_m(xs);
@@ -90,13 +86,28 @@ void do_Value_unhold(ListPointer* xs){
 		x->count--;
 		if(!Value_exist_p(x)){
 			Value_ValueList_push_sub(x, &xs);
-			memory_delete(x);
-		}
-	}
-}
+			memory_delete(x);}}}
 extern void Value_unhold(Value x){
 	ListPointer* xs=ListPointer_null;
-	ListPointer_push(&xs, x);
-	do_Value_unhold(xs);
+	ListPointer_push_m(xs, x);
+	do_Value_unhold(xs);}
+
+ListPointer* marksweep=ListPointer_null;
+ListPointer* marking=ListPointer_null;//子(sub) 未 mark
+mark_t mark_count=1;
+extern void gcValue(){
+	assert(ListPointer_null_p(marking));
+	{ListPointer* xs=marksweep;
+		while(ListPointer_cons_p(xs)){
+			Value x=assert_ListPointer_head(xs);
+			xs=assert_ListPointer_tail(xs);
+			
+			assert(x->mark);
+			if(x->count){ListPointer_push_m(marking, x);}}}
+	while(ListPointer_cons_p(marking)){
+		//WIP
+	}
+	//WIP
 }
+
 

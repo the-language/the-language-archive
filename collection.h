@@ -26,23 +26,19 @@ struct CollectionPointer;typedef struct CollectionPointer CollectionPointer;stru
 	bool has_zero : 1;
 	bool has_one : 1;
 	CollectionPointer* zero;
-	CollectionPointer* one;
-};
+	CollectionPointer* one;};
 inline CollectionPointer* new_CollectionPointer(){
 	CollectionPointer* r=memory_new_type(CollectionPointer);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
-	return r;
-}
+	return r;}
 extern void delete_CollectionPointer(CollectionPointer* c);
 extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
 extern bool CollectionPointer_has(CollectionPointer* c, void* x);
 
 inline bool CollectionPointer_not_null_p(CollectionPointer* c){
-	return c->has_zeros||c->has_zero||c->has_one;
-}
+	return c->has_zeros||c->has_zero||c->has_one;}
 inline bool CollectionPointer_null_p(CollectionPointer* c){
-	return !CollectionPointer_not_null_p(c);
-}
+	return !CollectionPointer_not_null_p(c);}
 
 
 #endif
