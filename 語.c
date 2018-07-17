@@ -47,7 +47,7 @@ struct ValueV{
 			Value list;
 		} data;
 		Value collection;
-		// 禁止
+		// 禁止 //不同語處理不同
 		// lang = Haskell
 		// let x = x in x
 		Value just;
