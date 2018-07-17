@@ -1,3 +1,4 @@
+Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
 # 普通思想控制（誤？）（来源为百度）
 ## 中华人民共和国文编程
 + 完全拥有自己知识产权？
