@@ -47,6 +47,9 @@ struct ValueV{
 			Value list;
 		} data;
 		Value collection;
+		// 禁止
+		// lang = Haskell
+		// let x = x in x
 		Value just;
 		struct {
 			Value x;
@@ -127,4 +130,6 @@ extern void gcValue(){
 			}else{
 				assert(eq_p(x->mark, old_mark_count));
 				memory_delete(x);}}}}
+
+//WIP
 
