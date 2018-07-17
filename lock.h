@@ -45,6 +45,8 @@ inline void assert_lock_unlock_do(lock* x){
 	bool b=lock_unlock_do(x);
 	assert(b);}
 #define assert_lock_unlock_do_m(x) assert_lock_unlock_do(&x)
+#define lock_with_m(lock, body) {must_lock_do_m(lock);body assert_lock_unlock_do_m(lock);}
+#define lock_with_if_m(lock, body, elseb) {if(lock_lock_do_m(lock)){body assert_lock_unlock_do_m(lock);}else{elseb}}
 
 
 #endif

@@ -21,10 +21,12 @@
 #include "eq.h"
 #include "語.h"
 #include "list.h"
+#include "lock.h"
 typedef struct ValueV ValueV;
 typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
 typedef unsigned char mark_t;// 5 bits
 struct ValueV{
+	lock lock;
 	size_t count; // 自動引用計數
 	ValueVType type : 3;
 	mark_t mark : 5;
@@ -51,12 +53,12 @@ struct ValueV{
 			Value (*f)(Value);// f不被remove
 		} delay;
 	} value;};
-inline bool Value_exist_p(Value x){
+inline bool unsafe_Value_exist_p(Value x){
 	return x->count||x->mark;}
-extern void Value_hold(Value x){
-	assert(Value_exist_p(x));
-	x->count++;}
-void Value_ListPointer_push_sub(Value x, ListPointer** xs){
+extern void Value_hold(Value x){lock_with_m(x->lock,{
+	assert(unsafe_Value_exist_p(x));
+	x->count++;})}
+void unsafe_Value_ListPointer_push_sub(Value x, ListPointer** xs){
 	switch(x->type){
 		case Cons:
 			ListPointer_push(xs, x->value.cons.head);
@@ -79,19 +81,23 @@ void Value_ListPointer_push_sub(Value x, ListPointer** xs){
 			ListPointer_push(xs, x->value.delay.x);
 			break;
 		default:assert(false);}}
-void do_Value_unhold(ListPointer* xs){
+void safe_do_Value_unhold(ListPointer* xs){
 	while(ListPointer_cons_p(xs)){
 		Value x=assert_ListPointer_pop_m(xs);
+		must_lock_do(x->lock);
 		assert(x->count);
 		x->count--;
-		if(!Value_exist_p(x)){
-			Value_ListPointer_push_sub(x, &xs);
-			memory_delete(x);}}}
+		if(!unsafe_Value_exist_p(x)){
+			unsafe_Value_ListPointer_push_sub(x, &xs);
+			memory_delete(x);}
+		else{
+			assert_lock_unlock_do(x->lock);}}}
 extern void Value_unhold(Value x){
 	ListPointer* xs=ListPointer_null;
 	ListPointer_push_m(xs, x);
-	do_Value_unhold(xs);}
+	safe_do_Value_unhold(xs);}
 
+//lock - WIP
 ListPointer* marksweep=ListPointer_null;
 mark_t mark_count=1;
 extern void gcValue(){
@@ -110,7 +116,7 @@ extern void gcValue(){
 		//標記子，寫入mark
 		while(ListPointer_cons_p(marked)){
 			Value x=assert_ListPointer_pop_m(marked);
-			Value_ListPointer_push_sub(x, &marked);
+			unsafe_Value_ListPointer_push_sub(x, &marked);
 			x->mark=mark_count;}}
 	//清除
 	{ListPointer* new_marksweep=ListPointer_null;ListPointer* xs=marksweep;

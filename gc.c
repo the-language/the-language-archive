@@ -20,8 +20,8 @@
 #include "語.gc.h"
 lock gcing=lock_init;
 extern void gc(){
-	if(lock_lock_do_m(gcing)){
+	lock_with_if_m(gcing,{
 		
 		gcValue();
 		
-		assert_lock_unlock_do_m(gcing);}}
+		assert_lock_unlock_do_m(gcing);},{})}
