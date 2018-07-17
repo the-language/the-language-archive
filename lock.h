@@ -26,8 +26,7 @@ typedef struct lock lock;
 //單進程實現
 struct lock{
 	bool locked : 1;};
-inline void lock_init(lock* x){
-	x->locked=false;}
+#define lock_init {true}
 #define lock_init_m(x) lock_init(&x)
 inline bool lock_lock_do(lock* x){
 	if(x->locked)

@@ -16,13 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "gc.h"
-#include "bool.h"
+#include "lock.h"
 #include "語.gc.h"
-bool gcing=false;
+lock gcing=lock_init;
 extern void gc(){
-	if(gcing){return;}
-	gcing=true;
-	
-	gcValue();
-	
-	gcing=false;}
+	if(lock_lock_do_m(gcing)){
+		
+		gcValue();
+		
+		assert_lock_unlock_do_m(gcing);}}
