@@ -102,6 +102,7 @@ extern void Value_unhold(Value x){
 
 //lock - WIP
 ListPointer* marksweep=ListPointer_null;
+lock marksweep_lock=lock_init;
 mark_t mark_count=1;
 extern void gcValue(){
 	mark_t old_mark_count=mark_count;

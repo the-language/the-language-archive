@@ -27,7 +27,6 @@ typedef struct lock lock;
 struct lock{
 	bool locked : 1;};
 #define lock_init {true}
-#define lock_init_m(x) lock_init(&x)
 inline bool lock_lock_do(lock* x){
 	if(x->locked)
 		{return false;}
