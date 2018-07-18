@@ -33,9 +33,10 @@ inline bool lock_lock_do(lock* x){
 		{return false;}
 		else{x->locked=true;return true;}}
 #define lock_lock_do_m(x) lock_lock_do(&x)
-inline void must_lock_do(lock* x){
-	until(lock_lock_do(x)){}}
-#define must_lock_do_m(x) must_lock_do(&x)
+inline void assert_must_lock_do(lock* x){
+	bool b=lock_lock_do(x);
+	assert(b);}
+#define assert_must_lock_do_m(x) assert_must_lock_do(&x)
 inline bool lock_unlock_do(lock* x){
 	if(x->locked)
 		{x->locked=false;return true;}
@@ -45,7 +46,7 @@ inline void assert_lock_unlock_do(lock* x){
 	bool b=lock_unlock_do(x);
 	assert(b);}
 #define assert_lock_unlock_do_m(x) assert_lock_unlock_do(&x)
-#define lock_with_m(lock, body) {must_lock_do_m(lock);body assert_lock_unlock_do_m(lock);}
+#define lock_with_m(lock, body) {assert_must_lock_do_m(lock);body assert_lock_unlock_do_m(lock);}
 #define lock_with_if_m(lock, body, elseb) {if(lock_lock_do_m(lock)){body assert_lock_unlock_do_m(lock);}else{elseb}}
 
 

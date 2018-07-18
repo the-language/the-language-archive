@@ -87,14 +87,14 @@ void unsafe_Value_ListPointer_push_sub(Value x, ListPointer** xs){
 void safe_do_Value_unhold(ListPointer* xs){
 	while(ListPointer_cons_p(xs)){
 		Value x=assert_ListPointer_pop_m(xs);
-		must_lock_do(x->lock);
+		assert_must_lock_do_m(x->lock);
 		assert(x->count);
 		x->count--;
 		if(!unsafe_Value_exist_p(x)){
 			unsafe_Value_ListPointer_push_sub(x, &xs);
 			memory_delete(x);}
 		else{
-			assert_lock_unlock_do(x->lock);}}}
+			assert_lock_unlock_do_m(x->lock);}}}
 extern void Value_unhold(Value x){
 	ListPointer* xs=ListPointer_null;
 	ListPointer_push_m(xs, x);
