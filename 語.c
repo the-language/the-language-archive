@@ -101,36 +101,39 @@ extern void Value_unhold(Value x){
 	safe_do_Value_unhold(xs);}
 
 //lock - WIP
-ListPointer* marksweep=ListPointer_null;
 lock marksweep_lock=lock_init;
-mark_t mark_count=1;
-extern void gcValue(){
-	mark_t old_mark_count=mark_count;
-	mark_count++;
-	if(eq_p(mark_count, 0)){mark_count=1;}
+ListPointer* marksweep_list=ListPointer_null;
+mark_t marksweep_count=1;
+extern void gcValue(){lock_with_m(marksweep_lock,{
+	mark_t old_marksweep_count=marksweep_count;
+	marksweep_count++;
+	if(eq_p(marksweep_count, 0)){marksweep_count=1;}
 	{ListPointer* marked=ListPointer_null;
 		//標記根
-		{ListPointer* xs=marksweep;
+		{ListPointer* xs=marksweep_list;
 			while(ListPointer_cons_p(xs)){
 				Value x=assert_ListPointer_head(xs);
 				xs=assert_ListPointer_tail(xs);
 				
-				assert(eq_p(x->mark, old_mark_count));
-				if(x->count){ListPointer_push_m(marked, x);}}}
+				lock_with_m(x->lock,{
+					assert(eq_p(x->mark, old_marksweep_count));
+					if(x->count){ListPointer_push_m(marked, x);}})}}
 		//標記子，寫入mark
 		while(ListPointer_cons_p(marked)){
 			Value x=assert_ListPointer_pop_m(marked);
 			unsafe_Value_ListPointer_push_sub(x, &marked);
-			x->mark=mark_count;}}
+			lock_with_m(x->lock, {x->mark=marksweep_count;})}}
 	//清除
-	{ListPointer* new_marksweep=ListPointer_null;ListPointer* xs=marksweep;
+	{ListPointer* new_marksweep_list=ListPointer_null;ListPointer* xs=marksweep_list;
 		while(ListPointer_cons_p(xs)){
 			Value x=assert_ListPointer_pop_m(xs);
-			if(eq_p(x->mark, mark_count)){
-				ListPointer_push_m(new_marksweep, x);
+			assert_must_lock_do_m(x->lock);
+			if(eq_p(x->mark, marksweep_count)){
+				ListPointer_push_m(new_marksweep_list, x);
+				assert_lock_unlock_do_m(x->lock);
 			}else{
-				assert(eq_p(x->mark, old_mark_count));
-				memory_delete(x);}}}}
+				assert(eq_p(x->mark, old_marksweep_count));
+				memory_delete(x);}}}})}
 
 //WIP
 
