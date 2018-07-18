@@ -29,6 +29,7 @@ struct ValueV{
 	lock lock;
 	size_t count; // 自動引用計數
 	ValueVType type : 3;
+	// mark-sweep 當自動引用計數可能不能處理時使用
 	mark_t mark : 5;
 		// 0 => 非 mark-sweep
 		// 其他 => 由GC確定
@@ -47,7 +48,7 @@ struct ValueV{
 			Value list;
 		} data;
 		Value collection;
-		// 禁止 //不同語處理不同
+		// 禁止
 		// lang = Haskell
 		// let x = x in x
 		Value just;
@@ -100,7 +101,6 @@ extern void Value_unhold(Value x){
 	ListPointer_push_m(xs, x);
 	safe_do_Value_unhold(xs);}
 
-//lock - WIP
 lock marksweep_lock=lock_init;
 ListPointer* marksweep_list=ListPointer_null;
 mark_t marksweep_count=1;
