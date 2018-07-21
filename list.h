@@ -15,50 +15,50 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef ListPointer_null
+#ifndef List_null
 
 
 #include "eq.h"
 #include "bool.h"
 #include "memory.h"
 #include "c.h"
-struct ListPointer;
-typedef struct ListPointer ListPointer;
-struct ListPointer{
+struct List;
+typedef struct List List;
+struct List{
 	void* head;
-	ListPointer* tail;};
+	List* tail;};
 #ifdef NULL
-#define ListPointer_null NULL
+#define List_null NULL
 #else
-extern ListPointer ListPointer_null_v;
-#define ListPointer_null (&ListPointer_null_v)
+extern List List_null_v;
+#define List_null (&List_null_v)
 #endif
-extern void remove_ListPointer(ListPointer* xs);
-inline ListPointer* ListPointer_cons(void* head, ListPointer* tail){
-	ListPointer* r=memory_new_type(ListPointer);
+extern void remove_List(List* xs);
+inline List* List_cons(void* head, List* tail){
+	List* r=memory_new_type(List);
 	r->head=head;r->tail=tail;
 	return r;}
-inline bool ListPointer_null_p(ListPointer* xs){return eq_p(xs, ListPointer_null);}
-inline bool ListPointer_cons_p(ListPointer* xs){return !ListPointer_null_p(xs);}
-inline void* assert_ListPointer_head(ListPointer* xs){
-	assert(ListPointer_cons_p(xs));
+inline bool List_null_p(List* xs){return eq_p(xs, List_null);}
+inline bool List_cons_p(List* xs){return !List_null_p(xs);}
+inline void* assert_List_head(List* xs){
+	assert(List_cons_p(xs));
 	return xs->head;}
-inline ListPointer* assert_ListPointer_tail(ListPointer* xs){
-	assert(ListPointer_cons_p(xs));
+inline List* assert_List_tail(List* xs){
+	assert(List_cons_p(xs));
 	return xs->tail;}
 
-inline void ListPointer_push(ListPointer** l, void* x){
-	ListPointer* r=memory_new_type(ListPointer);
+inline void List_push(List** l, void* x){
+	List* r=memory_new_type(List);
 	r->head=x;r->tail=*l;
 	*l=r;}
-#define ListPointer_push_m(xs, x) ListPointer_push(&xs, x)
-inline void* assert_ListPointer_pop(ListPointer** l){
-	assert(ListPointer_cons_p(*l));
-	ListPointer* nl=(*l)->tail;void* r=(*l)->head;
+#define List_push_m(xs, x) List_push(&xs, x)
+inline void* assert_List_pop(List** l){
+	assert(List_cons_p(*l));
+	List* nl=(*l)->tail;void* r=(*l)->head;
 	memory_delete(*l);
 	*l=nl;
 	return r;}
-#define assert_ListPointer_pop_m(xs) assert_ListPointer_pop(&xs)
+#define assert_List_pop_m(xs) assert_List_pop(&xs)
 
 
 #endif

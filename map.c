@@ -21,35 +21,35 @@
 #include "bool.h"
 #include "list.h"
 #include "eq.h"
-extern void delete_MapPointer(MapPointer* m){
-	ListPointer* ms=ListPointer_null;
-	ListPointer_push_m(ms, m);
-	while(ListPointer_cons_p(ms)){
-		MapPointer* m=assert_ListPointer_pop_m(ms);
+extern void delete_Map(Map* m){
+	List* ms=List_null;
+	List_push_m(ms, m);
+	while(List_cons_p(ms)){
+		Map* m=assert_List_pop_m(ms);
 		if(m->has_zeros){memory_delete(m->zeros);}
-		if(m->has_zero){ListPointer_push_m(ms, m->zero);}
-		if(m->has_one){ListPointer_push_m(ms, m->one);}
+		if(m->has_zero){List_push_m(ms, m->zero);}
+		if(m->has_one){List_push_m(ms, m->one);}
 		memory_delete(m);}}
-extern void MapPointer_set_do(MapPointer* m, void* key, void* value){
+extern void Map_set_do(Map* m, void* key, void* value){
 	size_t k=(size_t)key;
-	MapPointer* i=m;
+	Map* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=new_MapPointer();}
+				i->has_one=true;i->one=new_Map();}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=new_MapPointer();}
+				i->has_zero=true;i->zero=new_Map();}
 			i=i->zero;}}
 	i->has_zeros=true;
 	i->zeros=value;}
-extern void* orNull_MapPointer_ref(MapPointer* m, void* key){
+extern void* orNull_Map_ref(Map* m, void* key){
 	size_t k=(size_t)key;
-	MapPointer* i=m;
+	Map* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
@@ -63,9 +63,9 @@ extern void* orNull_MapPointer_ref(MapPointer* m, void* key){
 				return NULL;}
 			i=i->zero;}}
 	return i->has_zeros?i->zeros:NULL;}
-extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v){
+extern void* Map_ref(Map* m, void* key, void* default_v){
 	size_t k=(size_t)key;
-	MapPointer* i=m;
+	Map* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
@@ -79,9 +79,9 @@ extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v){
 				return default_v;}
 			i=i->zero;}}
 	return i->has_zeros?i->zeros:default_v;}
-extern void* assert_MapPointer_ref(MapPointer* m, void* key){
+extern void* assert_Map_ref(Map* m, void* key){
 	size_t k=(size_t)key;
-	MapPointer* i=m;
+	Map* i=m;
 	while(k){
 		bool b=k&1;
 		k=k>>1;

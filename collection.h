@@ -21,24 +21,24 @@
 
 #include "bool.h"
 #include "memory.h"
-struct CollectionPointer;typedef struct CollectionPointer CollectionPointer;struct CollectionPointer{
+struct Collection;typedef struct Collection Collection;struct Collection{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
-	CollectionPointer* zero;
-	CollectionPointer* one;};
-inline CollectionPointer* new_CollectionPointer(){
-	CollectionPointer* r=memory_new_type(CollectionPointer);
+	Collection* zero;
+	Collection* one;};
+inline Collection* new_Collection(){
+	Collection* r=memory_new_type(Collection);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;}
-extern void delete_CollectionPointer(CollectionPointer* c);
-extern void CollectionPointer_add_do(CollectionPointer* c, void* x);
-extern bool CollectionPointer_has(CollectionPointer* c, void* x);
+extern void delete_Collection(Collection* c);
+extern void Collection_add_do(Collection* c, void* x);
+extern bool Collection_has(Collection* c, void* x);
 
-inline bool CollectionPointer_not_null_p(CollectionPointer* c){
+inline bool Collection_not_null_p(Collection* c){
 	return c->has_zeros||c->has_zero||c->has_one;}
-inline bool CollectionPointer_null_p(CollectionPointer* c){
-	return !CollectionPointer_not_null_p(c);}
+inline bool Collection_null_p(Collection* c){
+	return !Collection_not_null_p(c);}
 
 
 #endif

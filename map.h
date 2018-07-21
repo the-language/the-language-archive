@@ -22,28 +22,28 @@
 #include "c.h"
 #include "memory.h"
 #include "bool.h"
-struct MapPointer;typedef struct MapPointer MapPointer;struct MapPointer{
+struct Map;typedef struct Map Map;struct Map{
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
 	void* zeros;
-	MapPointer* zero;
-	MapPointer* one;};
-inline MapPointer* new_MapPointer(){
-	MapPointer* r=memory_new_type(MapPointer);
+	Map* zero;
+	Map* one;};
+inline Map* new_Map(){
+	Map* r=memory_new_type(Map);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;}
-extern void delete_MapPointer(MapPointer* m);
-extern void MapPointer_set_do(MapPointer* m, void* key, void* value);
+extern void delete_Map(Map* m);
+extern void Map_set_do(Map* m, void* key, void* value);
 
-extern void* orNull_MapPointer_ref(MapPointer* m, void* key);
-extern void* MapPointer_ref(MapPointer* m, void* key, void* default_v);
-extern void* assert_MapPointer_ref(MapPointer* m, void* key);
+extern void* orNull_Map_ref(Map* m, void* key);
+extern void* Map_ref(Map* m, void* key, void* default_v);
+extern void* assert_Map_ref(Map* m, void* key);
 
-inline bool MapPointer_not_null_p(MapPointer* m){
+inline bool Map_not_null_p(Map* m){
 	return m->has_zeros||m->has_zero||m->has_one;}
-inline bool MapPointer_null_p(MapPointer* c){
-	return !MapPointer_not_null_p(c);}
+inline bool Map_null_p(Map* c){
+	return !Map_not_null_p(c);}
 
 
 #endif

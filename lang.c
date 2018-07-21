@@ -62,73 +62,73 @@ inline bool unsafe_Value_exist_p(Value x){
 extern void Value_hold(Value x){lock_with_m(x->lock,{
 	assert(unsafe_Value_exist_p(x));
 	x->count++;})}
-void unsafe_Value_ListPointer_push_sub(Value x, ListPointer** xs){
+void unsafe_Value_List_push_sub(Value x, List** xs){
 	switch(x->type){
 		case Cons:
-			ListPointer_push(xs, x->value.cons.head);
-			ListPointer_push(xs, x->value.cons.tail);
+			List_push(xs, x->value.cons.head);
+			List_push(xs, x->value.cons.tail);
 			break;
 		case Null:break;
 		case Symbol:break;
 		case SymbolConst:break;
 		case Data:
-			ListPointer_push(xs, x->value.data.name);
-			ListPointer_push(xs, x->value.data.list);
+			List_push(xs, x->value.data.name);
+			List_push(xs, x->value.data.list);
 			break;
 		case Collection:
-			ListPointer_push(xs, x->value.collection);
+			List_push(xs, x->value.collection);
 			break;
 		case Just:
-			ListPointer_push(xs, x->value.just);
+			List_push(xs, x->value.just);
 			break;
 		case Delay:
-			ListPointer_push(xs, x->value.delay.x);
+			List_push(xs, x->value.delay.x);
 			break;
 		default:assert(false);}}
-void safe_do_Value_unhold(ListPointer* xs){
-	while(ListPointer_cons_p(xs)){
-		Value x=assert_ListPointer_pop_m(xs);
+void safe_do_Value_unhold(List* xs){
+	while(List_cons_p(xs)){
+		Value x=assert_List_pop_m(xs);
 		assert_must_lock_do_m(x->lock);
 		assert(x->count);
 		x->count--;
 		if(!unsafe_Value_exist_p(x)){
-			unsafe_Value_ListPointer_push_sub(x, &xs);
+			unsafe_Value_List_push_sub(x, &xs);
 			memory_delete(x);}
 		else{
 			assert_lock_unlock_do_m(x->lock);}}}
 extern void Value_unhold(Value x){
-	ListPointer* xs=ListPointer_null;
-	ListPointer_push_m(xs, x);
+	List* xs=List_null;
+	List_push_m(xs, x);
 	safe_do_Value_unhold(xs);}
 
 lock marksweep_lock=lock_init;
-ListPointer* marksweep_list=ListPointer_null;
+List* marksweep_list=List_null;
 extern void gcValue(){lock_with_m(marksweep_lock,{
-	{ListPointer* marked=ListPointer_null;
+	{List* marked=List_null;
 		//標記根
-		{ListPointer* xs=marksweep_list;
-			while(ListPointer_cons_p(xs)){
-				Value x=assert_ListPointer_head(xs);
-				xs=assert_ListPointer_tail(xs);
+		{List* xs=marksweep_list;
+			while(List_cons_p(xs)){
+				Value x=assert_List_head(xs);
+				xs=assert_List_tail(xs);
 				
 				lock_with_m(x->lock,{
 					assert(eq_p(x->mark, NotMarked));
-					if(x->count){ListPointer_push_m(marked, x);}
+					if(x->count){List_push_m(marked, x);}
 					})}}
 		//標記子，寫入mark
-		while(ListPointer_cons_p(marked)){
-			Value x=assert_ListPointer_pop_m(marked);
-			unsafe_Value_ListPointer_push_sub(x, &marked);
+		while(List_cons_p(marked)){
+			Value x=assert_List_pop_m(marked);
+			unsafe_Value_List_push_sub(x, &marked);
 			lock_with_m(x->lock, {x->mark=Marked;})}}
 	//清除
-	{ListPointer* new_marksweep_list=ListPointer_null;
-		while(ListPointer_cons_p(marksweep_list)){
-			Value x=assert_ListPointer_pop_m(marksweep_list);
+	{List* new_marksweep_list=List_null;
+		while(List_cons_p(marksweep_list)){
+			Value x=assert_List_pop_m(marksweep_list);
 			assert_must_lock_do_m(x->lock);
 			switch(x->mark){
 				case Marked:
 					x->mark=NotMarked;
-					ListPointer_push_m(new_marksweep_list, x);
+					List_push_m(new_marksweep_list, x);
 					assert_lock_unlock_do_m(x->lock);
 					break;
 				case NotMarked:

@@ -18,33 +18,33 @@
 #include "list.h"
 #include "c.h"
 #include "collection.h"
-extern void delete_CollectionPointer(CollectionPointer* c){
-	ListPointer* cs=ListPointer_null;
-	ListPointer_push_m(cs, c);
-	while(ListPointer_cons_p(cs)){
-		CollectionPointer* c=assert_ListPointer_pop_m(cs);
-		if(c->has_zero){ListPointer_push_m(cs, c->zero);}
-		if(c->has_one){ListPointer_push_m(cs, c->one);}
+extern void delete_Collection(Collection* c){
+	List* cs=List_null;
+	List_push_m(cs, c);
+	while(List_cons_p(cs)){
+		Collection* c=assert_List_pop_m(cs);
+		if(c->has_zero){List_push_m(cs, c->zero);}
+		if(c->has_one){List_push_m(cs, c->one);}
 		memory_delete(c);}}
-extern void CollectionPointer_add_do(CollectionPointer* c, void* x){
+extern void Collection_add_do(Collection* c, void* x){
 	size_t k=(size_t)x;
-	CollectionPointer* i=c;
+	Collection* i=c;
 	while(k){
 		bool b=k&1;
 		k=k>>1;
 		
 		if(b){
 			if(!i->has_one){
-				i->has_one=true;i->one=new_CollectionPointer();}
+				i->has_one=true;i->one=new_Collection();}
 			i=i->one;
 		}else{
 			if(!i->has_zero){
-				i->has_zero=true;i->zero=new_CollectionPointer();}
+				i->has_zero=true;i->zero=new_Collection();}
 			i=i->zero;}}
 	i->has_zeros=true;}
-extern bool CollectionPointer_has(CollectionPointer* c, void* x){
+extern bool Collection_has(Collection* c, void* x){
 	size_t k=(size_t)x;
-	CollectionPointer* i=c;
+	Collection* i=c;
 	while(k){
 		bool b=k&1;
 		k=k>>1;

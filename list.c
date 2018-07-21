@@ -20,10 +20,10 @@
 #include "list.h"
 #ifdef NULL
 #else
-extern ListPointer ListPointer_null_v;
-ListPointer ListPointer_null_v={};
+extern List List_null_v;
+List List_null_v={};
 #endif
-extern void remove_ListPointer(ListPointer* xs){
-	while(ListPointer_cons_p(xs)){
-		ListPointer* temp=xs->tail;memory_delete(xs);
+extern void remove_List(List* xs){
+	while(List_cons_p(xs)){
+		List* temp=xs->tail;memory_delete(xs);
 		xs=temp;}}
