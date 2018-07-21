@@ -21,19 +21,31 @@
 #include "eq.h"
 #include "bool.h"
 #include "memory.h"
+#include "c.h"
 struct ListPointer;
 typedef struct ListPointer ListPointer;
 struct ListPointer{
 	void* head;
 	ListPointer* tail;};
+#ifdef NULL
+#define ListPointer_null NULL
+#else
 extern ListPointer ListPointer_null_v;
 #define ListPointer_null (&ListPointer_null_v)
+#endif
 extern void remove_ListPointer(ListPointer* xs);
-extern ListPointer* ListPointer_cons(void* head, ListPointer* tail);
+inline ListPointer* ListPointer_cons(void* head, ListPointer* tail){
+	ListPointer* r=memory_new_type(ListPointer);
+	r->head=head;r->tail=tail;
+	return r;}
 inline bool ListPointer_null_p(ListPointer* xs){return eq_p(xs, ListPointer_null);}
 inline bool ListPointer_cons_p(ListPointer* xs){return !ListPointer_null_p(xs);}
-extern void* assert_ListPointer_head(ListPointer* xs);
-extern ListPointer* assert_ListPointer_tail(ListPointer* xs);
+inline void* assert_ListPointer_head(ListPointer* xs){
+	assert(ListPointer_cons_p(xs));
+	return xs->head;}
+inline ListPointer* assert_ListPointer_tail(ListPointer* xs){
+	assert(ListPointer_cons_p(xs));
+	return xs->tail;}
 
 inline void ListPointer_push(ListPointer** l, void* x){
 	ListPointer* r=memory_new_type(ListPointer);

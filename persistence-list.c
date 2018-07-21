@@ -15,15 +15,19 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "persistence-list.h"
+#include "eq.h"
 #include "memory.h"
 #include "c.h"
-#include "list.h"
 #ifdef NULL
 #else
-extern ListPointer ListPointer_null_v;
-ListPointer ListPointer_null_v={};
+extern PersistenceList PersistenceList_null_v;
+PersistenceList PersistenceList_null_v={};
 #endif
-extern void remove_ListPointer(ListPointer* xs){
-	while(ListPointer_cons_p(xs)){
-		ListPointer* temp=xs->tail;memory_delete(xs);
-		xs=temp;}}
+extern void remove_PersistenceList(PersistenceList* xs){
+	assert(xs->count);
+	xs->count--;
+	if(eq_p(xs->count, 0)){
+		memory_delete(xs->head);
+		remove_PersistenceList(xs->tail);}}
+
