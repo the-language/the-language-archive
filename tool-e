@@ -1,0 +1,4 @@
+#!/bin/sh
+gedit --new-window *.c&
+gedit --new-window *.h&
+gedit --new-window *.s&

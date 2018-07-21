@@ -17,7 +17,7 @@
 */
 #include "gc.h"
 #include "lock.h"
-#include "語.gc.h"
+#include "lang.gc.h"
 lock gcing=lock_init;
 extern void gc(){
 	lock_with_if_m(gcing,{

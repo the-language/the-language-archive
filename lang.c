@@ -19,7 +19,7 @@
 #include "c.h"
 #include "bool.h"
 #include "eq.h"
-#include "語.h"
+#include "lang.h"
 #include "list.h"
 #include "lock.h"
 typedef struct ValueV ValueV;
