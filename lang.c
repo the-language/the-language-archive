@@ -24,15 +24,15 @@
 #include "lock.h"
 typedef struct ValueV ValueV;
 typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
-typedef unsigned char mark_t;// 5 bits
+typedef enum {MarkNothing, // 不需要 mark-sweep
+	Marked,
+	NotMarked} Mark;
 struct ValueV{
 	lock lock;
 	size_t count; // 自動引用計數
 	ValueVType type : 3;
 	// mark-sweep 當自動引用計數可能不能處理時使用
-	mark_t mark : 5;
-		// 0 => 非 mark-sweep
-		// 其他 => 由GC確定
+	Mark mark : 2;
 	union {
 		struct {
 			Value head;
@@ -103,11 +103,7 @@ extern void Value_unhold(Value x){
 
 lock marksweep_lock=lock_init;
 ListPointer* marksweep_list=ListPointer_null;
-mark_t marksweep_count=1;
 extern void gcValue(){lock_with_m(marksweep_lock,{
-	mark_t old_marksweep_count=marksweep_count;
-	marksweep_count++;
-	if(eq_p(marksweep_count, 0)){marksweep_count=1;}
 	{ListPointer* marked=ListPointer_null;
 		//標記根
 		{ListPointer* xs=marksweep_list;
@@ -116,24 +112,29 @@ extern void gcValue(){lock_with_m(marksweep_lock,{
 				xs=assert_ListPointer_tail(xs);
 				
 				lock_with_m(x->lock,{
-					assert(eq_p(x->mark, old_marksweep_count));
-					if(x->count){ListPointer_push_m(marked, x);}})}}
+					assert(eq_p(x->mark, NotMarked));
+					if(x->count){ListPointer_push_m(marked, x);}
+					})}}
 		//標記子，寫入mark
 		while(ListPointer_cons_p(marked)){
 			Value x=assert_ListPointer_pop_m(marked);
 			unsafe_Value_ListPointer_push_sub(x, &marked);
-			lock_with_m(x->lock, {x->mark=marksweep_count;})}}
+			lock_with_m(x->lock, {x->mark=Marked;})}}
 	//清除
-	{ListPointer* new_marksweep_list=ListPointer_null;ListPointer* xs=marksweep_list;
-		while(ListPointer_cons_p(xs)){
-			Value x=assert_ListPointer_pop_m(xs);
+	{ListPointer* new_marksweep_list=ListPointer_null;
+		while(ListPointer_cons_p(marksweep_list)){
+			Value x=assert_ListPointer_pop_m(marksweep_list);
 			assert_must_lock_do_m(x->lock);
-			if(eq_p(x->mark, marksweep_count)){
-				ListPointer_push_m(new_marksweep_list, x);
-				assert_lock_unlock_do_m(x->lock);
-			}else{
-				assert(eq_p(x->mark, old_marksweep_count));
-				memory_delete(x);}}}})}
+			switch(x->mark){
+				case Marked:
+					x->mark=NotMarked;
+					ListPointer_push_m(new_marksweep_list, x);
+					assert_lock_unlock_do_m(x->lock);
+					break;
+				case NotMarked:
+					memory_delete(x);
+					break;
+				default:assert(false);}}}})}
 
 //WIP
 
