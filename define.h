@@ -15,16 +15,18 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "define.h"
-#include "memory.h"
-#include "gc.h"
-#include "c.h"
-#include "eq.h"
-PUBLIC void* must_memory_new(size_t size){
-	void* r=maybe_memory_new(size);
-	while(eq_p(r, NULL)){gc();r=maybe_memory_new(size);}
-	return r;}
-PUBLIC void* must_memory_resize(void* pointer, size_t size){
-	void* r=maybe_memory_resize(pointer, size);
-	while(eq_p(r, NULL)){gc();r=maybe_memory_resize(pointer, size);}
-	return r;}
+#ifndef _HEAD_define_
+#define _HEAD_define_
+
+
+#define INLINE static inline
+#define PUBLIC extern
+#define PRIVATE static
+
+#define record(x) struct x;typedef struct x x;struct x
+#define anonymous_record struct
+#define enumeration(x) enum x;typedef enum x x;enum x
+#define anonymous_enumeration enum
+
+
+#endif

@@ -15,16 +15,17 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "define.h"
 #include "persistence-list.h"
 #include "eq.h"
 #include "memory.h"
 #include "c.h"
 #ifdef NULL
 #else
-extern PersistenceList PersistenceList_null_v;
+PUBLIC PersistenceList PersistenceList_null_v;
 PersistenceList PersistenceList_null_v={};
 #endif
-extern void remove_PersistenceList(PersistenceList* xs){
+PUBLIC void remove_PersistenceList(PersistenceList* xs){
 	assert(xs->count);
 	xs->count--;
 	if(eq_p(xs->count, 0)){

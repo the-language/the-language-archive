@@ -18,41 +18,40 @@
 #ifndef List_null
 
 
+#include "define.h"
 #include "eq.h"
 #include "bool.h"
 #include "memory.h"
 #include "c.h"
-struct List;
-typedef struct List List;
-struct List{
+record(List){
 	void* head;
 	List* tail;};
 #ifdef NULL
 #define List_null NULL
 #else
-extern List List_null_v;
+PUBLIC List List_null_v;
 #define List_null (&List_null_v)
 #endif
-extern void remove_List(List* xs);
-inline List* List_cons(void* head, List* tail){
+PUBLIC void remove_List(List* xs);
+INLINE List* List_cons(void* head, List* tail){
 	List* r=memory_new_type(List);
 	r->head=head;r->tail=tail;
 	return r;}
-inline bool List_null_p(List* xs){return eq_p(xs, List_null);}
-inline bool List_cons_p(List* xs){return !List_null_p(xs);}
-inline void* assert_List_head(List* xs){
+INLINE bool List_null_p(List* xs){return eq_p(xs, List_null);}
+INLINE bool List_cons_p(List* xs){return !List_null_p(xs);}
+INLINE void* assert_List_head(List* xs){
 	assert(List_cons_p(xs));
 	return xs->head;}
-inline List* assert_List_tail(List* xs){
+INLINE List* assert_List_tail(List* xs){
 	assert(List_cons_p(xs));
 	return xs->tail;}
 
-inline void List_push(List** l, void* x){
+INLINE void List_push(List** l, void* x){
 	List* r=memory_new_type(List);
 	r->head=x;r->tail=*l;
 	*l=r;}
 #define List_push_m(xs, x) List_push(&xs, x)
-inline void* assert_List_pop(List** l){
+INLINE void* assert_List_pop(List** l){
 	assert(List_cons_p(*l));
 	List* nl=(*l)->tail;void* r=(*l)->head;
 	memory_delete(*l);

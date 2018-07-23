@@ -15,10 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "define.h"
 #include "list.h"
 #include "c.h"
 #include "collection.h"
-extern void delete_Collection(Collection* c){
+PUBLIC void delete_Collection(Collection* c){
 	List* cs=List_null;
 	List_push_m(cs, c);
 	while(List_cons_p(cs)){
@@ -26,7 +27,7 @@ extern void delete_Collection(Collection* c){
 		if(c->has_zero){List_push_m(cs, c->zero);}
 		if(c->has_one){List_push_m(cs, c->one);}
 		memory_delete(c);}}
-extern void Collection_add_do(Collection* c, void* x){
+PUBLIC void Collection_add_do(Collection* c, void* x){
 	size_t k=(size_t)x;
 	Collection* i=c;
 	while(k){
@@ -42,7 +43,7 @@ extern void Collection_add_do(Collection* c, void* x){
 				i->has_zero=true;i->zero=new_Collection();}
 			i=i->zero;}}
 	i->has_zeros=true;}
-extern bool Collection_has(Collection* c, void* x){
+PUBLIC bool Collection_has(Collection* c, void* x){
 	size_t k=(size_t)x;
 	Collection* i=c;
 	while(k){

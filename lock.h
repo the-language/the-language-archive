@@ -18,30 +18,29 @@
 #ifndef lock_init_m
 
 
+#include "define.h"
 #include "bool.h"
 #include "until.h"
 #include "c.h"
-struct lock;
-typedef struct lock lock;
 //單進程實現
-struct lock{
+record(lock){
 	bool locked : 1;};
 #define lock_init {true}
-inline bool lock_lock_do(lock* x){
+INLINE bool lock_lock_do(lock* x){
 	if(x->locked)
 		{return false;}
 		else{x->locked=true;return true;}}
 #define lock_lock_do_m(x) lock_lock_do(&x)
-inline void assert_must_lock_do(lock* x){
+INLINE void assert_must_lock_do(lock* x){
 	bool b=lock_lock_do(x);
 	assert(b);}
 #define assert_must_lock_do_m(x) assert_must_lock_do(&x)
-inline bool lock_unlock_do(lock* x){
+INLINE bool lock_unlock_do(lock* x){
 	if(x->locked)
 		{x->locked=false;return true;}
 		else{return false;}}
 #define lock_unlock_do_m(x) lock_unlock_do(&x)
-inline void assert_lock_unlock_do(lock* x){
+INLINE void assert_lock_unlock_do(lock* x){
 	bool b=lock_unlock_do(x);
 	assert(b);}
 #define assert_lock_unlock_do_m(x) assert_lock_unlock_do(&x)

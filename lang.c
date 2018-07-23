@@ -16,53 +16,53 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //WIP
+#include "define.h"
 #include "c.h"
 #include "bool.h"
 #include "eq.h"
 #include "lang.h"
 #include "list.h"
 #include "lock.h"
-typedef struct ValueV ValueV;
-typedef enum {Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay} ValueVType;
-typedef enum {MarkNothing, // 不需要 mark-sweep
+enumeration(ValueType){Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay};
+enumeration(Mark){MarkNothing, // 不需要 mark-sweep
 	Marked,
-	NotMarked} Mark;
-struct ValueV{
+	NotMarked};
+record(Value){
 	lock lock;
 	size_t count; // 自動引用計數
-	ValueVType type : 3;
+	ValueType type : 3;
 	// mark-sweep 當自動引用計數可能不能處理時使用
 	Mark mark : 2;
 	union {
-		struct {
-			Value head;
-			Value tail;
+		anonymous_record {
+			Value* head;
+			Value* tail;
 		} cons;
 		// null
-		struct {
+		anonymous_record {
 			size_t length;// 單位 byte
 			char* value;
 		} symbol;
-		struct {
-			Value name;
-			Value list;
+		anonymous_record {
+			Value* name;
+			Value* list;
 		} data;
-		Value collection;
+		Value* collection;
 		// 禁止
 		// lang = Haskell
 		// let x = x in x
-		Value just;
-		struct {
-			Value x;
-			Value (*f)(Value);// f不被remove
+		Value* just;
+		anonymous_record {
+			Value* x;
+			Value* (*f)(Value*);// f不被remove
 		} delay;
 	} value;};
-inline bool unsafe_Value_exist_p(Value x){
+INLINE bool unsafe_Value_exist_p(Value* x){
 	return x->count||x->mark;}
-extern void Value_hold(Value x){lock_with_m(x->lock,{
+PUBLIC void Value_hold(Value* x){lock_with_m(x->lock,{
 	assert(unsafe_Value_exist_p(x));
 	x->count++;})}
-void unsafe_Value_List_push_sub(Value x, List** xs){
+void unsafe_Value_List_push_sub(Value* x, List** xs){
 	switch(x->type){
 		case Cons:
 			List_push(xs, x->value.cons.head);
@@ -87,7 +87,7 @@ void unsafe_Value_List_push_sub(Value x, List** xs){
 		default:assert(false);}}
 void safe_do_Value_unhold(List* xs){
 	while(List_cons_p(xs)){
-		Value x=assert_List_pop_m(xs);
+		Value* x=assert_List_pop_m(xs);
 		assert_must_lock_do_m(x->lock);
 		assert(x->count);
 		x->count--;
@@ -96,19 +96,19 @@ void safe_do_Value_unhold(List* xs){
 			memory_delete(x);}
 		else{
 			assert_lock_unlock_do_m(x->lock);}}}
-extern void Value_unhold(Value x){
+PUBLIC void Value_unhold(Value* x){
 	List* xs=List_null;
 	List_push_m(xs, x);
 	safe_do_Value_unhold(xs);}
 
 lock marksweep_lock=lock_init;
 List* marksweep_list=List_null;
-extern void gcValue(){lock_with_m(marksweep_lock,{
+PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 	{List* marked=List_null;
 		//標記根
 		{List* xs=marksweep_list;
 			while(List_cons_p(xs)){
-				Value x=assert_List_head(xs);
+				Value* x=assert_List_head(xs);
 				xs=assert_List_tail(xs);
 				
 				lock_with_m(x->lock,{
@@ -117,13 +117,13 @@ extern void gcValue(){lock_with_m(marksweep_lock,{
 					})}}
 		//標記子，寫入mark
 		while(List_cons_p(marked)){
-			Value x=assert_List_pop_m(marked);
+			Value* x=assert_List_pop_m(marked);
 			unsafe_Value_List_push_sub(x, &marked);
 			lock_with_m(x->lock, {x->mark=Marked;})}}
 	//清除
 	{List* new_marksweep_list=List_null;
 		while(List_cons_p(marksweep_list)){
-			Value x=assert_List_pop_m(marksweep_list);
+			Value* x=assert_List_pop_m(marksweep_list);
 			assert_must_lock_do_m(x->lock);
 			switch(x->mark){
 				case Marked:

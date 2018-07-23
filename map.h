@@ -19,30 +19,31 @@
 #define _HEAD_map_
 
 
+#include "define.h"
 #include "c.h"
 #include "memory.h"
 #include "bool.h"
-struct Map;typedef struct Map Map;struct Map{
+record(Map){
 	bool has_zeros : 1;
 	bool has_zero : 1;
 	bool has_one : 1;
 	void* zeros;
 	Map* zero;
 	Map* one;};
-inline Map* new_Map(){
+INLINE Map* new_Map(){
 	Map* r=memory_new_type(Map);
 	r->has_zeros=false;r->has_zero=false;r->has_one=false;
 	return r;}
-extern void delete_Map(Map* m);
-extern void Map_set_do(Map* m, void* key, void* value);
+PUBLIC void delete_Map(Map* m);
+PUBLIC void Map_set_do(Map* m, void* key, void* value);
 
-extern void* orNull_Map_ref(Map* m, void* key);
-extern void* Map_ref(Map* m, void* key, void* default_v);
-extern void* assert_Map_ref(Map* m, void* key);
+PUBLIC void* orNull_Map_ref(Map* m, void* key);
+PUBLIC void* Map_ref(Map* m, void* key, void* default_v);
+PUBLIC void* assert_Map_ref(Map* m, void* key);
 
-inline bool Map_not_null_p(Map* m){
+INLINE bool Map_not_null_p(Map* m){
 	return m->has_zeros||m->has_zero||m->has_one;}
-inline bool Map_null_p(Map* c){
+INLINE bool Map_null_p(Map* c){
 	return !Map_not_null_p(c);}
 
 

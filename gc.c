@@ -15,11 +15,12 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "define.h"
 #include "gc.h"
 #include "lock.h"
 #include "lang.gc.h"
 lock gcing=lock_init;
-extern void gc(){
+PUBLIC void gc(){
 	lock_with_if_m(gcing,{
 		
 		gcValue();

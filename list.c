@@ -15,15 +15,16 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "define.h"
 #include "memory.h"
 #include "c.h"
 #include "list.h"
 #ifdef NULL
 #else
-extern List List_null_v;
+PUBLIC List List_null_v;
 List List_null_v={};
 #endif
-extern void remove_List(List* xs){
+PUBLIC void remove_List(List* xs){
 	while(List_cons_p(xs)){
 		List* temp=xs->tail;memory_delete(xs);
 		xs=temp;}}

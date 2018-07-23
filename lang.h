@@ -19,11 +19,11 @@
 #define _HEAD_lang_
 
 
+#include "define.h"
 //WIP
-struct ValueV;
-typedef struct ValueV* Value;
-extern void Value_hold(Value x);
-extern void Value_unhold(Value x);
+record(Value);
+PUBLIC void Value_hold(Value* x);
+PUBLIC void Value_unhold(Value* x);
 
 
 #endif

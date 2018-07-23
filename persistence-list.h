@@ -19,6 +19,7 @@
 #define _HEAD_persistence_list_
 
 
+#include "define.h"
 #include "c.h"
 #include "eq.h"
 #include "bool.h"
@@ -33,28 +34,28 @@ struct PersistenceList{
 #ifdef NULL
 #define PersistenceList_null NULL
 #else
-extern PersistenceList PersistenceList_null_v;
+PUBLIC PersistenceList PersistenceList_null_v;
 #define PersistenceList_null (&PersistenceList_null_v)
 #endif
-inline bool PersistenceList_null_p(PersistenceList* xs){
+INLINE bool PersistenceList_null_p(PersistenceList* xs){
 	return eq_p(xs, PersistenceList_null);}
-inline bool PersistenceList_cons_p(PersistenceList* xs){
+INLINE bool PersistenceList_cons_p(PersistenceList* xs){
 	return !PersistenceList_null_p(xs);}
-inline PersistenceList* PersistenceList_cons(void* x, PersistenceList* xs){
+INLINE PersistenceList* PersistenceList_cons(void* x, PersistenceList* xs){
 	assert(xs->count);
 	xs->count++;
 	PersistenceList* r=memory_new_type(PersistenceList);
 	r->count=1;
 	r->head=x;
 	r->tail=xs;}
-inline void* assert_PersistenceList_head(PersistenceList* xs){
+INLINE void* assert_PersistenceList_head(PersistenceList* xs){
 	assert(PersistenceList_cons_p(xs));
 	return xs->head;}
-inline PersistenceList* assert_PersistenceList_tail(PersistenceList* xs){
+INLINE PersistenceList* assert_PersistenceList_tail(PersistenceList* xs){
 	assert(PersistenceList_cons_p(xs));
 	if(PersistenceList_cons_p(xs->tail)){
 		xs->tail->count++;}
 	return xs->tail;}
-extern void remove_PersistenceList(PersistenceList* xs);
+PUBLIC void remove_PersistenceList(PersistenceList* xs);
 
 #endif

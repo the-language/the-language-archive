@@ -19,7 +19,8 @@
 #define _HEAD_lang_gc_
 
 
-extern void gcValue();
+#include "define.h"
+PUBLIC void gcValue();
 
 
 #endif

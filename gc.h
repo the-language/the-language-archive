@@ -19,7 +19,8 @@
 #define _HEAD_gc_
 
 
-extern void gc();
+#include "define.h"
+PUBLIC void gc();
 
 
 #endif

@@ -15,13 +15,14 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "define.h"
 #include "c.h"
 #include "memory.h"
 #include "map.h"
 #include "bool.h"
 #include "list.h"
 #include "eq.h"
-extern void delete_Map(Map* m){
+PUBLIC void delete_Map(Map* m){
 	List* ms=List_null;
 	List_push_m(ms, m);
 	while(List_cons_p(ms)){
@@ -30,7 +31,7 @@ extern void delete_Map(Map* m){
 		if(m->has_zero){List_push_m(ms, m->zero);}
 		if(m->has_one){List_push_m(ms, m->one);}
 		memory_delete(m);}}
-extern void Map_set_do(Map* m, void* key, void* value){
+PUBLIC void Map_set_do(Map* m, void* key, void* value){
 	size_t k=(size_t)key;
 	Map* i=m;
 	while(k){
@@ -47,7 +48,7 @@ extern void Map_set_do(Map* m, void* key, void* value){
 			i=i->zero;}}
 	i->has_zeros=true;
 	i->zeros=value;}
-extern void* orNull_Map_ref(Map* m, void* key){
+PUBLIC void* orNull_Map_ref(Map* m, void* key){
 	size_t k=(size_t)key;
 	Map* i=m;
 	while(k){
@@ -63,7 +64,7 @@ extern void* orNull_Map_ref(Map* m, void* key){
 				return NULL;}
 			i=i->zero;}}
 	return i->has_zeros?i->zeros:NULL;}
-extern void* Map_ref(Map* m, void* key, void* default_v){
+PUBLIC void* Map_ref(Map* m, void* key, void* default_v){
 	size_t k=(size_t)key;
 	Map* i=m;
 	while(k){
@@ -79,7 +80,7 @@ extern void* Map_ref(Map* m, void* key, void* default_v){
 				return default_v;}
 			i=i->zero;}}
 	return i->has_zeros?i->zeros:default_v;}
-extern void* assert_Map_ref(Map* m, void* key){
+PUBLIC void* assert_Map_ref(Map* m, void* key){
 	size_t k=(size_t)key;
 	Map* i=m;
 	while(k){
