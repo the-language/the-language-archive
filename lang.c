@@ -24,7 +24,7 @@
 #include "list.h"
 #include "lock.h"
 #include "collection.h"
-enumeration(ValueType){Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay};
+enumeration(ValueType){ValueCons, ValueNull, ValueSymbol, ValueSymbolValueConst, ValueData, ValueCollection, ValueJust, ValueDelay};
 enumeration(Mark){MarkNothing, // 不需要 mark-sweep
 	Marked,
 	NotMarked};
@@ -65,24 +65,24 @@ PUBLIC void Value_hold(Value* x){lock_with_m(x->lock,{
 	x->count++;})}
 void unsafe_Value_List_push_sub(Value* x, List** xs){
 	switch(x->type){
-		case Cons:
+		case ValueCons:
 			List_push(xs, x->value.cons.head);
 			List_push(xs, x->value.cons.tail);
 			break;
-		case Null:break;
-		case Symbol:break;
-		case SymbolConst:break;
-		case Data:
+		case ValueNull:break;
+		case ValueSymbol:break;
+		case ValueSymbolValueConst:break;
+		case ValueData:
 			List_push(xs, x->value.data.name);
 			List_push(xs, x->value.data.list);
 			break;
-		case Collection:
+		case ValueCollection:
 			List_push(xs, x->value.collection);
 			break;
-		case Just:
+		case ValueJust:
 			List_push(xs, x->value.just);
 			break;
-		case Delay:
+		case ValueDelay:
 			List_push(xs, x->value.delay.x);
 			break;
 		default:assert(false);}}
@@ -140,8 +140,8 @@ PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 record(Hold){
 	Value* v;
 	Collection* xs;//值含有它的
-}
+};
 lock holds_lock=lock_init;
-List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为Just（不能修改Value的内容）。
+List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
 //WIP
 
