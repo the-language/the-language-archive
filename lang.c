@@ -23,13 +23,14 @@
 #include "lang.h"
 #include "list.h"
 #include "lock.h"
+#include "collection.h"
 enumeration(ValueType){Cons, Null, Symbol, SymbolConst, Data, Collection, Just, Delay};
 enumeration(Mark){MarkNothing, // 不需要 mark-sweep
 	Marked,
 	NotMarked};
 record(Value){
-	lock lock;
 	size_t count; // 自動引用計數
+	lock lock;
 	ValueType type : 3;
 	// mark-sweep 當自動引用計數可能不能處理時使用
 	Mark mark : 2;
@@ -136,5 +137,11 @@ PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 					break;
 				default:assert(false);}}}})}
 
+record(Hold){
+	Value* v;
+	Collection* xs;//值含有它的
+}
+lock holds_lock=lock_init;
+List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为Just（不能修改Value的内容）。
 //WIP
 
