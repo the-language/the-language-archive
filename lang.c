@@ -97,10 +97,6 @@ PRIVATE void safe_do_Value_unhold(List* xs){
 			memory_delete(x);}
 		else{
 			assert_lock_unlock_do_m(x->lock);}}}
-PUBLIC void Value_unhold(Value* x){
-	List* xs=List_null;
-	List_push_m(xs, x);
-	safe_do_Value_unhold(xs);}
 
 PRIVATE lock marksweep_lock=lock_init;
 PRIVATE List* marksweep_list=List_null;
@@ -143,5 +139,10 @@ record(Hold){
 };
 PRIVATE lock holds_lock=lock_init;
 PRIVATE List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
+PUBLIC void Value_unhold(Value* x){
+	assert(eq_p(holds,List_null));
+	List* xs=List_null;
+	List_push_m(xs, x);
+	safe_do_Value_unhold(xs);}
 //WIP
 
