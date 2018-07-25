@@ -63,7 +63,7 @@ INLINE bool unsafe_Value_exist_p(Value* x){
 PUBLIC void Value_hold(Value* x){lock_with_m(x->lock,{
 	assert(unsafe_Value_exist_p(x));
 	x->count++;})}
-void unsafe_Value_List_push_sub(Value* x, List** xs){
+PRIVATE void unsafe_Value_List_push_sub(Value* x, List** xs){
 	switch(x->type){
 		case ValueCons:
 			List_push(xs, x->value.cons.head);
@@ -86,7 +86,7 @@ void unsafe_Value_List_push_sub(Value* x, List** xs){
 			List_push(xs, x->value.delay.x);
 			break;
 		default:assert(false);}}
-void safe_do_Value_unhold(List* xs){
+PRIVATE void safe_do_Value_unhold(List* xs){
 	while(List_cons_p(xs)){
 		Value* x=assert_List_pop_m(xs);
 		assert_must_lock_do_m(x->lock);
@@ -102,8 +102,8 @@ PUBLIC void Value_unhold(Value* x){
 	List_push_m(xs, x);
 	safe_do_Value_unhold(xs);}
 
-lock marksweep_lock=lock_init;
-List* marksweep_list=List_null;
+PRIVATE lock marksweep_lock=lock_init;
+PRIVATE List* marksweep_list=List_null;
 PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 	{List* marked=List_null;
 		//標記根
@@ -141,7 +141,7 @@ record(Hold){
 	Value* v;
 	Collection* xs;//值含有它的
 };
-lock holds_lock=lock_init;
-List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
+PRIVATE lock holds_lock=lock_init;
+PRIVATE List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
 //WIP
 
