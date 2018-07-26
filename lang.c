@@ -133,6 +133,11 @@ PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 					memory_delete(x);
 					break;
 				default:assert(false);}}}})}
+PRIVATE void assert_unsafe_Value_enable_marksweep(Value* x){lock_with_m(marksweep_lock,
+	assert(eq_p(hole->mark, MarkNothing) || eq_p(hole->mark, NotMarked));
+	x->mark=NotMarked;
+	List_push_m(marksweep_list, x);
+})
 
 record(Hole){
 	Value* hole;
@@ -140,43 +145,50 @@ record(Hole){
 };
 PRIVATE lock holes_lock=lock_init;
 PRIVATE List/*(Hole)*/* holes=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
-PUBLIC void Value_unhold(Value* x){
+PUBLIC void Value_unhold(Value* x){lock_with_m(holes_lock, {
 	assert(eq_p(holes,List_null));
 	List* xs=List_null;
 	List_push_m(xs, x);
-	safe_do_Value_unhold(xs);}
-PUBLIC void ValueHole_set_do(Value* hole, Value* x){
+	safe_do_Value_unhold(xs);})}
+PUBLIC void ValueHole_set_do(Value* hole, Value* x){lock_with_m(holes_lock, {
 	assert(!eq_p(hole, x));
 	lock_with_m(hole->lock, {
 		assert(eq_p(hole->type, ValueHole));
 		hole->type=ValueJust;
 		hole->value.just=x;});
 	Collection/*(Value)*/* xs;
-	List_for_m(Hole, h, holes, {
-		if(eq_p(h->hole, hole)){
-			xs=h->xs;
-			goto get;
+	{List/*(Hole)*/* new_holes=List_null;
+		while(List_cons_p(holes)){
+			Hole* h=assert_List_pop_m(holes);
+			if(eq_p(h->hole, hole)){
+				xs=h->xs;
+				memory_delete(h);
+				goto get;}
+			List_push_m(new_holes, h);
 		}
-	});
-	assert(false);
-	get:;
+		assert(false);
+		get:;
+		while(List_cons_p(new_holes)){
+			List_push_m(holes, assert_List_pop_m(new_holes));}}
 	List* checking=List_null;
 	List_push_m(checking, x);
 	while(List_cons_p(checking)){
 		Value* x=assert_List_pop_m(checking);
 		assert(not(eq_p(hole, x)));
 		if(Collection_has(xs, x)){
-			lock_with_m(hole->lock, {
-				assert(eq_p(hole->mark, MarkNothing) || eq_p(hole->mark, NotMarked));
-				hole->mark=NotMarked;
-			});
+			lock_with_m(hole->lock, {assert_unsafe_Value_enable_marksweep(hole);})
 			lock_with_m(x->lock, {
-				assert(eq_p(x->mark, MarkNothing) || eq_p(x->mark, NotMarked));
-				x->mark=NotMarked;
-				unsafe_Value_List_push_sub(x, &checking);})}}}
+				assert_unsafe_Value_enable_marksweep(x);
+				unsafe_Value_List_push_sub(x, &checking);});}}
+	delete_Collection(xs);
+	})}
 PUBLIC Value* make_ValueHole(){
 	Value* x=memory_new_type(Value);
 	x->count=1;x->lock=lock_init_v;x->type=ValueHole;x->mark=MarkNothing;
+	Collection/*(Value)*/* xs=new_Collection();
+	Hole* h=memory_new_type(Hole);
+	h->hole=x;h->xs=xs;
+	lock_with_m(holes_lock, {List_push_m(holes, h);})
 	return x;
 }
 //WIP
