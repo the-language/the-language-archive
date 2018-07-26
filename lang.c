@@ -176,7 +176,8 @@ PUBLIC void ValueHole_set_do(Value* hole, Value* x){
 				unsafe_Value_List_push_sub(x, &checking);})}}}
 PUBLIC Value* make_ValueHole(){
 	Value* x=memory_new_type(Value);
-	//WIP
+	x->count=1;x->lock=lock_init_v;x->type=ValueHole;x->mark=MarkNothing;
+	return x;
 }
 //WIP
 

@@ -25,6 +25,8 @@
 //單進程實現
 record(lock){
 	bool locked : 1;};
+PRIVATE const lock lock_init_v = {true};//只能赋值
+//只能初始化
 #define lock_init {true}
 INLINE bool lock_lock_do(lock* x){
 	if(x->locked)
