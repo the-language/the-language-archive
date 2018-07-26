@@ -22,16 +22,14 @@
 #include "c.h"
 INLINE void* maybe_memory_new(size_t size){
 	return malloc(size);}
-PUBLIC void* must_memory_new(size_t size);
-INLINE void* memory_new(size_t size){
-	return must_memory_new(size);}
-#define memory_new_type(t) must_memory_new(sizeof(t))
+PUBLIC void* assert_must_memory_new(size_t size);
+#define memory_new assert_must_memory_new
+#define memory_new_type(t) memory_new(sizeof(t))
 
 INLINE void* maybe_memory_resize(void* pointer, size_t size){	
 	return realloc(pointer, size);}
-PUBLIC void* must_memory_resize(void* pointer, size_t size);
-INLINE void* memory_resize(void* pointer, size_t size){
-	return must_memory_resize(pointer, size);}
+PUBLIC void* assert_must_memory_resize(void* pointer, size_t size);
+#define memory_resize assert_must_memory_resize
 
 INLINE void memory_delete(void* ptr){
 	free(ptr);}

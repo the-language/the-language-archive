@@ -21,6 +21,8 @@
 #define true 1
 #define false 0
 typedef char bool;
-
+#define not(x) (!(x))
+#define and(x, y) ((x)&&(y))
+#define or(x, y) ((x)||(y))
 
 #endif

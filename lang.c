@@ -164,10 +164,19 @@ PUBLIC void ValueHole_set_do(Value* hole, Value* x){
 	List_push_m(checking, x);
 	while(List_cons_p(checking)){
 		Value* x=assert_List_pop_m(checking);
+		assert(not(eq_p(hole, x)));
 		if(Collection_has(xs, x)){
+			lock_with_m(hole->lock, {
+				assert(eq_p(hole->mark, MarkNothing) || eq_p(hole->mark, NotMarked));
+				hole->mark=NotMarked;
+			});
 			lock_with_m(x->lock, {
 				assert(eq_p(x->mark, MarkNothing) || eq_p(x->mark, NotMarked));
 				x->mark=NotMarked;
 				unsafe_Value_List_push_sub(x, &checking);})}}}
+PUBLIC Value* make_ValueHole(){
+	Value* x=memory_new_type(Value);
+	//WIP
+}
 //WIP
 

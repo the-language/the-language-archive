@@ -24,6 +24,7 @@
 record(Value);
 PUBLIC void Value_hold(Value* x);
 PUBLIC void Value_unhold(Value* x);
+PUBLIC void ValueHole_set_do(Value* hole, Value* x);
 
 
 #endif
