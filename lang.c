@@ -24,14 +24,15 @@
 #include "list.h"
 #include "lock.h"
 #include "collection.h"
-enumeration(ValueType){ValueCons, ValueNull, ValueSymbol, ValueSymbolValueConst, ValueData, ValueCollection, ValueJust, ValueDelay};
-enumeration(Mark){MarkNothing, // 不需要 mark-sweep
+enumeration(Mark){
+	MarkNothing, // 不需要 mark-sweep
 	Marked,
 	NotMarked};
 record(Value){
 	size_t count; // 自動引用計數
 	lock lock;
-	ValueType type : 3;
+	anonymous_enumeration
+		{ValueCons, ValueNull, ValueSymbol, ValueSymbolValueConst, ValueData, ValueCollection, ValueJust, ValueDelay, ValueHole} type : 4;
 	// mark-sweep 當自動引用計數可能不能處理時使用
 	Mark mark : 2;
 	union {
@@ -133,16 +134,40 @@ PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 					break;
 				default:assert(false);}}}})}
 
-record(Hold){
-	Value* v;
-	Collection* xs;//值含有它的
+record(Hole){
+	Value* hole;
+	Collection/*(Value)*/* xs;//值含有它的
 };
-PRIVATE lock holds_lock=lock_init;
-PRIVATE List/*(Hold)*/* holds=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
+PRIVATE lock holes_lock=lock_init;
+PRIVATE List/*(Hole)*/* holes=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
 PUBLIC void Value_unhold(Value* x){
-	assert(eq_p(holds,List_null));
+	assert(eq_p(holes,List_null));
 	List* xs=List_null;
 	List_push_m(xs, x);
 	safe_do_Value_unhold(xs);}
+PUBLIC void ValueHole_set_do(Value* hole, Value* x){
+	assert(!eq_p(hole, x));
+	lock_with_m(hole->lock, {
+		assert(eq_p(hole->type, ValueHole));
+		hole->type=ValueJust;
+		hole->value.just=x;});
+	Collection/*(Value)*/* xs;
+	List_for_m(Hole, h, holes, {
+		if(eq_p(h->hole, hole)){
+			xs=h->xs;
+			goto get;
+		}
+	});
+	assert(false);
+	get:;
+	List* checking=List_null;
+	List_push_m(checking, x);
+	while(List_cons_p(checking)){
+		Value* x=assert_List_pop_m(checking);
+		if(Collection_has(xs, x)){
+			lock_with_m(x->lock, {
+				assert(eq_p(x->mark, MarkNothing) || eq_p(x->mark, NotMarked));
+				x->mark=NotMarked;
+				unsafe_Value_List_push_sub(x, &checking);})}}}
 //WIP
 

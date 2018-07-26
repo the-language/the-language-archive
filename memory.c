@@ -22,9 +22,11 @@
 #include "eq.h"
 PUBLIC void* must_memory_new(size_t size){
 	void* r=maybe_memory_new(size);
-	while(eq_p(r, NULL)){gc();r=maybe_memory_new(size);}
+	if(eq_p(r, NULL)){gc();r=maybe_memory_new(size);}
+	assert(r);
 	return r;}
 PUBLIC void* must_memory_resize(void* pointer, size_t size){
 	void* r=maybe_memory_resize(pointer, size);
-	while(eq_p(r, NULL)){gc();r=maybe_memory_resize(pointer, size);}
+	if(eq_p(r, NULL)){gc();r=maybe_memory_resize(pointer, size);}
+	assert(r);
 	return r;}

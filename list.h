@@ -58,6 +58,12 @@ INLINE void* assert_List_pop(List** l){
 	*l=nl;
 	return r;}
 #define assert_List_pop_m(xs) assert_List_pop(&xs)
+#define List_for_m(t, x, xs, body) \
+	{for(List* _TEMP_list_for_ = xs; \
+			List_cons_p(_TEMP_list_for_); \
+			_TEMP_list_for_=assert_List_tail(_TEMP_list_for_)){ \
+		t* x=assert_List_head(_TEMP_list_for_); \
+		{body}}}
 
 
 #endif
