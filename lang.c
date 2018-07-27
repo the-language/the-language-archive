@@ -32,9 +32,9 @@ record(Value){
 	size_t count; // 自動引用計數
 	lock lock;
 	anonymous_enumeration
-		{ValueCons, ValueNull, ValueSymbol, ValueSymbolValueConst, ValueData, ValueCollection, ValueJust, ValueDelay, ValueHole} type : 4;
+		{ValueCons, ValueNull, ValueSymbol, ValueSymbolConst, ValueData, ValueCollection, ValueJust, ValueDelay, ValueHole} type : 4;
 	// mark-sweep 當自動引用計數可能不能處理時使用
-	Mark mark : 2;
+	Mark mark : 2;//需要marksweep_lock
 	union {
 		anonymous_record {
 			Value* head;
@@ -59,8 +59,16 @@ record(Value){
 			Value* (*f)(Value*);// f不被remove
 		} delay;
 	} value;};
-INLINE bool unsafe_Value_exist_p(Value* x){
-	return x->count||x->mark;}
+INLINE void unsafe_delete_Value(Value* x){
+	switch(x->type){
+		case ValueSymbol:
+			memory_delete(x->value.symbol.value);
+			break;
+		case ValueCons:case ValueNull:case ValueSymbolConst:case ValueData:case ValueCollection:case ValueJust:case ValueDelay:break;
+		case ValueHole:default:assert(false);}
+	memory_delete(x);}
+INLINE bool unsafe_Value_exist_p(Value* x){lock_with_m(marksweep_lock,{
+	return x->count||eq_p(x->mark, Marked);})}
 PUBLIC void Value_hold(Value* x){lock_with_m(x->lock,{
 	assert(unsafe_Value_exist_p(x));
 	x->count++;})}
@@ -93,26 +101,33 @@ PRIVATE void safe_do_Value_unhold(List* xs){
 		assert_must_lock_do_m(x->lock);
 		assert(x->count);
 		x->count--;
-		if(!unsafe_Value_exist_p(x)){
+		if(unsafe_Value_exist_p(x)){
+			assert_lock_unlock_do_m(x->lock);
+		}else{
 			unsafe_Value_List_push_sub(x, &xs);
-			memory_delete(x);}
-		else{
-			assert_lock_unlock_do_m(x->lock);}}}
+			unsafe_delete_Value(x);}}}
+INLINE void safe_unsafeMarksweep_Value_disable_marksweep(Value* x){
+	assert_must_lock_do_m(x->lock);
+	assert(eq_p(x->mark, NotMarked));
+	if(eq_p(x->count, 0)){
+		delete_Value(x);
+	}else{
+		x->mark=MarkNothing;
+		assert_lock_unlock_do_m(x->lock);
+	}
+}
 
 PRIVATE lock marksweep_lock=lock_init;
 PRIVATE List* marksweep_list=List_null;
 PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 	{List* marked=List_null;
-		//標記根
-		{List* xs=marksweep_list;
-			while(List_cons_p(xs)){
-				Value* x=assert_List_head(xs);
-				xs=assert_List_tail(xs);
-				
-				lock_with_m(x->lock,{
-					assert(eq_p(x->mark, NotMarked));
-					if(x->count){List_push_m(marked, x);}
-					})}}
+		//初始化,標記根
+		List_for_m(Value, x, marksweep_list, {
+			lock_with_m(x->lock,{
+				assert(eq_p(x->mark, Marked));
+				x->mark=NotMarked;
+				if(x->count){List_push_m(marked, x);}
+			})})
 		//標記子，寫入mark
 		while(List_cons_p(marked)){
 			Value* x=assert_List_pop_m(marked);
@@ -125,15 +140,16 @@ PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
 			assert_must_lock_do_m(x->lock);
 			switch(x->mark){
 				case Marked:
-					x->mark=NotMarked;
-					List_push_m(new_marksweep_list, x);
 					assert_lock_unlock_do_m(x->lock);
+					List_push_m(new_marksweep_list, x);
 					break;
 				case NotMarked:
-					memory_delete(x);
+					assert_lock_unlock_do_m(x->lock);
+					safe_unsafeMarksweep_Value_disable_marksweep(x);
 					break;
 				default:assert(false);}}}})}
-PRIVATE void assert_unsafe_Value_enable_marksweep(Value* x){lock_with_m(marksweep_lock,
+//BUGS
+PRIVATE void assert_unsafe_safeMarksweep_Value_enable_marksweep(Value* x){lock_with_m(marksweep_lock,
 	assert(eq_p(hole->mark, MarkNothing) || eq_p(hole->mark, NotMarked));
 	x->mark=NotMarked;
 	List_push_m(marksweep_list, x);
@@ -143,13 +159,13 @@ record(Hole){
 	Value* hole;
 	Collection/*(Value)*/* xs;//值含有它的
 };
-PRIVATE lock holes_lock=lock_init;
-PRIVATE List/*(Hole)*/* holes=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。
-PUBLIC void Value_unhold(Value* x){lock_with_m(holes_lock, {
+PRIVATE lock holes_lock=lock_init;//BUG
+PRIVATE List/*(Hole)*/* holes=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。//BUG
+PUBLIC void Value_unhold(Value* x){lock_with_m(holes_lock, {//BUG
 	assert(eq_p(holes,List_null));
 	List* xs=List_null;
 	List_push_m(xs, x);
-	safe_do_Value_unhold(xs);})}
+	safe_do_Value_unhold(xs);})}//BUG
 PUBLIC void ValueHole_set_do(Value* hole, Value* x){lock_with_m(holes_lock, {
 	assert(!eq_p(hole, x));
 	lock_with_m(hole->lock, {

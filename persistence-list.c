@@ -25,10 +25,10 @@
 PUBLIC PersistenceList PersistenceList_null_v;
 PersistenceList PersistenceList_null_v={};
 #endif
-PUBLIC void remove_PersistenceList(PersistenceList* xs){
+PUBLIC void delete_PersistenceList(PersistenceList* xs){
 	assert(xs->count);
 	xs->count--;
 	if(eq_p(xs->count, 0)){
 		memory_delete(xs->head);
-		remove_PersistenceList(xs->tail);}}
+		delete_PersistenceList(xs->tail);}}
 

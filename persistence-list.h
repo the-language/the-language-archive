@@ -56,6 +56,6 @@ INLINE PersistenceList* assert_PersistenceList_tail(PersistenceList* xs){
 	if(PersistenceList_cons_p(xs->tail)){
 		xs->tail->count++;}
 	return xs->tail;}
-PUBLIC void remove_PersistenceList(PersistenceList* xs);
+PUBLIC void delete_PersistenceList(PersistenceList* xs);
 
 #endif
