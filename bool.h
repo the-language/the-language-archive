@@ -15,12 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef true
+#ifndef _HEAD_bool_
+#define _HEAD_bool_
 
-
-#define true 1
-#define false 0
-typedef char bool;
+#include "define.h"
+enumeration(bool){false=0,true=1};
 #define not(x) (!(x))
 #define and(x, y) ((x)&&(y))
 #define or(x, y) ((x)||(y))

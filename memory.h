@@ -31,8 +31,10 @@ INLINE void* maybe_memory_resize(void* pointer, size_t size){
 PUBLIC void* assert_must_memory_resize(void* pointer, size_t size);
 #define memory_resize assert_must_memory_resize
 
-INLINE void memory_delete(void* ptr){
-	free(ptr);}
+INLINE void assert_must_memory_delete(void* pointer, size_t size){
+	free(pointer);}
+#define memory_delete assert_must_memory_delete
+#define memory_delete_type(pointer, type) memory_delete(pointer, sizeof(type))
 
 
 #endif

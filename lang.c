@@ -24,188 +24,119 @@
 #include "list.h"
 #include "lock.h"
 #include "collection.h"
-enumeration(Mark){
-	MarkNothing, // 不需要 mark-sweep
-	Marked,
-	NotMarked};
+#include "byte.h"
+lock marksweep_lock=lock_init;
+List/*(Value)*/* xs_marked=List_null;
 record(Value){
-	size_t count; // 自動引用計數
 	lock lock;
-	anonymous_enumeration
-		{ValueCons, ValueNull, ValueSymbol, ValueSymbolConst, ValueData, ValueCollection, ValueJust, ValueDelay, ValueHole} type : 4;
-	// mark-sweep 當自動引用計數可能不能處理時使用
-	Mark mark : 2;//需要marksweep_lock
-	union {
-		anonymous_record {
+	size_t count; // 自動引用計數
+	bool is_marked : 1;//需要marksweep_lock
+	anonymous_enumeration{
+		ValueCons,
+		ValueNull,
+		ValueSymbol,
+		ValueData,
+		ValueCollection,
+		ValueJust,
+		ValueDelay,
+		ValueHole
+	} type : 3;
+	union{
+		anonymous_record{
+			bool is_marksweep_head :1;
+			bool is_marksweep_tail :1;
 			Value* head;
 			Value* tail;
-		} cons;
-		// null
-		anonymous_record {
+		} ValueCons;
+		anonymous_record{
+		} ValueNull;
+		anonymous_record{
+			bool is_const :1;
 			size_t length;// 單位 byte
-			char* value;
-		} symbol;
-		anonymous_record {
+			byte* value;
+		} ValueSymbol;
+		anonymous_record{
+			bool is_marksweep_name :1;
+			bool is_marksweep_list :1;
 			Value* name;
 			Value* list;
-		} data;
-		Value* collection;
-		// 禁止
-		// lang = Haskell
-		// let x = x in x
-		Value* just;
-		anonymous_record {
+		} ValueData;
+		anonymous_record{
+			bool is_marksweep :1;
 			Value* x;
-			Value* (*f)(Value*);// f不被remove
-		} delay;
-	} value;};
-INLINE void unsafe_delete_Value(Value* x){
-	switch(x->type){
-		case ValueSymbol:
-			memory_delete(x->value.symbol.value);
-			break;
-		case ValueCons:case ValueNull:case ValueSymbolConst:case ValueData:case ValueCollection:case ValueJust:case ValueDelay:break;
-		case ValueHole:default:assert(false);}
-	memory_delete(x);}
-INLINE bool unsafe_Value_exist_p(Value* x){lock_with_m(marksweep_lock,{
-	return x->count||eq_p(x->mark, Marked);})}
-PUBLIC void Value_hold(Value* x){lock_with_m(x->lock,{
-	assert(unsafe_Value_exist_p(x));
+		} ValueCollection;
+		anonymous_record{
+			bool is_marksweep :1;
+			Value* x;
+		} ValueJust;
+		anonymous_record{
+			bool is_marksweep :1;
+			Value* x;
+			Value* (*f)(Value*);
+		} ValueDelay;
+		anonymous_record{
+		} ValueHole;
+	} x;
+};
+INLINE void unsafe_delete_Value_self(Value* x){
+	memory_delete_type(x);
+}
+#define with_marksweep_m(body) lock_with_m(marksweep_lock, body)
+#define with_value_m(x, body) lock_with_m(x->lock, body)
+#define value_lock(x) assert_must_lock_do_m(x->lock)
+#define value_unlock(x) assert_lock_unlock_do_m(x->lock)
+INLINE bool unsafeValue_unsafeMarksweep_Value_exist_p(Value* x){
+	return or(x->count, x->is_marked);}
+INLINE bool unsafeValue_safeMarksweep_Value_exist_p(Value* x){with_marksweep_m({
+	return unsafeValue_unsafeMarksweep_Value_exist_p(x);})}
+PUBLIC void assert_Value_hold(Value* x){with_value_m(x, {
+	assert(unsafeValue_safeMarksweep_Value_exist_p(x));
 	x->count++;})}
-PRIVATE void unsafe_Value_List_push_sub(Value* x, List** xs){
+PRIVATE void safeValue_unsafeMarksweep_assert_Value_unhold(Value* x);
+PRIVATE void unsafeValue_unsafeMarksweep_delete_Value(Value* x){
+	assert(not(unsafeValue_unsafeMarksweep_Value_exist_p(x)));
 	switch(x->type){
 		case ValueCons:
-			List_push(xs, x->value.cons.head);
-			List_push(xs, x->value.cons.tail);
+			if(not(x->x.ValueCons.is_marksweep_head)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueCons.head);}
+			if(not(x->x.ValueCons.is_marksweep_tail)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueCons.tail);}
 			break;
-		case ValueNull:break;
-		case ValueSymbol:break;
-		case ValueSymbolValueConst:break;
+		case ValueNull:
+			break;
+		case ValueSymbol:
+			if(not(x->x.ValueSymbol.is_const)){
+				memory_delete(x->x.ValueSymbol.value, x->x.ValueSymbol.length);}
+			break;
 		case ValueData:
-			List_push(xs, x->value.data.name);
-			List_push(xs, x->value.data.list);
+			if(not(x->x.ValueData.is_marksweep_name)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueData.name);}
+			if(not(x->x.ValueData.is_marksweep_list)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueData.list);}
 			break;
 		case ValueCollection:
-			List_push(xs, x->value.collection);
+			if(not(x->x.ValueCollection.is_marksweep)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueCollection.x);}
 			break;
 		case ValueJust:
-			List_push(xs, x->value.just);
+			if(not(x->x.ValueJust.is_marksweep)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueJust.x);}
 			break;
 		case ValueDelay:
-			List_push(xs, x->value.delay.x);
+			if(not(x->x.ValueDelay.is_marksweep)){
+				safeValue_unsafeMarksweep_assert_Value_unhold(x->x.ValueDelay.x);}
 			break;
-		default:assert(false);}}
-PRIVATE void safe_do_Value_unhold(List* xs){
-	while(List_cons_p(xs)){
-		Value* x=assert_List_pop_m(xs);
-		assert_must_lock_do_m(x->lock);
-		assert(x->count);
-		x->count--;
-		if(unsafe_Value_exist_p(x)){
-			assert_lock_unlock_do_m(x->lock);
-		}else{
-			unsafe_Value_List_push_sub(x, &xs);
-			unsafe_delete_Value(x);}}}
-INLINE void safe_unsafeMarksweep_Value_disable_marksweep(Value* x){
-	assert_must_lock_do_m(x->lock);
-	assert(eq_p(x->mark, NotMarked));
-	if(eq_p(x->count, 0)){
-		delete_Value(x);
+		case ValueHole:default:assert(false);}
+	unsafe_delete_Value_self(x);
+}
+PRIVATE void safeValue_unsafeMarksweep_assert_Value_unhold(Value* x){
+	value_lock(x);
+	assert(unsafeValue_safeMarksweep_Value_exist_p(x));
+	assert(x->count);
+	x->count--;
+	if(unsafeValue_unsafeMarksweep_Value_exist_p(x)){
+		value_unlock(x);
 	}else{
-		x->mark=MarkNothing;
-		assert_lock_unlock_do_m(x->lock);
-	}
-}
-
-PRIVATE lock marksweep_lock=lock_init;
-PRIVATE List* marksweep_list=List_null;
-PUBLIC void gcValue(){lock_with_m(marksweep_lock,{
-	{List* marked=List_null;
-		//初始化,標記根
-		List_for_m(Value, x, marksweep_list, {
-			lock_with_m(x->lock,{
-				assert(eq_p(x->mark, Marked));
-				x->mark=NotMarked;
-				if(x->count){List_push_m(marked, x);}
-			})})
-		//標記子，寫入mark
-		while(List_cons_p(marked)){
-			Value* x=assert_List_pop_m(marked);
-			unsafe_Value_List_push_sub(x, &marked);
-			lock_with_m(x->lock, {x->mark=Marked;})}}
-	//清除
-	{List* new_marksweep_list=List_null;
-		while(List_cons_p(marksweep_list)){
-			Value* x=assert_List_pop_m(marksweep_list);
-			assert_must_lock_do_m(x->lock);
-			switch(x->mark){
-				case Marked:
-					assert_lock_unlock_do_m(x->lock);
-					List_push_m(new_marksweep_list, x);
-					break;
-				case NotMarked:
-					assert_lock_unlock_do_m(x->lock);
-					safe_unsafeMarksweep_Value_disable_marksweep(x);
-					break;
-				default:assert(false);}}}})}
-//BUGS
-PRIVATE void assert_unsafe_safeMarksweep_Value_enable_marksweep(Value* x){lock_with_m(marksweep_lock,
-	assert(eq_p(hole->mark, MarkNothing) || eq_p(hole->mark, NotMarked));
-	x->mark=NotMarked;
-	List_push_m(marksweep_list, x);
-})
-
-record(Hole){
-	Value* hole;
-	Collection/*(Value)*/* xs;//值含有它的
-};
-PRIVATE lock holes_lock=lock_init;//BUG
-PRIVATE List/*(Hole)*/* holes=List_null;//非null时不能Value_unhold，不能修改Value的内容为ValueJust（不能修改Value的内容）。//BUG
-PUBLIC void Value_unhold(Value* x){lock_with_m(holes_lock, {//BUG
-	assert(eq_p(holes,List_null));
-	List* xs=List_null;
-	List_push_m(xs, x);
-	safe_do_Value_unhold(xs);})}//BUG
-PUBLIC void ValueHole_set_do(Value* hole, Value* x){lock_with_m(holes_lock, {
-	assert(!eq_p(hole, x));
-	lock_with_m(hole->lock, {
-		assert(eq_p(hole->type, ValueHole));
-		hole->type=ValueJust;
-		hole->value.just=x;});
-	Collection/*(Value)*/* xs;
-	{List/*(Hole)*/* new_holes=List_null;
-		while(List_cons_p(holes)){
-			Hole* h=assert_List_pop_m(holes);
-			if(eq_p(h->hole, hole)){
-				xs=h->xs;
-				memory_delete(h);
-				goto get;}
-			List_push_m(new_holes, h);
-		}
-		assert(false);
-		get:;
-		while(List_cons_p(new_holes)){
-			List_push_m(holes, assert_List_pop_m(new_holes));}}
-	List* checking=List_null;
-	List_push_m(checking, x);
-	while(List_cons_p(checking)){
-		Value* x=assert_List_pop_m(checking);
-		assert(not(eq_p(hole, x)));
-		if(Collection_has(xs, x)){
-			lock_with_m(hole->lock, {assert_unsafe_Value_enable_marksweep(hole);})
-			lock_with_m(x->lock, {
-				assert_unsafe_Value_enable_marksweep(x);
-				unsafe_Value_List_push_sub(x, &checking);});}}
-	delete_Collection(xs);
-	})}
-PUBLIC Value* make_ValueHole(){
-	Value* x=memory_new_type(Value);
-	x->count=1;x->lock=lock_init_v;x->type=ValueHole;x->mark=MarkNothing;
-	Collection/*(Value)*/* xs=new_Collection();
-	Hole* h=memory_new_type(Hole);
-	h->hole=x;h->xs=xs;
-	lock_with_m(holes_lock, {List_push_m(holes, h);})
-	return x;
-}
-//WIP
+		unsafeValue_unsafeMarksweep_delete_Value(x);}}
+PUBLIC void gcValue(){}
 
