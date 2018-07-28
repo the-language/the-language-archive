@@ -27,10 +27,9 @@ PUBLIC void delete_Map(Map* m){
 	List_push_m(ms, m);
 	while(List_cons_p(ms)){
 		Map* m=assert_List_pop_m(ms);
-		if(m->has_zeros){memory_delete(m->zeros);}
 		if(m->has_zero){List_push_m(ms, m->zero);}
 		if(m->has_one){List_push_m(ms, m->one);}
-		memory_delete(m);}}
+		memory_delete_type(m, Map);}}
 PUBLIC void Map_set_do(Map* m, void* key, void* value){
 	size_t k=(size_t)key;
 	Map* i=m;

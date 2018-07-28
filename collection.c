@@ -26,7 +26,7 @@ PUBLIC void delete_Collection(Collection* c){
 		Collection* c=assert_List_pop_m(cs);
 		if(c->has_zero){List_push_m(cs, c->zero);}
 		if(c->has_one){List_push_m(cs, c->one);}
-		memory_delete(c);}}
+		memory_delete_type(c, Collection);}}
 PUBLIC void Collection_add_do(Collection* c, void* x){
 	size_t k=(size_t)x;
 	Collection* i=c;

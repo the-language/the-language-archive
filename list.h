@@ -54,7 +54,7 @@ INLINE void List_push(List** l, void* x){
 INLINE void* assert_List_pop(List** l){
 	assert(List_cons_p(*l));
 	List* nl=(*l)->tail;void* r=(*l)->head;
-	memory_delete(*l);
+	memory_delete_type(*l, List);
 	*l=nl;
 	return r;}
 #define assert_List_pop_m(xs) assert_List_pop(&xs)

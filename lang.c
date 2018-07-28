@@ -79,7 +79,7 @@ record(Value){
 	} x;
 };
 INLINE void unsafe_delete_Value_self(Value* x){
-	memory_delete_type(x);
+	memory_delete_type(x, Value);
 }
 #define with_marksweep_m(body) lock_with_m(marksweep_lock, body)
 #define with_value_m(x, body) lock_with_m(x->lock, body)
@@ -138,5 +138,7 @@ PRIVATE void safeValue_unsafeMarksweep_assert_Value_unhold(Value* x){
 		value_unlock(x);
 	}else{
 		unsafeValue_unsafeMarksweep_delete_Value(x);}}
-PUBLIC void gcValue(){}
+//WIP
+PUBLIC void gcValue(){
+}
 

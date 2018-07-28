@@ -29,6 +29,7 @@ PUBLIC void delete_PersistenceList(PersistenceList* xs){
 	assert(xs->count);
 	xs->count--;
 	if(eq_p(xs->count, 0)){
-		memory_delete(xs->head);
-		delete_PersistenceList(xs->tail);}}
+		PersistenceList* temp=xs->tail;
+		memory_delete_type(xs, PersistenceList);
+		delete_PersistenceList(temp);}}
 

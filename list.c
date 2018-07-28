@@ -26,5 +26,5 @@ List List_null_v={};
 #endif
 PUBLIC void delete_List(List* xs){
 	while(List_cons_p(xs)){
-		List* temp=xs->tail;memory_delete(xs);
+		List* temp=xs->tail;memory_delete_type(xs, List);
 		xs=temp;}}
