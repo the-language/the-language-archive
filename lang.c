@@ -58,20 +58,19 @@ record(Value){
 PUBLIC Value Value_null_v;
 Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
 PRIVATE lock value_xs_lock;
-#define with_lang_m(body) lock_with_m(value_xs_lock, body)
 PRIVATE Value* value_xs=Value_null;
 INLINE void addValue(Value* x){
 	x->lock=lock_init;
 	x->count=0;
-	with_lang_m({
+	lock_with_m(value_xs_lock, {
 		x->next=value_xs;
 		value_xs=x;})}
 
-INLINE bool safeValue_safeLang_Value_is_p(Value* x, ValueTypeType tt, ValueType t){with_lang_m({lock_with_m(x->lock, {
-	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})})}
-PUBLIC void Value_hold(Value* x){with_lang_m({lock_with_m(x->lock, {
+INLINE bool safeValue_safeLang_Value_is_p(Value* x, ValueTypeType tt, ValueType t){lock_with_m(x->lock, {
+	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})}
+PUBLIC void Value_hold(Value* x){lock_with_m(x->lock, {
 	assert(x->count);
-	x->count++;})})}
+	x->count++;})}
 INLINE void unsafeLang_unsafeValue_Value_delete_extra(Value* x){
 	switch(x->type_type){
 		case Atom:
@@ -130,7 +129,7 @@ PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){lock_with_m(unsafeLang_
 			assert_lock_unlock_do_m(x);}
 		
 		if(is_end){return;}}})}
-PUBLIC void Value_unhold(Value* x){with_lang_m({unsafeLang_safeValue_Value_unhold(x);})}
+PUBLIC void Value_unhold(Value* x){unsafeLang_safeValue_Value_unhold(x);}
 PUBLIC void gc_lang(){
 	//WIP
 }
@@ -147,11 +146,11 @@ INLINE void unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
 		default:assert(false);}}
 PUBLIC void Value_assert_equal(Value* x, Value* y){
 	Value_hold(y);
-	with_lang_m({lock_with_m(x->lock, {
+	lock_with_m(x->lock, {
 		assert(x->count);
 		unsafeLang_unsafeValue_Value_delete_extra(x);
 		unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(x);
-		x->type_type=Box;x->type=BoxJust;x->x.x=y;})})}
+		x->type_type=Box;x->type=BoxJust;x->x.x=y;})}
 PUBLIC Value* Value_symbol_dynamic_memcpy(size_t symbol_length, byte* old_symbol){
 	byte* new=assert_must_memory_new(symbol_length);
 	memcpy(new, old_symbol, symbol_length);
@@ -164,8 +163,8 @@ PUBLIC Value* Value_symbol_const(size_t symbol_length, byte* symbol){
 	r->type_type=Atom;r->type=AtomSymbolConst;r->x.symbol_length=symbol_length;r->y.symbol=symbol;
 	addValue(r);
 	return r;}
-PUBLIC bool Value_symbol_p(Value* x){with_lang_m({lock_with_m(x->lock, {
-	return and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst));})})}
+PUBLIC bool Value_symbol_p(Value* x){lock_with_m(x->lock, {
+	return and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst));})}
 PUBLIC Value* Value_cons(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);
@@ -177,5 +176,6 @@ PUBLIC Value* Value_data(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);
 	r->count=1;r->type_type=Pair;r->type=PairData;r->x.x=x;r->y.x=y;
+	addValue(r);
 	return r;}
 PUBLIC bool Value_data_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairData);}
