@@ -24,6 +24,7 @@
 record(Value);
 PUBLIC Value Value_null_v;
 #define Value_null (&Value_null_v)
+PUBLIC void Value_assert_equal(Value* x, Value* y);
 PUBLIC void Value_hold(Value* x);
 PUBLIC void Value_unhold(Value* x);
 PUBLIC Value* Value_cons(Value* x, Value* y);
