@@ -26,8 +26,6 @@
 #include "byte.h"
 #include "fallthrough.h"
 // PHP簡單實現
-PRIVATE lock lock_values;
-#define with_lang_m(body) lock_with_m(lock_values, body)
 enumeration(ValueTypeType){Atom, Box, Pair};
 enumeration(ValueType){A_T, B_T, C_T, D_T};
 #define AtomSymbolDynamic A_T
@@ -48,7 +46,7 @@ record(Value){
 		Value* x;
 	} x;
 	union{
-		byte* symbol_x;
+		byte* symbol;
 		Value* x;
 		Value* (*delay_f)(Value*);
 	} y;
@@ -57,10 +55,20 @@ record(Value){
 	ValueType type :2;
 	Value* next;//Value_null表示結束
 };
-INLINE bool safeValue_safeLang_Value_is_p(Value* x, ValueTypeType tt, ValueType t){with_lang_m({lock_with_m(x->lock, {
-	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})})}
 PUBLIC Value Value_null_v;
 Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
+PRIVATE lock value_xs_lock;
+#define with_lang_m(body) lock_with_m(value_xs_lock, body)
+PRIVATE Value* value_xs=Value_null;
+INLINE void addValue(Value* x){
+	x->lock=lock_init;
+	x->count=0;
+	with_lang_m({
+		x->next=value_xs;
+		value_xs=x;})}
+
+INLINE bool safeValue_safeLang_Value_is_p(Value* x, ValueTypeType tt, ValueType t){with_lang_m({lock_with_m(x->lock, {
+	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})})}
 PUBLIC void Value_hold(Value* x){with_lang_m({lock_with_m(x->lock, {
 	assert(x->count);
 	x->count++;})})}
@@ -68,7 +76,7 @@ INLINE void unsafeLang_unsafeValue_Value_delete_extra(Value* x){
 	switch(x->type_type){
 		case Atom:
 			switch(x->type){
-				case AtomSymbolDynamic:assert_must_memory_delete(x->y.symbol_x, x->x.symbol_length);break;
+				case AtomSymbolDynamic:assert_must_memory_delete(x->y.symbol, x->x.symbol_length);break;
 				case AtomSymbolConst:case AtomNull:break;
 				case AtomHole:default:assert(false);}
 			break;
@@ -143,12 +151,26 @@ PUBLIC void Value_assert_equal(Value* x, Value* y){
 		assert(x->count);
 		unsafeLang_unsafeValue_Value_delete_extra(x);
 		unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(x);
-		x->type_type=Box;x->type=BoxJust;x->x.x=y;
-})})}
+		x->type_type=Box;x->type=BoxJust;x->x.x=y;})})}
+PUBLIC Value* Value_symbol_dynamic_memcpy(size_t symbol_length, byte* old_symbol){
+	byte* new=assert_must_memory_new(symbol_length);
+	memcpy(new, old_symbol, symbol_length);
+	Value* r=memory_new_type(Value);
+	r->type_type=Atom;r->type=AtomSymbolDynamic;r->x.symbol_length=symbol_length;r->y.symbol=new;
+	addValue(r);
+	return r;}
+PUBLIC Value* Value_symbol_const(size_t symbol_length, byte* symbol){
+	Value* r=memory_new_type(Value);
+	r->type_type=Atom;r->type=AtomSymbolConst;r->x.symbol_length=symbol_length;r->y.symbol=symbol;
+	addValue(r);
+	return r;}
+PUBLIC bool Value_symbol_p(Value* x){with_lang_m({lock_with_m(x->lock, {
+	return and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst));})})}
 PUBLIC Value* Value_cons(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);
-	r->count=1;r->type_type=Pair;r->type=PairCons;r->x.x=x;r->y.x=y;
+	r->type_type=Pair;r->type=PairCons;r->x.x=x;r->y.x=y;
+	addValue(r);
 	return r;}
 PUBLIC bool Value_cons_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairCons);}
 PUBLIC Value* Value_data(Value* x, Value* y){
