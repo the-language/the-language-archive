@@ -24,6 +24,7 @@
 #include "list.h"
 #include "lock.h"
 #include "byte.h"
+#include "fallthrough.h"
 // PHP簡單實現
 PRIVATE lock lock_values;
 #define with_lang_m(body) lock_with_m(lock_values, body)
@@ -63,26 +64,28 @@ Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
 PUBLIC void Value_hold(Value* x){with_lang_m({lock_with_m(x->lock, {
 	assert(x->count);
 	x->count++;})})}
-INLINE void Value_unhold_helper_delete(Value* x){
+INLINE void unsafeLang_unsafeValue_Value_delete_extra(Value* x){
 	switch(x->type_type){
 		case Atom:
 			switch(x->type){
-				case AtomSymbolDynamic:assert_must_memory_delete(x->y.symbol_x, x->x.symbol_length);return;
-				case AtomSymbolConst:case AtomNull:return;
+				case AtomSymbolDynamic:assert_must_memory_delete(x->y.symbol_x, x->x.symbol_length);break;
+				case AtomSymbolConst:case AtomNull:break;
 				case AtomHole:default:assert(false);}
-			assert(false);
+			break;
 		case Box:
 			switch(x->type){
-				case BoxDelay:case BoxJust:case BoxCollection:return;
+				case BoxDelay:case BoxJust:case BoxCollection:break;
 				default:assert(false);}
-			assert(false);
+			break;
 		case Pair:
 			switch(x->type){
-				case PairCons:case PairData:return;
+				case PairCons:case PairData:break;
 				default:assert(false);}
-			assert(false);
-		default:assert(false);}
-	assert(false);}
+			break;
+		default:assert(false);}}
+INLINE void Value_unhold_helper_delete(Value* x){
+	unsafeLang_unsafeValue_Value_delete_extra(x);
+	memory_delete_type(x, Value);}
 PRIVATE lock unsafeLang_safeValue_Value_unhold_lock;
 PRIVATE List unsafeLang_safeValue_Value_unhold_end;
 //不計算Stack，不會消耗更多的內存
@@ -108,12 +111,11 @@ PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){lock_with_m(unsafeLang_
 			//不計算Stack，不會消耗更多的內存
 			switch(temp_type_type){
 				case Atom:break;
+				case Pair:
+					List_push_m(xs, temp_y);
+					fallthrough;
 				case Box:
 					List_push_m(xs, temp_x);
-					break;
-				case Pair:
-					List_push_m(xs, temp_x);
-					List_push_m(xs, temp_y);
 					break;
 				default:assert(false);}
 		}else{
@@ -124,6 +126,25 @@ PUBLIC void Value_unhold(Value* x){with_lang_m({unsafeLang_safeValue_Value_unhol
 PUBLIC void gc_lang(){
 	//WIP
 }
+INLINE void unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
+	assert(x->count);
+	switch(x->type_type){
+		case Atom:break;
+		case Pair:
+			unsafeLang_safeValue_Value_unhold(x->y.x);
+			fallthrough;
+		case Box:
+			unsafeLang_safeValue_Value_unhold(x->x.x);
+			break;
+		default:assert(false);}}
+PUBLIC void Value_assert_equal(Value* x, Value* y){
+	Value_hold(y);
+	with_lang_m({lock_with_m(x->lock, {
+		assert(x->count);
+		unsafeLang_unsafeValue_Value_delete_extra(x);
+		unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(x);
+		x->type_type=Box;x->type=BoxJust;x->x.x=y;
+})})}
 PUBLIC Value* Value_cons(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);
