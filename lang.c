@@ -43,9 +43,6 @@ enumeration(ValueType){A_T, B_T, C_T, D_T};
 #define PairData B_T
 record(Value){
 	size_t count; // 自動引用計數
-	lock_in_record(lock);
-	ValueTypeType type_type :2;
-	ValueType type :2;
 	union{
 		size_t symbol_length;// 單位 byte
 		Value* x;
@@ -54,7 +51,13 @@ record(Value){
 		byte* symbol_x;
 		Value* x;
 		Value*(*delay_f)(Value*);
-	} y;};
+	} y;
+	lock_in_record(lock);
+	ValueTypeType type_type :2;
+	ValueType type :2;
+	Value* next;//Value_null表示結束
+};
+Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
 PUBLIC void Value_hold(Value* x){with_lang({lock_with_m(x->lock, {
 	assert(x->count);
 	x->count++;})})}
@@ -101,5 +104,5 @@ PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){
 	}else{
 		assert_lock_unlock_do_m(x);}}
 PUBLIC void Value_unhold(Value* x){with_lang({unsafeLang_safeValue_Value_unhold(x);})}
-	
+PUBLIC void gc_lang()
 

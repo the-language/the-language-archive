@@ -22,6 +22,8 @@
 #include "define.h"
 //WIP
 record(Value);
+PUBLIC Value Value_null_v;
+#define Value_null (&Value_null_v)
 PUBLIC void Value_hold(Value* x);
 PUBLIC void Value_unhold(Value* x)
 
