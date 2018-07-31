@@ -25,8 +25,8 @@
 #include "lock.h"
 #include "byte.h"
 // PHP簡單實現
-lock lock_values;
-#define with_lang(body) lock_with_m(lock_values, body)
+PRIVATE lock lock_values;
+#define with_lang_m(body) lock_with_m(lock_values, body)
 enumeration(ValueTypeType){Atom, Box, Pair};
 enumeration(ValueType){A_T, B_T, C_T, D_T};
 #define AtomSymbolDynamic A_T
@@ -58,7 +58,7 @@ record(Value){
 };
 PUBLIC Value Value_null_v;
 Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
-PUBLIC void Value_hold(Value* x){with_lang({lock_with_m(x->lock, {
+PUBLIC void Value_hold(Value* x){with_lang_m({lock_with_m(x->lock, {
 	assert(x->count);
 	x->count++;})})}
 INLINE void Value_unhold_helper_delete(Value* x){
@@ -81,26 +81,44 @@ INLINE void Value_unhold_helper_delete(Value* x){
 			assert(false);
 		default:assert(false);}
 	assert(false);}
-PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){
-	assert_must_lock_do_m(x->lock);
-	assert(x->count);
-	x->count--;
-	if(eq_p(x->count, 0)){
-		//循環在這裏不會出現
-		switch(x->type_type){
-			case Atom:break;
-			case Box:
-				unsafeLang_safeValue_Value_unhold(x->x.x);
-				break;
-			case Pair:
-				unsafeLang_safeValue_Value_unhold(x->x.x);
-				unsafeLang_safeValue_Value_unhold(x->y.x);
-				break;
-			default:assert(false);}
-		Value_unhold_helper_delete(x);
-	}else{
-		assert_lock_unlock_do_m(x);}}
-PUBLIC void Value_unhold(Value* x){with_lang({unsafeLang_safeValue_Value_unhold(x);})}
+PRIVATE lock unsafeLang_safeValue_Value_unhold_lock;
+PRIVATE List unsafeLang_safeValue_Value_unhold_end;
+//不計算Stack，不會消耗更多的內存
+PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){lock_with_m(unsafeLang_safeValue_Value_unhold_lock, {
+	List(Value*)* xs=&unsafeLang_safeValue_Value_unhold_end;unsafeLang_safeValue_Value_unhold_end.tail=(void*)x;
+	while(true){
+		Value* x;
+		bool is_end=eq_p(xs, &unsafeLang_safeValue_Value_unhold_end);
+		if(is_end){
+			x=(Value*)unsafeLang_safeValue_Value_unhold_end.tail;
+		}else{
+			x=assert_List_pop_m(xs);}
+
+		assert_must_lock_do_m(x->lock);
+		assert(x->count);
+		x->count--;
+		if(eq_p(x->count, 0)){
+			//循環在這裏不會出現
+			ValueTypeType temp_type_type=x->type_type;
+			Value* temp_x=x->x.x;
+			Value* temp_y=x->y.x;
+			Value_unhold_helper_delete(x);
+			//不計算Stack，不會消耗更多的內存
+			switch(temp_type_type){
+				case Atom:break;
+				case Box:
+					List_push_m(xs, temp_x);
+					break;
+				case Pair:
+					List_push_m(xs, temp_x);
+					List_push_m(xs, temp_y);
+					break;
+				default:assert(false);}
+		}else{
+			assert_lock_unlock_do_m(x);}
+		
+		if(is_end){return;}}})}
+PUBLIC void Value_unhold(Value* x){with_lang_m({unsafeLang_safeValue_Value_unhold(x);})}
 PUBLIC void gc_lang(){
 	//WIP
 }
