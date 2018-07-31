@@ -23,11 +23,10 @@
 #include "lang.h"
 #include "list.h"
 #include "lock.h"
-#include "collection.h"
 #include "byte.h"
 // PHP簡單實現
 lock lock_values;
-#define with_lang(body) lock_with_m(lock_values, body);
+#define with_lang(body) lock_with_m(lock_values, body)
 enumeration(ValueTypeType){Atom, Box, Pair};
 enumeration(ValueType){A_T, B_T, C_T, D_T};
 #define AtomSymbolDynamic A_T
@@ -50,13 +49,14 @@ record(Value){
 	union{
 		byte* symbol_x;
 		Value* x;
-		Value*(*delay_f)(Value*);
+		Value* (*delay_f)(Value*);
 	} y;
 	lock_in_record(lock);
 	ValueTypeType type_type :2;
 	ValueType type :2;
 	Value* next;//Value_null表示結束
 };
+PUBLIC Value Value_null_v;
 Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
 PUBLIC void Value_hold(Value* x){with_lang({lock_with_m(x->lock, {
 	assert(x->count);
@@ -65,24 +65,21 @@ INLINE void Value_unhold_helper_delete(Value* x){
 	switch(x->type_type){
 		case Atom:
 			switch(x->type){
-				case AtomSymbolDynamic:assert_must_memory_delete(x->y.symbol_x, x->x.x);return;
+				case AtomSymbolDynamic:assert_must_memory_delete(x->y.symbol_x, x->x.symbol_length);return;
 				case AtomSymbolConst:case AtomNull:return;
-				case AtomHole:default:
-			}
+				case AtomHole:default:assert(false);}
 			assert(false);
 		case Box:
 			switch(x->type){
 				case BoxDelay:case BoxJust:case BoxCollection:return;
-				default:
-			}
+				default:assert(false);}
 			assert(false);
 		case Pair:
 			switch(x->type){
 				case PairCons:case PairData:return;
-				default:
-			}
+				default:assert(false);}
 			assert(false);
-		default:}
+		default:assert(false);}
 	assert(false);}
 PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){
 	assert_must_lock_do_m(x->lock);
@@ -104,5 +101,6 @@ PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){
 	}else{
 		assert_lock_unlock_do_m(x);}}
 PUBLIC void Value_unhold(Value* x){with_lang({unsafeLang_safeValue_Value_unhold(x);})}
-PUBLIC void gc_lang()
-
+PUBLIC void gc_lang(){
+	//WIP
+}
