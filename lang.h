@@ -32,8 +32,12 @@ PUBLIC Value* Value_symbol_const(size_t symbol_length, byte* symbol);
 PUBLIC void Value_hold(Value* x);
 PUBLIC void Value_unhold(Value* x);
 PUBLIC Value* Value_cons(Value* x, Value* y);
+PUBLIC Value* Value_cons_head(Value* x);
+PUBLIC Value* Value_cons_tail(Value* x);
 PUBLIC bool Value_cons_p(Value* x);
 PUBLIC Value* Value_data(Value* x, Value* y);
+PUBLIC Value* Value_data_name(Value* x);
+PUBLIC Value* Value_data_list(Value* x);
 PUBLIC bool Value_data_p(Value* x);
 
 

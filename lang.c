@@ -171,6 +171,14 @@ PUBLIC Value* Value_cons(Value* x, Value* y){
 	r->type_type=Pair;r->type=PairCons;r->x.x=x;r->y.x=y;
 	addValue(r);
 	return r;}
+PUBLIC Value* Value_cons_head(Value* x){lock_with_m(x->lock, {
+	assert(x->count);assert(Value_cons_p(x));
+	Value_hold(x->x.x);
+})}
+PUBLIC Value* Value_cons_tail(Value* x){lock_with_m(x->lock, {
+	assert(x->count);assert(Value_cons_p(x));
+	Value_hold(x->y.x);
+})}
 PUBLIC bool Value_cons_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairCons);}
 PUBLIC Value* Value_data(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
@@ -178,4 +186,12 @@ PUBLIC Value* Value_data(Value* x, Value* y){
 	r->count=1;r->type_type=Pair;r->type=PairData;r->x.x=x;r->y.x=y;
 	addValue(r);
 	return r;}
+PUBLIC Value* Value_data_name(Value* x){lock_with_m(x->lock, {
+	assert(x->count);assert(Value_data_p(x));
+	Value_hold(x->x.x);
+})}
+PUBLIC Value* Value_data_list(Value* x){lock_with_m(x->lock, {
+	assert(x->count);assert(Value_data_p(x));
+	Value_hold(x->y.x);
+})}
 PUBLIC bool Value_data_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairData);}
