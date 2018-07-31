@@ -56,6 +56,8 @@ record(Value){
 	ValueType type :2;
 	Value* next;//Value_null表示結束
 };
+INLINE bool safeValue_safeLang_Value_is_p(Value* x, ValueTypeType tt, ValueType t){with_lang_m({lock_with_m(x->lock, {
+	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})})}
 PUBLIC Value Value_null_v;
 Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
 PUBLIC void Value_hold(Value* x){with_lang_m({lock_with_m(x->lock, {
@@ -122,3 +124,15 @@ PUBLIC void Value_unhold(Value* x){with_lang_m({unsafeLang_safeValue_Value_unhol
 PUBLIC void gc_lang(){
 	//WIP
 }
+PUBLIC Value* Value_cons(Value* x, Value* y){
+	Value_hold(x);Value_hold(y);
+	Value* r=memory_new_type(Value);
+	r->count=1;r->type_type=Pair;r->type=PairCons;r->x.x=x;r->y.x=y;
+	return r;}
+PUBLIC bool Value_cons_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairCons);}
+PUBLIC Value* Value_data(Value* x, Value* y){
+	Value_hold(x);Value_hold(y);
+	Value* r=memory_new_type(Value);
+	r->count=1;r->type_type=Pair;r->type=PairData;r->x.x=x;r->y.x=y;
+	return r;}
+PUBLIC bool Value_data_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairData);}

@@ -26,5 +26,10 @@ PUBLIC Value Value_null_v;
 #define Value_null (&Value_null_v)
 PUBLIC void Value_hold(Value* x);
 PUBLIC void Value_unhold(Value* x);
+PUBLIC Value* Value_cons(Value* x, Value* y);
+PUBLIC bool Value_cons_p(Value* x);
+PUBLIC Value* Value_data(Value* x, Value* y);
+PUBLIC bool Value_data_p(Value* x);
+
 
 #endif
