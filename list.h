@@ -26,6 +26,7 @@
 record(List){
 	void* head;
 	List* tail;};
+#define List(x) List
 #ifdef NULL
 #define List_null NULL
 #else

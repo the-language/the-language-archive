@@ -22,7 +22,6 @@
 #include "define.h"
 //WIP
 record(Value);
-PUBLIC void assert_Value_hold(Value* x);
-PUBLIC void assert_Value_unhold(Value* x);
+PUBLIC void Value_unhold(Value x);
 
 #endif

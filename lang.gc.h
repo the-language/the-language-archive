@@ -20,7 +20,7 @@
 
 
 #include "define.h"
-PUBLIC void gcValue();
+PUBLIC void gc_step_lang_value_just();
 
 
 #endif
