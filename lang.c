@@ -28,8 +28,8 @@
 // PHP簡單實現
 enumeration(ValueTypeType){Atom, Box, Pair};
 enumeration(ValueType){A_T, B_T, C_T, D_T};
-#define AtomSymbolDynamic A_T
-#define AtomSymbolConst B_T
+#define AtomSymbolDynamic A_T//WIP
+#define AtomSymbolConst B_T//WIP
 #define AtomNull C_T
 #define AtomHole D_T
 
@@ -42,11 +42,11 @@ enumeration(ValueType){A_T, B_T, C_T, D_T};
 record(Value){
 	size_t count; // 自動引用計數
 	union{
-		size_t symbol_length;// 單位 byte
+		size_t symbol_length;// 單位 byte//WIP
 		Value* x;
 	} x;
 	union{
-		byte* symbol;
+		byte* symbol;//WIP
 		Value* x;
 		Value* (*delay_f)(Value*);
 	} y;
@@ -195,3 +195,4 @@ PUBLIC Value* Value_data_list(Value* x){lock_with_m(x->lock, {
 	Value_hold(x->y.x);
 })}
 PUBLIC bool Value_data_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairData);}
+//WIP
