@@ -152,7 +152,7 @@ PUBLIC void Value_assert_equal(Value* x, Value* y){
 		unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(x);
 		x->type_type=Box;x->type=BoxJust;x->x.x=y;})}
 PUBLIC Value* Value_symbol_dynamic_memcpy(size_t symbol_length, byte* old_symbol){
-	byte* new=assert_must_memory_new(symbol_length);
+	byte* new=memory_new(symbol_length);
 	memcpy(new, old_symbol, symbol_length);
 	Value* r=memory_new_type(Value);
 	r->type_type=Atom;r->type=AtomSymbolDynamic;r->x.symbol_length=symbol_length;r->y.symbol=new;

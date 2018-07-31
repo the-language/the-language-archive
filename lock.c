@@ -17,3 +17,4 @@
 */
 #include "define.h"
 #include "lock.h"
+//單進程無中斷實現
