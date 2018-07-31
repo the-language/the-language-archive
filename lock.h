@@ -30,29 +30,27 @@ INLINE bool lock_lock_do(lock* x){
 	if(*x)
 		{return false;}
 		else{*x=true;return true;}}
-#define lock_lock_do_m(x) lock_lock_do(&x)
+#define lock_lock_do_m(x) ((x)?false:({x=true;true;}))
 INLINE void assert_must_lock_do(lock* x){
 	bool b=lock_lock_do(x);
 	assert(b);}
-#define assert_must_lock_do_m(x) assert_must_lock_do(&x)
+#define assert_must_lock_do_m(x) {assert(not(x));x=true;}
 INLINE bool lock_unlock_do(lock* x){
 	if(*x)
 		{*x=false;return true;}
 		else{return false;}}
-#define lock_unlock_do_m(x) lock_unlock_do(&x)
+#define lock_unlock_do_m(x) ((x)?({x=false;true;}):false)
 INLINE void assert_lock_unlock_do(lock* x){
 	bool b=lock_unlock_do(x);
 	assert(b);}
-#define assert_lock_unlock_do_m(x) assert_lock_unlock_do(&x)
+#define assert_lock_unlock_do_m(x) {assert(x);x=false;}
 #define lock_with_m(lock, body) { \
-	lock* _TEMP_lock_with_m_=&(lock); \
-	assert_must_lock_do(_TEMP_lock_with_m_); \
+	assert_must_lock_do_m(lock); \
 	body \
-	assert_lock_unlock_do(_TEMP_lock_with_m_);}
+	assert_lock_unlock_do_m(lock);}
 #define lock_with_2_m(x, y, body) lock_with_m(x, lock_with_m(y, body))
 #define lock_with_if_m(lock, body, elseb) { \
-	lock* _TEMP_lock_lock_with_if_m_=&(lock); \
-	if(lock_lock_do(_TEMP_lock_lock_with_if_m_)){ \
+	if(lock_lock_do_m(lock)){ \
 		body \
 		assert_lock_unlock_do_m(lock); \
 	}else{ \

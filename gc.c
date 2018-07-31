@@ -23,6 +23,6 @@ lock gcing=lock_init;
 PUBLIC void gc(){
 	lock_with_if_m(gcing,{
 		
-		gcValue();
+		gc_lang();
 		
-		assert_lock_unlock_do_m(gcing);},{})}
+		},{})}
