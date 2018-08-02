@@ -145,7 +145,6 @@ INLINE void unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
 			break;
 		default:assert(false);}}
 */
-//WIP
 PUBLIC Value* Value_symbol_dynamic_memcpy(size_t symbol_length, byte* old_symbol){
 	byte* new=memory_new(symbol_length);
 	memcpy(new, old_symbol, symbol_length);
@@ -159,12 +158,7 @@ PUBLIC Value* Value_symbol_const(size_t symbol_length, byte* symbol){
 	r->count=0;r->enable_marksweep=false;r->lock=lock_init;
 	return r;}
 PUBLIC size_t Value_symbol_length(Value* x){
-	size_t r;
-	lock_with_m(x->lock, {
-		assert(x->count);assert(Value_symbol_p(x));
-		r=x->x.symbol_length;
-	});
-	return r;}
+	return lock_with_value_m(size_t, x->lock, ({assert(x->count);assert(Value_symbol_p(x));x->x.symbol_length;}));}
 PUBLIC bool Value_symbol_p(Value* x){
 	return lock_with_value_m(bool, x->lock,and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst)));}
 PUBLIC Value* Value_cons(Value* x, Value* y){
