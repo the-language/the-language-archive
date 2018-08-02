@@ -28,8 +28,8 @@
 // PHP簡單實現
 enumeration(ValueTypeType){Atom, Box, Pair};
 enumeration(ValueType){A_T, B_T, C_T, D_T};
-#define AtomSymbolDynamic A_T//WIP
-#define AtomSymbolConst B_T//WIP
+#define AtomSymbolDynamic A_T
+#define AtomSymbolConst B_T
 #define AtomNull C_T
 #define AtomHole D_T
 
@@ -42,36 +42,32 @@ enumeration(ValueType){A_T, B_T, C_T, D_T};
 record(Value){
 	size_t count; // 自動引用計數
 	union{
-		size_t symbol_length;// 單位 byte//WIP
+		size_t symbol_length;// 單位 byte
 		Value* x;
 	} x;
 	union{
-		byte* symbol;//WIP
+		byte* symbol;
 		Value* x;
 		Value* (*delay_f)(Value*);
 	} y;
 	lock_in_record(lock);
+	bool enable_marksweep :1;
 	ValueTypeType type_type :2;
 	ValueType type :2;
-	Value* next;//Value_null表示結束
 };
 PUBLIC Value Value_null_v;
 Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
-PRIVATE lock value_xs_lock;
-PRIVATE Value* value_xs=Value_null;
-INLINE void addValue(Value* x){
-	x->lock=lock_init;
-	x->count=0;
-	lock_with_m(value_xs_lock, {
-		x->next=value_xs;
-		value_xs=x;})}
+PRIVATE lock marksweep_xs_lock;
+PRIVATE List(Value*)* marksweep_xs=List_null;
+PRIVATE lock just_xs_lock;
+PRIVATE List(Value*)* just_xs=List_null;
 
-INLINE bool safeValue_safeLang_Value_is_p(Value* x, ValueTypeType tt, ValueType t){lock_with_m(x->lock, {
+INLINE bool safeValue_Value_is_p(Value* x, ValueTypeType tt, ValueType t){lock_with_m(x->lock, {
 	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})}
 PUBLIC void Value_hold(Value* x){lock_with_m(x->lock, {
 	assert(x->count);
 	x->count++;})}
-INLINE void unsafeLang_unsafeValue_Value_delete_extra(Value* x){
+INLINE void unsafeValue_Value_delete_extra(Value* x){
 	switch(x->type_type){
 		case Atom:
 			switch(x->type){
@@ -91,18 +87,18 @@ INLINE void unsafeLang_unsafeValue_Value_delete_extra(Value* x){
 			break;
 		default:assert(false);}}
 INLINE void Value_unhold_helper_delete(Value* x){
-	unsafeLang_unsafeValue_Value_delete_extra(x);
+	unsafeValue_Value_delete_extra(x);
 	memory_delete_type(x, Value);}
-PRIVATE lock unsafeLang_safeValue_Value_unhold_lock;
-PRIVATE List unsafeLang_safeValue_Value_unhold_end;
+PRIVATE lock safeValue_Value_unhold_lock;
+PRIVATE List safeValue_Value_unhold_end;
 //不計算Stack，不會消耗更多的內存
-PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){lock_with_m(unsafeLang_safeValue_Value_unhold_lock, {
-	List(Value*)* xs=&unsafeLang_safeValue_Value_unhold_end;unsafeLang_safeValue_Value_unhold_end.tail=(void*)x;
+PRIVATE void safeValue_Value_unhold(Value* x){lock_with_m(safeValue_Value_unhold_lock, {
+	List(Value*)* xs=&safeValue_Value_unhold_end;safeValue_Value_unhold_end.tail=(void*)x;
 	while(true){
 		Value* x;
-		bool is_end=eq_p(xs, &unsafeLang_safeValue_Value_unhold_end);
+		bool is_end=eq_p(xs, &safeValue_Value_unhold_end);
 		if(is_end){
-			x=(Value*)unsafeLang_safeValue_Value_unhold_end.tail;
+			x=(Value*)safeValue_Value_unhold_end.tail;
 		}else{
 			x=assert_List_pop_m(xs);}
 
@@ -129,39 +125,33 @@ PRIVATE void unsafeLang_safeValue_Value_unhold(Value* x){lock_with_m(unsafeLang_
 			assert_lock_unlock_do_m(x);}
 		
 		if(is_end){return;}}})}
-PUBLIC void Value_unhold(Value* x){unsafeLang_safeValue_Value_unhold(x);}
+PUBLIC void Value_unhold(Value* x){safeValue_Value_unhold(x);}
 PUBLIC void gc_lang(){
 	//WIP
 }
-INLINE void unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
+INLINE void unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
 	assert(x->count);
 	switch(x->type_type){
 		case Atom:break;
 		case Pair:
-			unsafeLang_safeValue_Value_unhold(x->y.x);
+			safeValue_Value_unhold(x->y.x);
 			fallthrough;
 		case Box:
-			unsafeLang_safeValue_Value_unhold(x->x.x);
+			safeValue_Value_unhold(x->x.x);
 			break;
 		default:assert(false);}}
-PUBLIC void Value_assert_equal(Value* x, Value* y){
-	Value_hold(y);
-	lock_with_m(x->lock, {
-		assert(x->count);
-		unsafeLang_unsafeValue_Value_delete_extra(x);
-		unsafeLang_unsafeValue_safeSubValue_Value_unhold_subValue(x);
-		x->type_type=Box;x->type=BoxJust;x->x.x=y;})}
+//WIP
 PUBLIC Value* Value_symbol_dynamic_memcpy(size_t symbol_length, byte* old_symbol){
 	byte* new=memory_new(symbol_length);
 	memcpy(new, old_symbol, symbol_length);
 	Value* r=memory_new_type(Value);
 	r->type_type=Atom;r->type=AtomSymbolDynamic;r->x.symbol_length=symbol_length;r->y.symbol=new;
-	addValue(r);
+	r->count=0;r->enable_marksweep=false;r->lock=lock_init;
 	return r;}
 PUBLIC Value* Value_symbol_const(size_t symbol_length, byte* symbol){
 	Value* r=memory_new_type(Value);
 	r->type_type=Atom;r->type=AtomSymbolConst;r->x.symbol_length=symbol_length;r->y.symbol=symbol;
-	addValue(r);
+	r->count=0;r->enable_marksweep=false;r->lock=lock_init;
 	return r;}
 PUBLIC bool Value_symbol_p(Value* x){lock_with_m(x->lock, {
 	return and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst));})}
@@ -169,7 +159,7 @@ PUBLIC Value* Value_cons(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);
 	r->type_type=Pair;r->type=PairCons;r->x.x=x;r->y.x=y;
-	addValue(r);
+	r->count=0;r->enable_marksweep=x->enable_marksweep||y->enable_marksweep;r->lock=lock_init;
 	return r;}
 PUBLIC Value* Value_cons_head(Value* x){lock_with_m(x->lock, {
 	assert(x->count);assert(Value_cons_p(x));
@@ -179,12 +169,12 @@ PUBLIC Value* Value_cons_tail(Value* x){lock_with_m(x->lock, {
 	assert(x->count);assert(Value_cons_p(x));
 	Value_hold(x->y.x);
 })}
-PUBLIC bool Value_cons_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairCons);}
+PUBLIC bool Value_cons_p(Value* x){return safeValue_Value_is_p(x, Pair, PairCons);}
 PUBLIC Value* Value_data(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);
 	r->count=1;r->type_type=Pair;r->type=PairData;r->x.x=x;r->y.x=y;
-	addValue(r);
+	r->count=0;r->enable_marksweep=x->enable_marksweep||y->enable_marksweep;r->lock=lock_init;
 	return r;}
 PUBLIC Value* Value_data_name(Value* x){lock_with_m(x->lock, {
 	assert(x->count);assert(Value_data_p(x));
@@ -194,5 +184,5 @@ PUBLIC Value* Value_data_list(Value* x){lock_with_m(x->lock, {
 	assert(x->count);assert(Value_data_p(x));
 	Value_hold(x->y.x);
 })}
-PUBLIC bool Value_data_p(Value* x){return safeValue_safeLang_Value_is_p(x, Pair, PairData);}
+PUBLIC bool Value_data_p(Value* x){return safeValue_Value_is_p(x, Pair, PairData);}
 //WIP

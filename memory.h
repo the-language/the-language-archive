@@ -25,6 +25,7 @@ INLINE void* maybe_memory_new(size_t size){
 PUBLIC void* assert_must_memory_new(size_t size);
 #define memory_new assert_must_memory_new
 #define memory_new_type(t) memory_new(sizeof(t))
+#define maybe_let_memory_new_type(t, x, suss, fail) {t* x=maybe_memory_new(sizeof(t));if(x){succ}{fail}}
 
 INLINE void* maybe_memory_resize(void* pointer, size_t size){	
 	return realloc(pointer, size);}
