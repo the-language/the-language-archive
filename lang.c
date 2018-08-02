@@ -55,11 +55,10 @@ record(Value){
 	ValueTypeType type_type :2;
 	ValueType type :2;
 };
-PUBLIC Value Value_null_v;
-Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull};
-PRIVATE lock marksweep_xs_lock;
+PUBLIC Value Value_null_v;Value Value_null_v={.count=1, .type_type=Atom, .type=AtomNull, .enable_marksweep=false};
+PRIVATE lock marksweep_xs_lock=lock_init;
 PRIVATE List(Value*)* marksweep_xs=List_null;
-PRIVATE lock just_xs_lock;
+PRIVATE lock just_xs_lock=lock_init;
 PRIVATE List(Value*)* just_xs=List_null;
 
 INLINE bool safeValue_Value_is_p(Value* x, ValueTypeType tt, ValueType t){lock_with_m(x->lock, {
@@ -86,49 +85,54 @@ INLINE void unsafeValue_Value_delete_extra(Value* x){
 				default:assert(false);}
 			break;
 		default:assert(false);}}
+
+PRIVATE lock unhold_xs_lock=lock_init;
+PRIVATE List(Value*)* unhold_xs=List_null;
+PUBLIC void Value_unhold(Value* x){
+	List_push_m(unhold_xs, x);}
 INLINE void Value_unhold_helper_delete(Value* x){
 	unsafeValue_Value_delete_extra(x);
 	memory_delete_type(x, Value);}
-PRIVATE lock safeValue_Value_unhold_lock;
-PRIVATE List safeValue_Value_unhold_end;
-//不計算Stack，不會消耗更多的內存
-PRIVATE void safeValue_Value_unhold(Value* x){lock_with_m(safeValue_Value_unhold_lock, {
-	List(Value*)* xs=&safeValue_Value_unhold_end;safeValue_Value_unhold_end.tail=(void*)x;
-	while(true){
-		Value* x;
-		bool is_end=eq_p(xs, &safeValue_Value_unhold_end);
-		if(is_end){
-			x=(Value*)safeValue_Value_unhold_end.tail;
-		}else{
-			x=assert_List_pop_m(xs);}
+INLINE void Value_unhold_helper(){
+	Value* x=assert_List_pop_m(unhold_xs);
+	assert_must_lock_do_m(x->lock);
+	assert(x->count);
+	x->count--;
+	if(eq_p(x->count, 0)){
+		//循環在這裏不會出現
+		ValueTypeType temp_type_type=x->type_type;
+		Value* temp_x=x->x.x;
+		Value* temp_y=x->y.x;
+		Value_unhold_helper_delete(x);
+		assert(2*sizeof(List)<=sizeof(Value));//不會消耗更多的內存
+		switch(temp_type_type){
+			case Atom:break;
+			case Pair:
+				List_push_m(unhold_xs, temp_y);
+				fallthrough;
+			case Box:
+				List_push_m(unhold_xs, temp_x);
+				break;
+			default:assert(false);}
+	}else{
+		assert_lock_unlock_do_m(x);}}
+INLINE void gc_step_lang_unhold_xs(){lock_with_or_doNothing_m(unhold_xs_lock, {
+	//不會出現遞歸（不會消耗更多的內存）
+	if(List_cons_p(unhold_xs)){
+		Value_unhold_helper();}})}
+INLINE void gc_lang_unhold_xs(){lock_with_or_doNothing_m(unhold_xs_lock, {
+	while(List_cons_p(unhold_xs)){
+		Value_unhold_helper();}})}
 
-		assert_must_lock_do_m(x->lock);
-		assert(x->count);
-		x->count--;
-		if(eq_p(x->count, 0)){
-			//循環在這裏不會出現
-			ValueTypeType temp_type_type=x->type_type;
-			Value* temp_x=x->x.x;
-			Value* temp_y=x->y.x;
-			Value_unhold_helper_delete(x);
-			//不計算Stack，不會消耗更多的內存
-			switch(temp_type_type){
-				case Atom:break;
-				case Pair:
-					List_push_m(xs, temp_y);
-					fallthrough;
-				case Box:
-					List_push_m(xs, temp_x);
-					break;
-				default:assert(false);}
-		}else{
-			assert_lock_unlock_do_m(x);}
-		
-		if(is_end){return;}}})}
-PUBLIC void Value_unhold(Value* x){safeValue_Value_unhold(x);}
-PUBLIC void gc_lang(){
+PUBLIC void gc_step_lang(){
+	gc_step_lang_unhold_xs();
 	//WIP
 }
+PUBLIC void gc_lang(){
+	gc_lang_unhold_xs();
+	//WIP
+}
+/*
 INLINE void unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
 	assert(x->count);
 	switch(x->type_type){
@@ -140,6 +144,7 @@ INLINE void unsafeValue_safeSubValue_Value_unhold_subValue(Value* x){
 			safeValue_Value_unhold(x->x.x);
 			break;
 		default:assert(false);}}
+*/
 //WIP
 PUBLIC Value* Value_symbol_dynamic_memcpy(size_t symbol_length, byte* old_symbol){
 	byte* new=memory_new(symbol_length);

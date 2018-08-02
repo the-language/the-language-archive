@@ -21,6 +21,7 @@
 
 #include "define.h"
 PUBLIC void gc();
+PUBLIC void gc_step();
 
 
 #endif

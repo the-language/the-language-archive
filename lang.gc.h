@@ -20,6 +20,7 @@
 
 
 #include "define.h"
+PUBLIC void gc_step_lang();
 PUBLIC void gc_lang();
 
 

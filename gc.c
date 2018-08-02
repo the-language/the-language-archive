@@ -21,8 +21,15 @@
 #include "lang.gc.h"
 lock gcing=lock_init;
 PUBLIC void gc(){
-	lock_with_if_m(gcing,{
+	lock_with_or_doNothing_m(gcing,{
 		
 		gc_lang();
 		
-		},{})}
+	})}
+lock gc_step_ing=lock_init;
+PUBLIC void gc_step(){
+	lock_with_or_doNothing_m(gc_step_ing,{
+		
+		gc_step_lang();
+		
+	})}

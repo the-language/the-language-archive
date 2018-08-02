@@ -55,6 +55,7 @@ INLINE void assert_lock_unlock_do(lock* x){
 		assert_lock_unlock_do_m(lock); \
 	}else{ \
 		elseb}}
+#define lock_with_or_doNothing_m(lock, body) lock_with_if_m(lock, body, {})
 
 
 #endif
