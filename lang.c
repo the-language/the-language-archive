@@ -61,8 +61,8 @@ PRIVATE List(Value*)* marksweep_xs=List_null;
 PRIVATE lock just_xs_lock=lock_init;
 PRIVATE List(Value*)* just_xs=List_null;
 
-INLINE bool safeValue_Value_is_p(Value* x, ValueTypeType tt, ValueType t){lock_with_m(x->lock, {
-	return eq_p(x->type_type, tt)&&eq_p(x->type, t);})}
+INLINE bool safeValue_Value_is_p(Value* x, ValueTypeType tt, ValueType t){
+	return lock_with_value_m(bool, x->lock, eq_p(x->type_type, tt)&&eq_p(x->type, t));}
 PUBLIC void Value_hold(Value* x){lock_with_m(x->lock, {
 	assert(x->count);
 	x->count++;})}
@@ -158,8 +158,15 @@ PUBLIC Value* Value_symbol_const(size_t symbol_length, byte* symbol){
 	r->type_type=Atom;r->type=AtomSymbolConst;r->x.symbol_length=symbol_length;r->y.symbol=symbol;
 	r->count=0;r->enable_marksweep=false;r->lock=lock_init;
 	return r;}
-PUBLIC bool Value_symbol_p(Value* x){lock_with_m(x->lock, {
-	return and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst));})}
+PUBLIC size_t Value_symbol_length(Value* x){
+	size_t r;
+	lock_with_m(x->lock, {
+		assert(x->count);assert(Value_symbol_p(x));
+		r=x->x.symbol_length;
+	});
+	return r;}
+PUBLIC bool Value_symbol_p(Value* x){
+	return lock_with_value_m(bool, x->lock,and(eq_p(x->type_type, Atom), eq_p(x->type, AtomSymbolDynamic)||eq_p(x->type, AtomSymbolConst)));}
 PUBLIC Value* Value_cons(Value* x, Value* y){
 	Value_hold(x);Value_hold(y);
 	Value* r=memory_new_type(Value);

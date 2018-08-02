@@ -48,6 +48,7 @@ INLINE void assert_lock_unlock_do(lock* x){
 	assert_must_lock_do_m(lock); \
 	body \
 	assert_lock_unlock_do_m(lock);}
+#define lock_with_value_m(type, lock, value) ({assert_must_lock_do_m(lock);type _TEMP_lock_lock_with_value_m_=(value);assert_lock_unlock_do_m(lock);_TEMP_lock_lock_with_value_m_;})
 #define lock_with_2_m(x, y, body) lock_with_m(x, lock_with_m(y, body))
 #define lock_with_if_m(lock, body, elseb) { \
 	if(lock_lock_do_m(lock)){ \
