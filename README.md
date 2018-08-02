@@ -37,3 +37,5 @@ Languages badly influenced by feudalism and examination-oriented education in th
 
 # C實現
 + 無`NULL`
++ 每個`X.c`和`X.h`都是一個獨立的庫。`X.c`可以不存在。
++ 所有庫被重新造，除了C標準庫。
