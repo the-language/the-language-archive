@@ -1,0 +1,3 @@
+[submodule "Expression-Oriented-C"]
+	path = Expression-Oriented-C
+	url = https://github.com/zaoqi/Expression-Oriented-C.git
