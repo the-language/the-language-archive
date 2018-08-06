@@ -1,2 +1,0 @@
-#!/bin/sh
-arm-none-eabi-gcc -S -O9 -Ofast -DNDEBUG *.c
