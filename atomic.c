@@ -70,4 +70,12 @@
 #error "WIP"
 #endif
 
+#define lock atomic_bool
+define_public_inline_function(void lock_init(volatile lock* l))({
+	atomic_bool_init(l, false);})
+define_public_inline_function(bool lock_lock(volatile lock* l))({
+	bool ignore;
+	atomic_bool_compare_exchange_load(l, false, true, &ignore);})
+#error "WIP"
+
 #include ">module"
