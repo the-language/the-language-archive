@@ -21,53 +21,59 @@
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)
 #	include <stdatomic.h>
 	/* atomic_size_t */
-	define_public_inline_function(void atomic_size_t_init(volatile atomic_size_t* a, size_t desired)({
+	define_public_inline_function(void atomic_size_t_init(volatile atomic_size_t* a, size_t desired))({
 		atomic_init(a, desired);})
 	define_public_inline_function(size_t atomic_size_t_fetch_add(volatile atomic_size_t* a, size_t x))({
 		atomic_fetch_add(a, x);})
 	define_public_inline_function(size_t atomic_size_t_fetch_sub(volatile atomic_size_t* a, size_t x))({
 		atomic_fetch_sub(a, x);})
-	define_public_inline_function(size_t atomic_size_t_read(const volatile atomic_size_t* a)({
+	define_public_inline_function(size_t atomic_size_t_read(volatile atomic_size_t* a))({
 		atomic_load(a);})
-	define_public_inline_function(bool atomic_size_t_compare_exchange_load(volatile atomic_size_t* a, size_t expected, size_t desired, size_t* ret)({
+	define_public_inline_function(bool atomic_size_t_compare_exchange(volatile atomic_size_t* a, size_t expected, size_t desired))({
+		atomic_compare_exchange_strong(a, &expected, desired);})
+	define_public_inline_function(bool atomic_size_t_compare_exchange_load(volatile atomic_size_t* a, size_t expected, size_t desired, size_t* ret))({
 		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({
 			*ret=desired;
 			true;
 		})({
 			*ret=expected;
-			false;})})
+			false;});})
 	
 #	define atomic_ptr_t atomic_uintptr_t
-	define_public_inline_function(void atomic_ptr_t_init(volatile atomic_ptr_t* a, ptr_t desired)({
+	define_public_inline_function(void atomic_ptr_t_init(volatile atomic_ptr_t* a, ptr_t desired))({
 		atomic_init(a, desired);})
 	define_public_inline_function(ptr_t atomic_ptr_t_fetch_add(volatile atomic_ptr_t* a, ptr_t x))({
 		atomic_fetch_add(a, (ptrdiff_t)x);})
 	define_public_inline_function(ptr_t atomic_ptr_t_fetch_sub(volatile atomic_ptr_t* a, ptr_t x))({
 		atomic_fetch_sub(a, (ptrdiff_t)x);})
-	define_public_inline_function(ptr_t atomic_ptr_t_read(const volatile atomic_ptr_t* a)({
+	define_public_inline_function(ptr_t atomic_ptr_t_read(volatile atomic_ptr_t* a))({
 		atomic_load(a);})
-	define_public_inline_function(bool atomic_ptr_t_compare_exchange_load(volatile atomic_ptr_t* a, ptr_t expected, ptr_t desired, ptr_t* ret)({
+	define_public_inline_function(bool atomic_ptr_t_compare_exchange(volatile atomic_ptr_t* a, ptr_t expected, ptr_t desired))({
+		atomic_compare_exchange_strong(a, &expected, desired);})
+	define_public_inline_function(bool atomic_ptr_t_compare_exchange_load(volatile atomic_ptr_t* a, ptr_t expected, ptr_t desired, ptr_t* ret))({
 		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({
 			*ret=desired;
 			true;
 		})({
 			*ret=expected;
-			false;})})
+			false;});})
 	
 	/* atomic_bool */
-	define_public_inline_function(void atomic_bool_init(volatile atomic_bool* a, bool desired)({
+	define_public_inline_function(void atomic_bool_init(volatile atomic_bool* a, bool desired))({
 		atomic_init(a, desired);})
-	define_public_inline_function(bool atomic_bool_read(const volatile atomic_bool* a)({
+	define_public_inline_function(bool atomic_bool_read(volatile atomic_bool* a))({
 		atomic_load(a);})
-	define_public_inline_function(bool atomic_bool_compare_exchange_load(volatile atomic_bool* a, bool expected, bool desired, bool* ret)({
+	define_public_inline_function(bool atomic_bool_compare_exchange(volatile atomic_bool* a, bool expected, bool desired))({
+		atomic_compare_exchange_strong(a, &expected, desired);})
+	define_public_inline_function(bool atomic_bool_compare_exchange_load(volatile atomic_bool* a, bool expected, bool desired, bool* ret))({
 		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({
 			*ret=desired;
 			true;
 		})({
 			*ret=expected;
-			false;})})
+			false;});})
 #else
-#error "WIP"
+//#error "WIP"
 #endif
 
 #define lock atomic_bool
@@ -76,6 +82,6 @@ define_public_inline_function(void lock_init(volatile lock* l))({
 define_public_inline_function(bool lock_lock(volatile lock* l))({
 	bool ignore;
 	atomic_bool_compare_exchange_load(l, false, true, &ignore);})
-#error "WIP"
+//#error "WIP"
 
 #include ">module"
