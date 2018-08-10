@@ -18,69 +18,73 @@
 #pragma once
 #include "module<"
 
+#define atomic(t) atomic_HELPER(t)
+#define atomic_HELPER(t) atomic_ ## t
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)
 #	include <stdatomic.h>
-	/* atomic_size_t */
-	define_public_inline_function(void atomic_size_t_init(volatile atomic_size_t* a, size_t desired))({
-		atomic_init(a, desired);})
-	define_public_inline_function(size_t atomic_size_t_fetch_add(volatile atomic_size_t* a, size_t x))({
-		atomic_fetch_add(a, x);})
-	define_public_inline_function(size_t atomic_size_t_fetch_sub(volatile atomic_size_t* a, size_t x))({
-		atomic_fetch_sub(a, x);})
-	define_public_inline_function(size_t atomic_size_t_read(volatile atomic_size_t* a))({
-		atomic_load(a);})
-	define_public_inline_function(bool atomic_size_t_compare_exchange(volatile atomic_size_t* a, size_t expected, size_t desired))({
-		atomic_compare_exchange_strong(a, &expected, desired);})
-	define_public_inline_function(bool atomic_size_t_compare_exchange_load(volatile atomic_size_t* a, size_t expected, size_t desired, size_t* ret))({
-		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({
-			*ret=desired;
-			true;
-		})({
-			*ret=expected;
+#	define HELPER_atomic_define1(T) \
+	define_public_inline_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
+		atomic_init(a, desired);}) \
+	define_public_inline_lambda(T atomic_##T##_read_add(volatile atomic_##T* a, T x))({ \
+		atomic_fetch_add(a, x);}) \
+	define_public_inline_lambda(T atomic_##T##_read_sub(volatile atomic_##T* a, T x))({ \
+		atomic_fetch_sub(a, x);}) \
+	define_public_inline_lambda(T atomic_##T##_read(volatile atomic_##T* a))({ \
+		atomic_load(a);}) \
+	define_public_inline_lambda(bool atomic_##T##_compare_exchange(volatile atomic_##T* a, T expected, T desired))({ \
+		atomic_compare_exchange_strong(a, &expected, desired);}) \
+	define_public_inline_lambda(bool atomic_##T##_compare_exchange_load(volatile atomic_##T* a, T expected, T desired, T* ret))({ \
+		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({ \
+			*ret=desired; \
+			true; \
+		})({ \
+			*ret=expected; \
 			false;});})
-	
-#	define atomic_ptr_t atomic_uintptr_t
-	define_public_inline_function(void atomic_ptr_t_init(volatile atomic_ptr_t* a, ptr_t desired))({
-		atomic_init(a, desired);})
-	define_public_inline_function(ptr_t atomic_ptr_t_fetch_add(volatile atomic_ptr_t* a, ptr_t x))({
-		atomic_fetch_add(a, (ptrdiff_t)x);})
-	define_public_inline_function(ptr_t atomic_ptr_t_fetch_sub(volatile atomic_ptr_t* a, ptr_t x))({
-		atomic_fetch_sub(a, (ptrdiff_t)x);})
-	define_public_inline_function(ptr_t atomic_ptr_t_read(volatile atomic_ptr_t* a))({
-		atomic_load(a);})
-	define_public_inline_function(bool atomic_ptr_t_compare_exchange(volatile atomic_ptr_t* a, ptr_t expected, ptr_t desired))({
-		atomic_compare_exchange_strong(a, &expected, desired);})
-	define_public_inline_function(bool atomic_ptr_t_compare_exchange_load(volatile atomic_ptr_t* a, ptr_t expected, ptr_t desired, ptr_t* ret))({
-		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({
-			*ret=desired;
-			true;
-		})({
-			*ret=expected;
+#	define HELPER_atomic_define(T, M) \
+	define_public_inline_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
+		atomic_init(a, desired);}) \
+	define_public_inline_lambda(T atomic_##T##_read_add(volatile atomic_##T* a, T x))({ \
+		atomic_fetch_add(a, (M)x);}) \
+	define_public_inline_lambda(T atomic_##T##_read_sub(volatile atomic_##T* a, T x))({ \
+		atomic_fetch_sub(a, (M)x);}) \
+	define_public_inline_lambda(T atomic_##T##_read(volatile atomic_##T* a))({ \
+		atomic_load(a);}) \
+	define_public_inline_lambda(bool atomic_##T##_compare_exchange(volatile atomic_##T* a, T expected, T desired))({ \
+		atomic_compare_exchange_strong(a, &expected, desired);}) \
+	define_public_inline_lambda(bool atomic_##T##_compare_exchange_load(volatile atomic_##T* a, T expected, T desired, T* ret))({ \
+		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({ \
+			*ret=desired; \
+			true; \
+		})({ \
+			*ret=expected; \
 			false;});})
-	
-	/* atomic_bool */
-	define_public_inline_function(void atomic_bool_init(volatile atomic_bool* a, bool desired))({
-		atomic_init(a, desired);})
-	define_public_inline_function(bool atomic_bool_read(volatile atomic_bool* a))({
-		atomic_load(a);})
-	define_public_inline_function(bool atomic_bool_compare_exchange(volatile atomic_bool* a, bool expected, bool desired))({
-		atomic_compare_exchange_strong(a, &expected, desired);})
-	define_public_inline_function(bool atomic_bool_compare_exchange_load(volatile atomic_bool* a, bool expected, bool desired, bool* ret))({
-		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({
-			*ret=desired;
-			true;
-		})({
-			*ret=expected;
-			false;});})
+#	define atomic_nat_pointer atomic(nat_pointer)
+	HELPER_atomic_define(nat_pointer, ptrdiff_t)
+#	define atomic_int_pointer atomic(int_pointer)
+	HELPER_atomic_define(int_pointer, ptrdiff_t)
+	HELPER_atomic_define1(bool)
+	HELPER_atomic_define1(size_t)
+#	define atomic_int8 atomic(int8)
+	HELPER_atomic_define1(int8)
+#	define atomic_int16 atomic(int16)
+	HELPER_atomic_define1(int16)
+#	define atomic_int32 atomic(int32)
+	HELPER_atomic_define1(int32)
+#	define atomic_int64 atomic(int64)
+	HELPER_atomic_define1(int64)
+#	define atomic_nat8 atomic(nat8)
+	HELPER_atomic_define1(nat8)
+#	define atomic_nat16 atomic(nat16)
+	HELPER_atomic_define1(nat16)
+#	define atomic_nat32 atomic(nat32)
+	HELPER_atomic_define1(nat32)
+#	define atomic_nat64 atomic(nat64)
+	HELPER_atomic_define1(nat64)
+
+
 #else
 #error "WIP"
 #endif
-
-#define lock atomic_bool
-define_public_inline_function(void lock_init(volatile lock* l))({
-	atomic_bool_init(l, false);})
-define_public_inline_function(bool lock_lock(volatile lock* l))({
-	atomic_bool_compare_exchange(l, false, true);})
-//#error "WIP"
 
 #include ">module"

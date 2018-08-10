@@ -1,11 +1,2 @@
 #!/bin/sh
-i=$(mktemp)
-rm $i
-wd=$PWD
-cd "$(dirname $0)"
-ln -s "$(readlink -f tool-includes)" $i
-cd $wd
-#eval "clang $($i) -Oz -O3 -target arm-v5-linux-eabi -S -DNDEBUG *.c"
-#eval "clang $($i) -Oz -O3 -target arm-v5-linux-eabi -S -emit-llvm -DNDEBUG *.c"
-eval "clang $($i) -Oz -O3 -S -emit-llvm -DNDEBUG *.c"
-rm $i
+"$(dirname $0)/tool-c" -S -emit-llvm -DNDEBUG *.c
