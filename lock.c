@@ -25,4 +25,6 @@ define_public_inline_lambda(void lock_init(volatile lock* l))({
 	atomic_bool_init(l, false);})
 define_public_inline_lambda(bool lock_lock(volatile lock* l))({
 	atomic_bool_compare_exchange(l, false, true);})
+define_public_inline_lambda(bool lock_unlock(volatile lock* l))({
+	atomic_bool_compare_exchange(l, true, false);})
 #include ">module"
