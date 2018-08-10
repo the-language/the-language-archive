@@ -18,11 +18,21 @@
 #pragma once
 #include "module<"
 
-#define atomic(t) atomic_HELPER(t)
-#define atomic_HELPER(t) atomic_ ## t
+#define HELPER_atomic_prim(t) HELPER_atomic_prim_HELPER(t)
+#define HELPER_atomic_prim_HELPER(t) atomic_ ## t
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)
-#	include <stdatomic.h>
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)) || (defined(__cplusplus) && __cplusplus >= 201103L)
+#	if defined(__cplusplus)
+#		include <atomic>
+		using std::atomic_init;
+		using std::atomic_fetch_add;
+		using std::atomic_load;
+		using std::atomic_compare_exchange_strong;
+#		define HELPER_atomic_using(x) using std::x;
+#	else
+#		include <stdatomic.h>
+#		define HELPER_atomic_using(x)
+#	endif
 #	define HELPER_atomic_define1(T) \
 	define_public_inline_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
 		atomic_init(a, desired);}) \
@@ -59,30 +69,52 @@
 		})({ \
 			*ret=expected; \
 			false;});})
-#	define atomic_nat_pointer atomic(nat_pointer)
+	HELPER_atomic_using(HELPER_atomic_prim(nat_pointer))
+#	define atomic_nat_pointer HELPER_atomic_prim(nat_pointer)
 	HELPER_atomic_define(nat_pointer, ptrdiff_t)
-#	define atomic_int_pointer atomic(int_pointer)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(int_pointer))
+#	define atomic_int_pointer HELPER_atomic_prim(int_pointer)
 	HELPER_atomic_define(int_pointer, ptrdiff_t)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(bool))
 	HELPER_atomic_define1(bool)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(size_t))
+#	define atomic_size_t HELPER_atomic_prim(size_t)
 	HELPER_atomic_define1(size_t)
-#	define atomic_int8 atomic(int8)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(int8))
+#	define atomic_int8 HELPER_atomic_prim(int8)
 	HELPER_atomic_define1(int8)
-#	define atomic_int16 atomic(int16)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(int16))
+#	define atomic_int16 HELPER_atomic_prim(int16)
 	HELPER_atomic_define1(int16)
-#	define atomic_int32 atomic(int32)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(int32))
+#	define atomic_int32 HELPER_atomic_prim(int32)
 	HELPER_atomic_define1(int32)
-#	define atomic_int64 atomic(int64)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(int64))
+#	define atomic_int64 HELPER_atomic_prim(int64)
 	HELPER_atomic_define1(int64)
-#	define atomic_nat8 atomic(nat8)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(nat8))
+#	define atomic_nat8 HELPER_atomic_prim(nat8)
 	HELPER_atomic_define1(nat8)
-#	define atomic_nat16 atomic(nat16)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(nat16))
+#	define atomic_nat16 HELPER_atomic_prim(nat16)
 	HELPER_atomic_define1(nat16)
-#	define atomic_nat32 atomic(nat32)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(nat32))
+#	define atomic_nat32 HELPER_atomic_prim(nat32)
 	HELPER_atomic_define1(nat32)
-#	define atomic_nat64 atomic(nat64)
+	
+	HELPER_atomic_using(HELPER_atomic_prim(nat64))
+#	define atomic_nat64 HELPER_atomic_prim(nat64)
 	HELPER_atomic_define1(nat64)
-
-
 #else
 #error "WIP"
 #endif
