@@ -36,6 +36,7 @@ Languages badly influenced by feudalism and examination-oriented education in th
 `集`可反構之爲`列`而化之。
 
 # C實現
++ 用 https://github.com/zaoqi/Expression-Oriented-C
 + 無`NULL`
-+ 每個`X.c`和`X.h`都是一個獨立的庫。`X.c`可以不存在。
++ 每個`X.c`都是一個獨立的庫。
 + 所有庫被重新造，除了C標準庫。
