@@ -34,17 +34,17 @@
 #		define HELPER_atomic_using(x)
 #	endif
 #	define HELPER_atomic_define1(T) \
-	define_public_inline_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
+	define_public_inline_withTypeOfBody_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
 		atomic_init(a, desired);}) \
-	define_public_inline_lambda(T atomic_##T##_read_add(volatile atomic_##T* a, T x))({ \
+	define_public_inline_withTypeOfBody_lambda(T atomic_##T##_read_add(volatile atomic_##T* a, T x))({ \
 		atomic_fetch_add(a, x);}) \
-	define_public_inline_lambda(T atomic_##T##_read_sub(volatile atomic_##T* a, T x))({ \
+	define_public_inline_withTypeOfBody_lambda(T atomic_##T##_read_sub(volatile atomic_##T* a, T x))({ \
 		atomic_fetch_sub(a, x);}) \
-	define_public_inline_lambda(T atomic_##T##_read(volatile atomic_##T* a))({ \
+	define_public_inline_withTypeOfBody_lambda(T atomic_##T##_read(volatile atomic_##T* a))({ \
 		atomic_load(a);}) \
-	define_public_inline_lambda(bool atomic_##T##_compare_exchange(volatile atomic_##T* a, T expected, T desired))({ \
+	define_public_inline_withTypeOfBody_lambda(bool atomic_##T##_compare_exchange(volatile atomic_##T* a, T expected, T desired))({ \
 		atomic_compare_exchange_strong(a, &expected, desired);}) \
-	define_public_inline_lambda(bool atomic_##T##_compare_exchange_load(volatile atomic_##T* a, T expected, T desired, T* ret))({ \
+	define_public_inline_withTypeOfBody_lambda(bool atomic_##T##_compare_exchange_load(volatile atomic_##T* a, T expected, T desired, T* ret))({ \
 		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({ \
 			*ret=desired; \
 			true; \
@@ -52,17 +52,17 @@
 			*ret=expected; \
 			false;});})
 #	define HELPER_atomic_define(T, M) \
-	define_public_inline_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
+	define_public_inline_withTypeOfBody_lambda(void atomic_##T##_init(volatile atomic_##T* a, T desired))({ \
 		atomic_init(a, desired);}) \
-	define_public_inline_lambda(T atomic_##T##_read_add(volatile atomic_##T* a, T x))({ \
+	define_public_inline_withTypeOfBody_lambda(T atomic_##T##_read_add(volatile atomic_##T* a, T x))({ \
 		atomic_fetch_add(a, (M)x);}) \
-	define_public_inline_lambda(T atomic_##T##_read_sub(volatile atomic_##T* a, T x))({ \
+	define_public_inline_withTypeOfBody_lambda(T atomic_##T##_read_sub(volatile atomic_##T* a, T x))({ \
 		atomic_fetch_sub(a, (M)x);}) \
-	define_public_inline_lambda(T atomic_##T##_read(volatile atomic_##T* a))({ \
+	define_public_inline_withTypeOfBody_lambda(T atomic_##T##_read(volatile atomic_##T* a))({ \
 		atomic_load(a);}) \
-	define_public_inline_lambda(bool atomic_##T##_compare_exchange(volatile atomic_##T* a, T expected, T desired))({ \
+	define_public_inline_withTypeOfBody_lambda(bool atomic_##T##_compare_exchange(volatile atomic_##T* a, T expected, T desired))({ \
 		atomic_compare_exchange_strong(a, &expected, desired);}) \
-	define_public_inline_lambda(bool atomic_##T##_compare_exchange_load(volatile atomic_##T* a, T expected, T desired, T* ret))({ \
+	define_public_inline_withTypeOfBody_lambda(bool atomic_##T##_compare_exchange_load(volatile atomic_##T* a, T expected, T desired, T* ret))({ \
 		if_then_else(atomic_compare_exchange_strong(a, &expected, desired))({ \
 			*ret=desired; \
 			true; \
