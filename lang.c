@@ -20,5 +20,5 @@
 #include "require<"
 #include "lock.c"
 #include ">require"
-/*EOC WIP*/
+/*WIP*/
 #include ">module"
