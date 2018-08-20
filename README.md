@@ -1,10 +1,8 @@
-Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
-# 普通思想控制（誤？）（来源为百度）
-## 中华人民共和国文编程
-+ 完全拥有自己知识产权？
-+ 可保障国家安全？
-+ 将会有Verilog实现，可以实现全面的硬件、软件安全？
-+ 。。。
++ Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
++ Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
++ Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
++ Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
++ Languages badly influenced by feudalism and examination-oriented education in the People's Republic of China
 # 語
 
 有五素：`列/連`，`列/空`，`文`，`構`，`集`。構五素以爲化，而化於內外。
