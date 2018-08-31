@@ -20,11 +20,11 @@
 #include "require<"
 #include "atomic.c"
 #include ">require"
-#define lock atomic_bool
+define_type(var(lock __ atomic_bool));
 define_public_inline_withTypeOfBody_lambda(void lock_init(volatile lock* l))(
-	atomic_bool_init(l, false);)
+    atomic_bool_init(l, false););
 define_public_inline_withTypeOfBody_lambda(bool lock_lock(volatile lock* l))(
-	atomic_bool_compare_exchange(l, false, true);)
+    atomic_bool_compare_exchange(l, false, true););
 define_public_inline_withTypeOfBody_lambda(bool lock_unlock(volatile lock* l))(
-	atomic_bool_compare_exchange(l, true, false);)
+    atomic_bool_compare_exchange(l, true, false););
 #include ">module"

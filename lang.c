@@ -31,20 +31,22 @@ define_private(var(BoxJust __ const ValueType) __ B_T);
 define_private(var(BoxCollection __ const ValueType) __ C_T);
 define_private(var(PairCons __ const ValueType) __ A_T);
 define_private(var(PairData __ const ValueType) __ B_T);
-define_record(Value)(
-	nat_pointer count;
-	union{
-		nat_pointer symbol_length;// 單位 byte
-		Value* x;
-	} x;
-	union{
-		byte* symbol;
-		Value* x;
-		Value* (*delay_f)(Value*);
-	} y;
-	lock_in_record(lock);
-	bool enable_marksweep :1;
-	ValueTypeType type_type :2;
-	ValueType type :2;);
-
+define_struct(Value)(
+    nat_pointer count;
+    union{
+	nat_pointer symbol_length;// 單位 byte
+	Value* x;
+    } x;
+    union{
+	byte* symbol;
+	Value* x;
+	Value* (*delay_f)(Value*);
+    } y;
+    lock lock;
+    bool enable_marksweep :1;
+    ValueTypeType type_type :2;
+    ValueType type :2;);
+define_public_lambda_withTypeOfBody(newValueHole() __ Value*)(
+    cast("WIP",Value*);
+    );
 #include ">module"
