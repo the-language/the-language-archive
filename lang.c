@@ -20,17 +20,17 @@
 #include "require<"
 #include "lock.c"
 #include ">require"
-define_enumeration(ValueTypeType)(Atom, Box, Pair)
-define_enumeration(ValueType)(A_T, B_T, C_T, D_T)
-define_private(var(AtomSymbolDynamic __ const ValueType) __ A_T)
-define_private(var(AtomSymbolConst __ const ValueType) __ B_T)
-define_private(var(AtomNull __ const ValueType) __ C_T)
-define_private(var(AtomHole __ const ValueType) __ D_T)
-define_private(var(BoxDelay __ const ValueType) __ A_T)
-define_private(var(BoxJust __ const ValueType) __ B_T)
-define_private(var(BoxCollection __ const ValueType) __ C_T)
-define_private(var(PairCons __ const ValueType) __ A_T)
-define_private(var(PairData __ const ValueType) __ B_T)
+define_enumeration(ValueTypeType)(Atom, Box, Pair);
+define_enumeration(ValueType)(A_T, B_T, C_T, D_T);
+define_private(var(AtomSymbolDynamic __ const ValueType) __ A_T);
+define_private(var(AtomSymbolConst __ const ValueType) __ B_T);
+define_private(var(AtomNull __ const ValueType) __ C_T);
+define_private(var(AtomHole __ const ValueType) __ D_T);
+define_private(var(BoxDelay __ const ValueType) __ A_T);
+define_private(var(BoxJust __ const ValueType) __ B_T);
+define_private(var(BoxCollection __ const ValueType) __ C_T);
+define_private(var(PairCons __ const ValueType) __ A_T);
+define_private(var(PairData __ const ValueType) __ B_T);
 define_record(Value)(
 	nat_pointer count;
 	union{
@@ -45,6 +45,6 @@ define_record(Value)(
 	lock_in_record(lock);
 	bool enable_marksweep :1;
 	ValueTypeType type_type :2;
-	ValueType type :2;
-)
+	ValueType type :2;);
+
 #include ">module"
