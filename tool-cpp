@@ -1,2 +1,0 @@
-#!/bin/sh
-eval clang++ -std=c++11 $("$(dirname $0)/tool-includes") -Oz -O3 -Wno-pragma-once-outside-header '"$@"'

@@ -1,0 +1,55 @@
+#!/bin/bash
+includes(){
+    #needs eval
+    oldpwd="$PWD"
+    while true
+    do
+	if [ -d require ]
+	then
+	    echo -n " '-I$(readlink -f require)'"
+	fi
+	echo -n " '-I$(readlink -f .)'"
+	[ -d .git ] && break
+	cd ..
+    done
+    cd "$oldpwd"
+}
+srcs(){
+    #does not support space
+    oldpwd="$PWD"
+    while true
+    do
+	if [ -d require ]
+	then
+	    echo -n $(ls $(readlink -f require)/*.c) 2>/dev/null
+	fi
+	echo -n $(ls $(readlink -f .)/*.c) 2>/dev/null
+	[ -d .git ] && break
+	cd ..
+    done
+    cd "$oldpwd"
+}
+git_add(){
+    git add .
+    git diff --cached | cat
+}
+git_commit(){
+    git commit -m "$1"
+    git push
+}
+c(){
+    eval clang $(includes) -Oz -O3 -Wno-pragma-once-outside-header '"$@"'
+}
+ll(){
+    c -S -emit-llvm "$@"
+}
+s(){
+    c -S "$@"
+}
+ll_all(){
+    ll $(srcs)
+}
+s_all(){
+    s $(srcs)
+}
+

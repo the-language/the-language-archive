@@ -1,2 +1,0 @@
-#!/bin/sh
-"$(dirname $0)/tool-c" -S -emit-llvm -DNDEBUG *.c
