@@ -20,11 +20,14 @@
 #include <stdlib.h>
 define_public_inline_lambda_withTypeOfBody(orNull_memory_alloc_bytes(nat_pointer size) __ void*)(
     malloc(size););
+#define orNull_memory_alloc_type(t) orNull_memory_alloc_bytes(sizeof(t))
 define_public_inline_lambda_withTypeOfBody(memory_alloc_bytes(nat_pointer size) __ void*)(
     var(r, void*)=(void*)0;
     while(!r)r=orNull_memory_alloc_bytes(size);
     r;);
+#define memory_alloc_type(t) memory_alloc_bytes(sizeof(t))
 define_public_inline_lambda_withTypeOfBody(memory_free_bytes(var(size , nat_pointer), var(pointer , void*)) __ void)(
     free(pointer);
     make_void(););
+#define memory_free_type(t, p) memory_free_bytes(sizeof(t), p)
 #include ">module"
