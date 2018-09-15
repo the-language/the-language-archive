@@ -19,6 +19,8 @@
 #include "module<"
 #include "require<"
 #include "lock.c"
+#include "memory.c"
+#include "list.c"
 #include ">require"
 define_enumeration(ValueTypeType)(Atom, Box, Pair);
 define_enumeration(ValueType)(A_T, B_T, C_T, D_T);
@@ -46,7 +48,21 @@ define_struct(Value)(
     bool enable_marksweep :1;
     ValueTypeType type_type :2;
     ValueType type :2;);
+define_private(var(marksweeps __ List/*(Value*)*/*) __ (List*)0);
+define_private(var(marksweeps_lock_raw __ lock*) __ (lock*)0);
+define_private_inline_lambda_withTypeOfBody(marksweeps_lock() __ lock*)(
+    if(!marksweeps_lock_raw){
+	marksweeps_lock_raw=memory_alloc_type(lock);
+	lock_init(marksweeps_lock_raw);
+    }
+    marksweeps_lock_raw;);
 define_public_lambda_withTypeOfBody(newValueHole() __ Value*)(
-    cast("WIP",Value*);
-    );
+    var(r __ Value*)=memory_alloc_type(Value);
+    r->count=1;
+    r->lock=lock_init;
+    r->type_type=Atom;
+    r->type=AtomHole;
+    lock_with(marksweeps_lock() , Value*)(
+	List_push(marksweeps, r);
+	r;););
 #include ">module"
